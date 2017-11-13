@@ -3,7 +3,7 @@ package org.unipi.matrixnorm
 import scala.reflect._
 import org.scalacheck._
 
-object MatrixGenerator extends App {
+class MatrixGenerator {
 
 //  def matrix[T: ClassTag](g: Gen[T])(order: Int): Gen[Array[Array[T]]] =
 //    Gen.listOfN(order*order, g).map { squareList =>
@@ -28,12 +28,12 @@ object MatrixGenerator extends App {
       squareList.toArray.grouped(cols).toArray
     }
 
-  val r = new scala.util.Random
-  val rows:Int = r.nextInt(50)
-  val cols:Int = r.nextInt(50)
-  val limit:Double = r.nextInt(100)
-
-  matrix(Gen.choose(0.0, 2.0 + limit))(2 + rows, 2 + cols)
+//  val r = new scala.util.Random
+//  val rows:Int = r.nextInt(50)
+//  val cols:Int = r.nextInt(50)
+//  val limit:Double = r.nextInt(100)
+//
+//  matrix(Gen.choose(0.0, 2.0 + limit))(2 + rows, 2 + cols)
 
 //  matrix(Gen.choose(0.0, 2.0 + limit))(2 + rows, 2 + cols).sample.foreach{
 //    rows => rows.foreach{
