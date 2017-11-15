@@ -34,7 +34,7 @@ import org.la4j.linear.*;
 
 public class HadoopMatrixNorm {
 
-    public static class TokenizerMapper
+    public static class MatrixMapper
             extends Mapper<Object, Text, Text, IntWritable>{
 
         private final static IntWritable one = new IntWritable(1);
@@ -49,6 +49,9 @@ public class HadoopMatrixNorm {
             }
         }
     }
+
+
+
 
 }
 
