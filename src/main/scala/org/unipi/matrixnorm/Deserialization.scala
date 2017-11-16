@@ -1,3 +1,4 @@
+// https://stackoverflow.com/questions/28785064/scala-convert-arraystring-to-arraydouble
 package org.unipi.matrixnorm
 
 import scala.io.Source
@@ -8,11 +9,8 @@ object Deserialization extends App {
   for (line <- Source.fromFile(filename).getLines) {
     val items = line.split("\t")
 
-    val rows = items.drop(1)
-    println(rows)
-    val cols = items.drop(1)
-    println(cols)
+    val numbers = items.map(x => x.toDouble)
 
-    items.foreach(println)
+    numbers.foreach(println)
   }
 }
