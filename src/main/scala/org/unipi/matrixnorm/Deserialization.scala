@@ -7,10 +7,14 @@ object Deserialization extends App {
 
   val filename = "data/matrix"
   for (line <- Source.fromFile(filename).getLines) {
-    val items = line.split("\t")
 
-    val numbers = items.map(x => x.toDouble)
+    val matrix = (new MatrixGenerator).deserialize(line)
 
-    numbers.foreach(println)
+    matrix.foreach {
+      row => row.foreach{
+        col => print(s"\t$col")
+      }
+        print("\n")
+    }
   }
 }
