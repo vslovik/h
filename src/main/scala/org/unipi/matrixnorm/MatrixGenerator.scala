@@ -24,6 +24,6 @@ class MatrixGenerator {
           case d: Double => decimal(d)
           case _ => None
         }
-      }.mkString(Array(rows, cols).mkString("", "|", "|"), "|", "")
+      }.mkString(Array(rows, cols).mkString("", "\t", "\t"), "\t", "") //ToDo delimiter val
     }
 }

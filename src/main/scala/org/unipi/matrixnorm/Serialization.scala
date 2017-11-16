@@ -9,7 +9,7 @@ object Serialization extends App {
   val r = new scala.util.Random
   val pw = new PrintWriter(new File("data/matrix"))
 
-  for (a <- 1 until 10000) {
+  for (a <- 1 until 100) {
     val rows: Int = r.nextInt(50)
     val cols: Int = r.nextInt(50)
     val limit: Double = r.nextInt(100)
