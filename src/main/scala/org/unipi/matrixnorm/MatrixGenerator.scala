@@ -2,7 +2,6 @@
 package org.unipi.matrixnorm
 
 import org.scalacheck._
-
 import scala.math.BigDecimal
 
 class MatrixGenerator {
@@ -16,15 +15,6 @@ class MatrixGenerator {
       squareList.grouped(cols).toList
     }
 
-  def matrixSerialized[Double](g: Gen[Double])(rows: Int, cols: Int): Gen[String] =
-    Gen.listOfN(rows * cols, g).map { squareList =>
-      squareList.map {
-        item => item match {
-          case i: scala.Double => decimal(i)
-        }
-      }.mkString(Array(rows, cols).mkString("", "\t", "\t"), "\t", "")
-    }
-
   def serialize(matrix: Any): String = {
     matrix match {
       case Some(i) =>  i match {
@@ -35,8 +25,7 @@ class MatrixGenerator {
     }
   }
 
-  def deserialize(s: String): List[List[Double]] =
-  {
+  def deserialize(s: String): List[List[Double]] = {
     val items = s.split("\t")
     // val rows = Integer.parseInt(items(0)) ToDo assert: check rows
     items.drop(2).toList.map{
