@@ -12,6 +12,7 @@
 // https://egkatzioura.com/2017/02/16/wordcount-on-hadoop-with-scala/
 // https://hadoopi.wordpress.com/2013/05/27/understand-recordreader-inputsplit/ ***
 // https://stackoverflow.com/questions/1888716/what-replaces-class-variables-in-scala ***
+// https://developer.yahoo.com/hadoop/tutorial/module5.html#types
 
 //ToDo 1. Write generated data to hadoop
 //ToDo 2.
