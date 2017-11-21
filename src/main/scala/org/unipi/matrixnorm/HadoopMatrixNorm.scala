@@ -4,6 +4,9 @@ import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.IntWritable
 import org.apache.hadoop.io.Text
+import org.apache.hadoop.io.ArrayWritable
+import org.apache.hadoop.io.MapWritable
+import org.apache.hadoop.io.DoubleWritable
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.Mapper
 import org.apache.hadoop.mapreduce.Reducer
@@ -14,13 +17,23 @@ object HadoopMatrixNorm {
 
   class MatrixNormMapper extends Mapper[Integer, Text, Text, IntWritable] {
 
-    override def map(key: Object, value: Text, context: Mapper[Object, Text, Text, IntWritable]#Context): Unit = {
-
-
+    override def map(key: Integer, value: Text, context: Mapper[Integer, Text, MapWritable, ArrayWritable]#Context): Unit = {
       val matrix = (new MatrixGenerator).deserialize(value.toString)
+      val rows = matrix.length
+      val cols = matrix.head.length
+      var i = 0
+      while ({ i < matrix.length }) {
 
+        val vl = new MapWritable
+        val nn  = new IntWritable(key)
+        val ii =  new IntWritable(i)
+        vl.put(nn, ii)
 
-      context.write("ToDo", "ToDo")
+        val mm = matrix[i].map{ e: Double => new DoubleWritable(e)}
+        val v = new ArrayWritable(DoubleWritable.class, mm)
+        context.write(vl, v) //Add Matrix key
+         i += 1
+      }
     }
   }
 
