@@ -22,17 +22,22 @@ object HadoopMatrixNorm {
       val rows = matrix.length
       val cols = matrix.head.length
       var i = 0
-      while ({ i < matrix.length }) {
+      while (i < matrix.length) {
 
         val vl = new MapWritable
         val nn  = new IntWritable(key)
         val ii =  new IntWritable(i)
         vl.put(nn, ii)
 
-        val mm = matrix[i].map{ e: Double => new DoubleWritable(e)}
-        val v = new ArrayWritable(DoubleWritable.class, mm)
-        context.write(vl, v) //Add Matrix key
-         i += 1
+        matrix.foreach {
+          row => {
+            val mm = row.map{ e: Double => new DoubleWritable(e)}
+            val v = new ArrayWritable(DoubleWritable.class, mm)
+            context.write(vl, v) //Add Matrix key
+          }
+
+        }
+        i += 1
       }
     }
   }
