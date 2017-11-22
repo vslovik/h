@@ -1,5 +1,10 @@
 // https://www.programcreek.com/java-api-examples/index.php?api=org.apache.hadoop.io.ArrayWritable
+// https://stackoverflow.com/questions/20212884/mapreduce-combiner
+// https://stackoverflow.com/questions/27404696/scala-for-loop-and-iterators
 package org.unipi.matrixnorm
+
+import java.{lang, util}
+import java.util.{HashMap, List}
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -13,8 +18,12 @@ import org.apache.hadoop.io.ArrayWritable
 import org.apache.hadoop.io.ObjectWritable
 
 class Mapper1Key(val matrixIndex: Integer, val rowIndex: Integer)
+
 class Mapper2Key(val matrixIndex: Integer, val colIndex: Integer, val flag: Boolean)
-class Mapper2Value(val rowIndex: Integer, val colValue: Double)
+class Mapper2Value(val matrixIndex: Integer, val rowIndex: Integer, val colValue: Double)
+
+class ReducerKey(val matrixIndex: Integer, val rowIndex: Integer)
+class ReducerValue(val matrixIndex: Integer, val colIndex: Integer, val colValue: Double)
 
 object HadoopMatrixNorm {
 
@@ -52,12 +61,12 @@ object HadoopMatrixNorm {
 
         context.write(
           new ObjectWritable(new Mapper2Key(k.matrixIndex, i, false)),
-          new ObjectWritable(new Mapper2Value(k.rowIndex, v.get()))
+          new ObjectWritable(new Mapper2Value(k.matrixIndex, k.rowIndex, v.get()))
         )
 
         context.write(
           new ObjectWritable(new Mapper2Key(k.matrixIndex, i, true)),
-          new ObjectWritable(new Mapper2Value(k.rowIndex, v.get()))
+          new ObjectWritable(new Mapper2Value(k.matrixIndex, k.rowIndex, v.get()))
         )
 
       }
@@ -65,18 +74,49 @@ object HadoopMatrixNorm {
     }
   }
 
+  class MatrixNormReducer extends Reducer[ObjectWritable, ObjectWritable, ObjectWritable, ObjectWritable] {
 
-  class MatrixNormReducer extends Reducer[Text,IntWritable,Text,IntWritable] {
-    override def reduce(key: Text, values: Iterable[IntWritable], context: Reducer[Text, IntWritable, Text, IntWritable]#Context): Unit = {
+    private var min = Double.MaxValue
+    private var max = Double.MinPositiveValue
+
+    override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, ObjectWritable, ObjectWritable]#Context): Unit = {
+
+      val i$ = values.iterator
+
+      val k = key.get() match { case j: Mapper2Key => j}
+
+      if(!k.flag) {
+
+        while ( {i$.hasNext}) {
+          val v = i$.next
+          val value = v.get() match { case j: Mapper2Value => j}
+          if(value.colValue > max) {
+            max = value.colValue
+          }
+          if(value.colValue < min) {
+            min = value.colValue
+          }
+        }
+
+      } else {
+
+        while ( {i$.hasNext}) {
+          val v = i$.next
+          val value = v.get() match { case j: Mapper2Value => j }
+          val newValue = (value.colValue - min) / (max - min)
+
+          context.write(
+            new ObjectWritable(new ReducerKey(k.matrixIndex, value.rowIndex)),
+            new ObjectWritable(new ReducerValue(k.matrixIndex, k.colIndex, newValue))
+          )
+
+        }
+
+      }
 
     }
   }
 
-  class MatrixNormCombiner extends Reducer[Text,IntWritable,Text,IntWritable] {
-    override def reduce(key: Text, values: Iterable[IntWritable], context: Reducer[Text, IntWritable, Text, IntWritable]#Context): Unit = {
-      context.write(key, new IntWritable("ToDo"))
-    }
-  }
 
   class MatrixNormComposer extends Reducer[Text,IntWritable,Text,IntWritable] {
     override def reduce(key: Text, values: Iterable[IntWritable], context: Reducer[Text, IntWritable, Text, IntWritable]#Context): Unit = {
@@ -91,7 +131,6 @@ object HadoopMatrixNorm {
 
     job.setMapperClass(classOf[MatrixNormMapper1])
     job.setMapperClass(classOf[MatrixNormMapper2])
-    job.setCombinerClass(classOf[MatrixNormCombiner])
     job.setReducerClass(classOf[MatrixNormReducer])
     job.setReducerClass(classOf[MatrixNormComposer])
 
