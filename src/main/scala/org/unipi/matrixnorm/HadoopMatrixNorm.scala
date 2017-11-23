@@ -16,19 +16,19 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.apache.hadoop.io.ArrayWritable
 import org.apache.hadoop.io.ObjectWritable
 import org.apache.hadoop.io.SortedMapWritable
+import org.unipi.matrixnorm.Serialization.mg
+
 import scala.collection.JavaConverters._
 
-class Mapper1Key(val matrixIndex: Integer, val rowIndex: Integer)
-
-class Mapper2Key(val matrixIndex: Integer, val colIndex: Integer, val flag: Boolean)
-class Mapper2Value(val matrixIndex: Integer, val rowIndex: Integer, val colValue: Double)
-
-class ReducerKey(val matrixIndex: Integer, val rowIndex: Integer)
+class RowKey(val matrixIndex: Integer, val rowIndex: Integer)
+class MapperKey(val matrixIndex: Integer, val colIndex: Integer, val flag: Boolean)
+class MapperValue(val matrixIndex: Integer, val rowIndex: Integer, val colValue: Double)
 class ReducerValue(val matrixIndex: Integer, val colIndex: Integer, val colValue: Double)
+class RowComposerValue(val matrixIndex: Integer, val row: Array[Double])
 
 object HadoopMatrixNorm {
 
-  class MatrixNormMapper1 extends Mapper[Integer, Text, ObjectWritable, ArrayWritable] {
+  class MatrixNormMatrixToRowMapper extends Mapper[Integer, Text, ObjectWritable, ArrayWritable] {
 
     override def map(key: Integer, value: Text, context: Mapper[Integer, Text, ObjectWritable, ArrayWritable]#Context): Unit = {
 
@@ -39,7 +39,7 @@ object HadoopMatrixNorm {
 
       for (index <- matrix.indices) {
         context.write(
-          new ObjectWritable(new Mapper1Key(key, index)),
+          new ObjectWritable(new RowKey(key, index)),
           new ArrayWritable(
             classOf[DoubleWritable],
             matrix(index).map { e: Double => new DoubleWritable(e) }.toArray
@@ -49,7 +49,7 @@ object HadoopMatrixNorm {
     }
   }
 
-  class MatrixNormMapper2 extends Mapper[ObjectWritable, ArrayWritable, ObjectWritable, ObjectWritable] {
+  class MatrixNormMapper extends Mapper[ObjectWritable, ArrayWritable, ObjectWritable, ObjectWritable] {
 
     override def map(key: ObjectWritable, value: ArrayWritable, context: Mapper[ObjectWritable, ArrayWritable, ObjectWritable, ObjectWritable]#Context): Unit = {
 
@@ -57,17 +57,17 @@ object HadoopMatrixNorm {
 
       for (i <- row.indices) {
 
-        val k = key.get() match { case j: Mapper1Key => j}
+        val k = key.get() match { case j: RowKey => j}
         val v = row(i) match { case h: DoubleWritable => h }
 
         context.write(
-          new ObjectWritable(new Mapper2Key(k.matrixIndex, i, false)),
-          new ObjectWritable(new Mapper2Value(k.matrixIndex, k.rowIndex, v.get()))
+          new ObjectWritable(new MapperKey(k.matrixIndex, i, false)),
+          new ObjectWritable(new MapperValue(k.matrixIndex, k.rowIndex, v.get()))
         )
 
         context.write(
-          new ObjectWritable(new Mapper2Key(k.matrixIndex, i, true)),
-          new ObjectWritable(new Mapper2Value(k.matrixIndex, k.rowIndex, v.get()))
+          new ObjectWritable(new MapperKey(k.matrixIndex, i, true)),
+          new ObjectWritable(new MapperValue(k.matrixIndex, k.rowIndex, v.get()))
         )
 
       }
@@ -84,13 +84,13 @@ object HadoopMatrixNorm {
 
       val i$ = values.iterator
 
-      val k = key.get() match { case j: Mapper2Key => j}
+      val k = key.get() match { case j: MapperKey => j}
 
       if(!k.flag) {
 
         while ( {i$.hasNext}) {
           val v = i$.next
-          val value = v.get() match { case j: Mapper2Value => j}
+          val value = v.get() match { case j: MapperValue => j}
           if(value.colValue > max) {
             max = value.colValue
           }
@@ -103,35 +103,36 @@ object HadoopMatrixNorm {
 
         while ( {i$.hasNext}) {
           val v = i$.next
-          val value = v.get() match { case j: Mapper2Value => j }
+          val value = v.get() match { case j: MapperValue => j }
           val newValue = (value.colValue - min) / (max - min)
 
           context.write(
-            new ObjectWritable(new ReducerKey(k.matrixIndex, value.rowIndex)),
+            new ObjectWritable(new RowKey(k.matrixIndex, value.rowIndex)),
             new ObjectWritable(new ReducerValue(k.matrixIndex, k.colIndex, newValue))
           )
 
         }
-
       }
-
     }
   }
 
-  class MatrixNormComposer extends Reducer[ObjectWritable, ObjectWritable, IntWritable, Text] {
-    override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, IntWritable, Text]#Context): Unit = {
+  class MatrixNormRowComposer extends Reducer[ObjectWritable, ObjectWritable, ObjectWritable, ObjectWritable] {
+    override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, ObjectWritable, ObjectWritable]#Context): Unit = {
       // https://stackoverflow.com/questions/25093483/how-to-define-init-matrix-in-scala
       // https://alvinalexander.com/source-code/scala/how-create-and-use-multi-dimensional-arrays-2d-3d-etc-scala
       // https://alvinalexander.com/scala/how-to-create-multidimensional-arrays-in-scala-cookbook
+      val k = key.get() match { case j:RowKey => j}
+      val row: Array[Double] = values.iterator.asScala.toArray.map{ v => v.get() match { case j: ReducerValue => j.colValue }}
+      context.write(key, new ObjectWritable(new RowComposerValue(k.matrixIndex, row)))
+    }
+  }
 
-
-      val k = key.get() match { case j:ReducerKey => j}
-
-      val row = values.iterator.asScala.toArray.map{ v => v.get() match { case j: ReducerValue => j.colValue }}
-
-
-      context.write(new IntWritable(k.matrixIndex), new Text("ToDo: serialized matrix"))
-
+  class MatrixNormComposer extends Reducer[ObjectWritable, ObjectWritable, IntWritable, String] {
+    override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, IntWritable, String]#Context): Unit = {
+      val k = key.get() match { case j:RowKey => j}
+      val matrix: Array[Array[Double]] = values.iterator.asScala.toArray.map{ v => v.get() match { case j: RowComposerValue => j.row }}
+      val mg = new MatrixGenerator
+      context.write(new IntWritable(k.matrixIndex), mg.serialize(matrix))
     }
   }
 
@@ -140,9 +141,10 @@ object HadoopMatrixNorm {
     val job = Job.getInstance(configuration,"matrix normalization")
     job.setJarByClass(this.getClass)
 
-    job.setMapperClass(classOf[MatrixNormMapper1])
-    job.setMapperClass(classOf[MatrixNormMapper2])
+    job.setMapperClass(classOf[MatrixNormMatrixToRowMapper])
+    job.setMapperClass(classOf[MatrixNormMapper])
     job.setReducerClass(classOf[MatrixNormReducer])
+    job.setReducerClass(classOf[MatrixNormRowComposer])
     job.setReducerClass(classOf[MatrixNormComposer])
 
     job.setOutputKeyClass(classOf[Text])
