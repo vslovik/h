@@ -119,7 +119,9 @@ object HadoopMatrixNorm {
 
   class MatrixNormComposer extends Reducer[ObjectWritable, ObjectWritable, IntWritable, Text] {
     override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, IntWritable, Text]#Context): Unit = {
-
+      // https://stackoverflow.com/questions/25093483/how-to-define-init-matrix-in-scala
+      // https://alvinalexander.com/source-code/scala/how-create-and-use-multi-dimensional-arrays-2d-3d-etc-scala
+      // https://alvinalexander.com/scala/how-to-create-multidimensional-arrays-in-scala-cookbook
       val k = key.get() match { case j:ReducerKey => j}
       context.write(new IntWritable(k.matrixIndex), new Text("ToDo: serialized matrix"))
 
