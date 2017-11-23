@@ -13,9 +13,9 @@
 // https://hadoopi.wordpress.com/2013/05/27/understand-recordreader-inputsplit/ ***
 // https://stackoverflow.com/questions/1888716/what-replaces-class-variables-in-scala ***
 // https://developer.yahoo.com/hadoop/tutorial/module5.html#types
-
-//ToDo 1. Write generated data to hadoop
-//ToDo 2.
+// https://stackoverflow.com/questions/25093483/how-to-define-init-matrix-in-scala
+// https://alvinalexander.com/source-code/scala/how-create-and-use-multi-dimensional-arrays-2d-3d-etc-scala
+// https://alvinalexander.com/scala/how-to-create-multidimensional-arrays-in-scala-cookbook
 package org.unipi.matrixnorm
 
 import scala.io.Source
