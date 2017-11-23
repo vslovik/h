@@ -16,6 +16,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.apache.hadoop.io.ArrayWritable
 import org.apache.hadoop.io.ObjectWritable
 import org.apache.hadoop.io.SortedMapWritable
+import scala.collection.JavaConverters._
 
 class Mapper1Key(val matrixIndex: Integer, val rowIndex: Integer)
 
@@ -122,7 +123,13 @@ object HadoopMatrixNorm {
       // https://stackoverflow.com/questions/25093483/how-to-define-init-matrix-in-scala
       // https://alvinalexander.com/source-code/scala/how-create-and-use-multi-dimensional-arrays-2d-3d-etc-scala
       // https://alvinalexander.com/scala/how-to-create-multidimensional-arrays-in-scala-cookbook
+
+
       val k = key.get() match { case j:ReducerKey => j}
+
+      val row = values.iterator.asScala.toArray.map{ v => v.get() match { case j: ReducerValue => j.colValue }}
+
+
       context.write(new IntWritable(k.matrixIndex), new Text("ToDo: serialized matrix"))
 
     }
