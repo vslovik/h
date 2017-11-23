@@ -4,7 +4,6 @@
 package org.unipi.matrixnorm
 
 import java.{lang, util}
-import java.util.{HashMap, List}
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -16,6 +15,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.apache.hadoop.io.ArrayWritable
 import org.apache.hadoop.io.ObjectWritable
+import org.apache.hadoop.io.SortedMapWritable
 
 class Mapper1Key(val matrixIndex: Integer, val rowIndex: Integer)
 
@@ -117,10 +117,12 @@ object HadoopMatrixNorm {
     }
   }
 
+  class MatrixNormComposer extends Reducer[ObjectWritable, ObjectWritable, IntWritable, Text] {
+    override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, IntWritable, Text]#Context): Unit = {
 
-  class MatrixNormComposer extends Reducer[Text,IntWritable,Text,IntWritable] {
-    override def reduce(key: Text, values: Iterable[IntWritable], context: Reducer[Text, IntWritable, Text, IntWritable]#Context): Unit = {
-      context.write(key, new IntWritable("ToDo"))
+      val k = key.get() match { case j:ReducerKey => j}
+      context.write(new IntWritable(k.matrixIndex), new Text("ToDo: serialized matrix"))
+
     }
   }
 
