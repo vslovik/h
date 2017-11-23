@@ -11,6 +11,7 @@ import org.apache.hadoop.io._
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.Mapper
 import org.apache.hadoop.mapreduce.Reducer
+import org.apache.hadoop.mapreduce.Partitioner
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.apache.hadoop.io.ArrayWritable
@@ -34,8 +35,8 @@ object HadoopMatrixNorm {
 
       val matrix = (new MatrixGenerator).deserialize(value.toString)
 
-      for (index <- matrix.indices) {
-        for (i <- matrix(index).indices) {
+      for (index <- matrix.indices) { // ToDo rename vars index ---> rowIndex
+        for (i <- matrix(index).indices) { // ToDo rename vars i ---> columnIndex
 
           context.write(
             new ObjectWritable(new MapperKey(key, i, false)),
@@ -49,6 +50,13 @@ object HadoopMatrixNorm {
           
         }
       }
+    }
+  }
+
+  // ToDo partitioner by matrix key, row index (not flag)
+  class ColumnIndexPartitioner extends Partitioner[IntWritable, Text] {
+    override def getPartition(key: IntWritable, value: Text, numPartitions: Int): Int = {
+      1
     }
   }
 
@@ -92,6 +100,8 @@ object HadoopMatrixNorm {
       }
     }
   }
+
+  // ToDo reduce only by matrix key, inside mapper matrix composing???
 
   class MatrixNormRowComposer extends Reducer[ObjectWritable, ObjectWritable, ObjectWritable, ObjectWritable] {
     override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, ObjectWritable, ObjectWritable]#Context): Unit = {
