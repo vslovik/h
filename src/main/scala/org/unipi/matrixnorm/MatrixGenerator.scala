@@ -1,4 +1,3 @@
-// http://danielwestheide.com/blog/2012/12/12/the-neophytes-guide-to-scala-part-4-pattern-matching-anonymous-functions.html
 package org.unipi.matrixnorm
 
 import org.scalacheck._
