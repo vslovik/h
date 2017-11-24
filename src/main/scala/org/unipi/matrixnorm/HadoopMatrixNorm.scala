@@ -11,7 +11,7 @@ import org.apache.hadoop.io._
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.Mapper
 import org.apache.hadoop.mapreduce.Reducer
-import org.apache.hadoop.mapreduce.Partitioner
+import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.apache.hadoop.io.ArrayWritable
@@ -22,6 +22,7 @@ import org.unipi.matrixnorm.Serialization.mg
 import scala.collection.JavaConverters._
 
 class RowKey(val matrixIndex: Integer, val rowIndex: Integer)
+class PartitionerKey(val matrixIndex: Integer, val colIndex: Integer)
 class MapperKey(val matrixIndex: Integer, val colIndex: Integer, val flag: Boolean)
 class MapperValue(val matrixIndex: Integer, val rowIndex: Integer, val colValue: Double)
 class ReducerValue(val matrixIndex: Integer, val colIndex: Integer, val colValue: Double)
@@ -54,9 +55,12 @@ object HadoopMatrixNorm {
   }
 
   // ToDo partitioner by matrix key, row index (not flag)
-  class ColumnIndexPartitioner extends Partitioner[IntWritable, Text] {
-    override def getPartition(key: IntWritable, value: Text, numPartitions: Int): Int = {
-      1
+  // http://hadoop.apache.org/docs/r1.2.1/mapred_tutorial.html#Partitioner
+  class ColumnIndexPartitioner extends HashPartitioner[ObjectWritable, ObjectWritable] {
+    override def getPartition(key: ObjectWritable, value: ObjectWritable, numReduceTasks: Int): Int = {
+      val k = key.get() match { case j: MapperKey => j}
+      val partitionerKey = new PartitionerKey(k.matrixIndex: Integer, k.colIndex)
+      (partitionerKey.hashCode & 2147483647) % numReduceTasks
     }
   }
 
