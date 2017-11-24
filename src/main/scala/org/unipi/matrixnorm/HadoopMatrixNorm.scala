@@ -1,9 +1,6 @@
-// https://www.programcreek.com/java-api-examples/index.php?api=org.apache.hadoop.io.ArrayWritable
-// https://stackoverflow.com/questions/20212884/mapreduce-combiner
-// https://stackoverflow.com/questions/27404696/scala-for-loop-and-iterators
 package org.unipi.matrixnorm
 
-import java.{lang, util}
+import java.lang
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -14,11 +11,7 @@ import org.apache.hadoop.mapreduce.Reducer
 import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
-import org.apache.hadoop.io.ArrayWritable
 import org.apache.hadoop.io.ObjectWritable
-import org.apache.hadoop.io.SortedMapWritable
-import org.unipi.matrixnorm.Serialization.mg
-
 import scala.collection.JavaConverters._
 
 class RowKey(val matrixIndex: Integer, val rowIndex: Integer)
@@ -36,17 +29,17 @@ object HadoopMatrixNorm {
 
       val matrix = (new MatrixGenerator).deserialize(value.toString)
 
-      for (index <- matrix.indices) { // ToDo rename vars index ---> rowIndex
-        for (i <- matrix(index).indices) { // ToDo rename vars i ---> columnIndex
+      for (rowIndex <- matrix.indices) {
+        for (columnIndex <- matrix(rowIndex).indices) {
 
           context.write(
-            new ObjectWritable(new MapperKey(key, i, false)),
-            new ObjectWritable(new MapperValue(key, index, matrix(index)(i)))
+            new ObjectWritable(new MapperKey(key, columnIndex, false)),
+            new ObjectWritable(new MapperValue(key, rowIndex, matrix(rowIndex)(columnIndex)))
           )
 
           context.write(
-            new ObjectWritable(new MapperKey(key, i, true)),
-            new ObjectWritable(new MapperValue(key, index, matrix(index)(i)))
+            new ObjectWritable(new MapperKey(key, columnIndex, true)),
+            new ObjectWritable(new MapperValue(key, rowIndex, matrix(rowIndex)(columnIndex)))
           )
           
         }
@@ -54,13 +47,11 @@ object HadoopMatrixNorm {
     }
   }
 
-  // ToDo partitioner by matrix key, row index (not flag)
-  // http://hadoop.apache.org/docs/r1.2.1/mapred_tutorial.html#Partitioner
   class ColumnIndexPartitioner extends HashPartitioner[ObjectWritable, ObjectWritable] {
     override def getPartition(key: ObjectWritable, value: ObjectWritable, numReduceTasks: Int): Int = {
       val k = key.get() match { case j: MapperKey => j}
-      val partitionerKey = new PartitionerKey(k.matrixIndex: Integer, k.colIndex)
-      (partitionerKey.hashCode & 2147483647) % numReduceTasks
+      val partitionerKey = new ObjectWritable(new PartitionerKey(k.matrixIndex: Integer, k.colIndex))
+      super.getPartition(partitionerKey, value, numReduceTasks)
     }
   }
 
@@ -105,22 +96,23 @@ object HadoopMatrixNorm {
     }
   }
 
-  // ToDo reduce only by matrix key, inside mapper matrix composing???
-
-  class MatrixNormRowComposer extends Reducer[ObjectWritable, ObjectWritable, ObjectWritable, ObjectWritable] {
-    override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, ObjectWritable, ObjectWritable]#Context): Unit = {
-      val k = key.get() match { case j:RowKey => j}
-      val row: Array[Double] = values.iterator.asScala.toArray.map{ v => v.get() match { case j: ReducerValue => j.colValue }}
-      context.write(key, new ObjectWritable(new RowComposerValue(k.matrixIndex, row)))
-    }
-  }
-
   class MatrixNormComposer extends Reducer[ObjectWritable, ObjectWritable, IntWritable, String] {
+
+    private var currentMatrixIndex = 0
+    private var matrix = new java.util.TreeMap[Int, Array[Double]]
+    private val mg = new MatrixGenerator
+
     override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, IntWritable, String]#Context): Unit = {
-      val k = key.get() match { case j:RowKey => j}
-      val matrix: Array[Array[Double]] = values.iterator.asScala.toArray.map{ v => v.get() match { case j: RowComposerValue => j.row }}
-      val mg = new MatrixGenerator
-      context.write(new IntWritable(k.matrixIndex), mg.serialize(matrix))
+      val k = key.get() match { case j: RowKey => j}
+
+      val row: Array[Double] = values.iterator.asScala.toArray.map { v => v.get() match { case j: ReducerValue => j.colValue }}
+
+      if (k.matrixIndex != currentMatrixIndex) {
+        context.write(new IntWritable(currentMatrixIndex), mg.serialize(matrix.values.toArray))
+        matrix = new java.util.TreeMap[Int, Array[Double]]
+      }
+
+      matrix.put(k.rowIndex, row)
     }
   }
 
@@ -131,7 +123,6 @@ object HadoopMatrixNorm {
 
     job.setMapperClass(classOf[MatrixNormMapper])
     job.setReducerClass(classOf[MatrixNormReducer])
-    job.setReducerClass(classOf[MatrixNormRowComposer])
     job.setReducerClass(classOf[MatrixNormComposer])
 
     job.setOutputKeyClass(classOf[Text])
