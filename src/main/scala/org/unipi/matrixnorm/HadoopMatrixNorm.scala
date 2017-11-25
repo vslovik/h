@@ -23,9 +23,11 @@ class RowComposerValue(val matrixIndex: Integer, val row: Array[Double])
 
 object HadoopMatrixNorm {
 
-  class MatrixNormMapper extends Mapper[Integer, Text, ObjectWritable, ObjectWritable] {
+  class MatrixNormMapper extends Mapper[LongWritable, Text, ObjectWritable, ObjectWritable] {
 
-    override def map(key: Integer, value: Text, context: Mapper[Integer, Text, ObjectWritable, ObjectWritable]#Context): Unit = {
+    private var matrixIndex = 0
+
+    override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, ObjectWritable, ObjectWritable]#Context): Unit = {
 
       val matrix = (new MatrixGenerator).deserialize(value.toString)
 
@@ -33,17 +35,19 @@ object HadoopMatrixNorm {
         for (columnIndex <- matrix(rowIndex).indices) {
 
           context.write(
-            new ObjectWritable(new MapperKey(key, columnIndex, false)),
-            new ObjectWritable(new MapperValue(key, rowIndex, matrix(rowIndex)(columnIndex)))
+            new ObjectWritable(new MapperKey(matrixIndex, columnIndex, false)),
+            new ObjectWritable(new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex)))
           )
 
           context.write(
-            new ObjectWritable(new MapperKey(key, columnIndex, true)),
-            new ObjectWritable(new MapperValue(key, rowIndex, matrix(rowIndex)(columnIndex)))
+            new ObjectWritable(new MapperKey(matrixIndex, columnIndex, true)),
+            new ObjectWritable(new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex)))
           )
           
         }
       }
+
+      matrixIndex += 1
     }
   }
 

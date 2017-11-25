@@ -4,10 +4,9 @@ import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
-import org.apache.hadoop.io.{IntWritable, Text}
+import org.apache.hadoop.io.{Text, NullWritable}
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.apache.hadoop.mapreduce.{Job, Mapper, Reducer}
-import scala.collection.JavaConverters._
 
 object HadoopMatrixGenerator {
 
@@ -18,30 +17,39 @@ object HadoopMatrixGenerator {
   }
 
   def main(args: Array[String]): Unit = {
-    if (args.length != 2) {
-      System.err.println("USAGE : [number of records] [output path]")
+    if (args.length != 3) {
+      System.err.println("USAGE : [number of map tasks] [number of records per task] [output path]")
       System.exit(0)
     } else {
+
       val configuration = new Configuration
+
+      val numMapTasks: Int = args(0).toInt
+      val numRecordsPerTasks = args(1).toInt
+      val outputDir = new Path(args(2))
+
       val job = Job.getInstance(configuration, "matrix generator")
-      val outputDir = new Path(args(1))
 
       // recursively delete the data set if it exists.
       FileSystem.get(outputDir.toUri, configuration).delete(outputDir, true)
 
       job.setJarByClass(this.getClass)
-      job.setMapperClass(classOf[MatrixMapper])
+
+      job.setNumReduceTasks(0)
+
+      job.setInputFormatClass(classOf[HadoopMatrixGeneratorInputFormat])
+
+      HadoopMatrixGeneratorInputFormat.setNumMapTasks(job, numMapTasks)
+      HadoopMatrixGeneratorInputFormat.setNumRecordsPerTask(job, numRecordsPerTasks)
 
       job.setOutputKeyClass(classOf[Text])
       job.setOutputValueClass(classOf[Text])
 
-      job.setMapOutputKeyClass(classOf[Text])
-      job.setMapOutputValueClass(classOf[Text])
-
-      job.setInputFormatClass(classOf[HadoopMatrixGeneratorInputFormat])
-      job.setOutputFormatClass(classOf[TextOutputFormat[Text, Text]])
-
       FileOutputFormat.setOutputPath(job, outputDir)
+
+      job.setOutputKeyClass(classOf[Text])
+      job.setOutputValueClass(classOf[NullWritable])
+
       System.exit(if (job.waitForCompletion(true)) 0 else 1)
     }
   }
