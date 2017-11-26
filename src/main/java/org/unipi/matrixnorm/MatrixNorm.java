@@ -1,6 +1,5 @@
 package org.unipi.matrixnorm;
 
-import java.io.PrintStream;
 import java.util.*;
 
 public class MatrixNorm {
@@ -156,10 +155,6 @@ public class MatrixNorm {
         MatrixNorm mn = new MatrixNorm();
         double[][] m = mn.normalize(matrix);
 
-    }
-
-    public static void print(PrintStream out) {
-        out.println("Hello, World!");
     }
 }
 
