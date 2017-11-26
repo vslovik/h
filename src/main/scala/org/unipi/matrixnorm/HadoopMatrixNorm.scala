@@ -10,14 +10,34 @@ import org.apache.hadoop.mapreduce.Reducer
 import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
-import org.apache.hadoop.io.ObjectWritable
+import org.apache.hadoop.io.{ObjectWritable, WritableComparable}
 import org.unipi.matrixgen.MatrixGenerator
 import scala.collection.JavaConverters._
 
 class RowKey(val matrixIndex: Integer, val rowIndex: Integer)
 class PartitionerKey(val matrixIndex: Integer, val colIndex: Integer)
-class MapperKey(val matrixIndex: Integer, val colIndex: Integer, val flag: Boolean)
-class MapperValue(val matrixIndex: Integer, val rowIndex: Integer, val colValue: Double)
+class MapperKey(val matrixIndex: Integer, val colIndex: Integer, val flag: Boolean) extends Comparable[MapperKey] {
+  def compareTo(mv: MapperKey):Boolean = {
+    if(this.matrixIndex != mv.matrixIndex)
+      this.matrixIndex > mv.matrixIndex
+    else if(this.colIndex != mv.colIndex)
+      this.colIndex > mv.colIndex
+    else if(this.flag != mv.flag)
+      this.flag > mv.flag
+    false
+  }
+}
+class MapperValue(val matrixIndex: Integer, val rowIndex: Integer, val colValue: Double) extends Comparable[MapperValue] {
+  def compareTo(mv: MapperValue):Boolean = {
+    if(this.matrixIndex != mv.matrixIndex)
+      this.matrixIndex > mv.matrixIndex
+    else if(this.rowIndex != mv.rowIndex)
+      this.rowIndex > mv.rowIndex
+    else if(this.colValue != mv.colValue)
+      this.colValue > mv.colValue
+    false
+  }
+}
 class ReducerValue(val matrixIndex: Integer, val colIndex: Integer, val colValue: Double)
 class RowComposerValue(val matrixIndex: Integer, val row: Array[Double])
 
@@ -109,12 +129,17 @@ object HadoopMatrixNorm {
     job.setJarByClass(this.getClass)
 
     job.setMapperClass(classOf[MatrixNormMapper])
+
+    job.setMapOutputKeyClass(classOf[ObjectWritable])
+    job.setMapOutputValueClass(classOf[ObjectWritable])
+
+    job.setPartitionerClass(classOf[ColumnIndexPartitioner])
+
     job.setReducerClass(classOf[MatrixNormReducer])
     job.setReducerClass(classOf[MatrixNormComposer])
 
-    job.setOutputKeyClass(classOf[Text])
-    job.setOutputKeyClass(classOf[Text])
-    job.setOutputValueClass(classOf[IntWritable])
+    job.setOutputKeyClass(classOf[IntWritable])
+    job.setOutputValueClass(classOf[String])
 
     FileInputFormat.addInputPath(job, new Path(args(0)))
     FileOutputFormat.setOutputPath(job, new Path(args(1)))
