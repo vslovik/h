@@ -16,6 +16,7 @@
 // https://stackoverflow.com/questions/25093483/how-to-define-init-matrix-in-scala
 // https://alvinalexander.com/source-code/scala/how-create-and-use-multi-dimensional-arrays-2d-3d-etc-scala
 // https://alvinalexander.com/scala/how-to-create-multidimensional-arrays-in-scala-cookbook
+// https://github.com/oscarrenalias/scalacheck-cookbook/blob/master/markdown/real-world-scenario.md
 package org.unipi.matrixnorm
 
 import scala.io.Source

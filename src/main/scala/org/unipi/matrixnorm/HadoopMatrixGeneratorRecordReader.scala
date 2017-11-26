@@ -10,13 +10,13 @@ class HadoopMatrixGeneratorRecordReader extends RecordReader[Text, NullWritable]
   private var numRecordsToCreate = 0
   private var createdRecords = 0
 
-  private val minRows = 2
-  private val minCols = 2
+  private val minRows = 1
+  private val minCols = 1
 
   private val maxRows = 5
   private val maxCols = 5
 
-  private val minValue = 2
+  private val minValue = 1
   private val maxValue = 100
 
   private val key = new Text

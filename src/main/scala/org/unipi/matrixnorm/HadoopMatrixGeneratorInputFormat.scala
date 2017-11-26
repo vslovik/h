@@ -16,7 +16,7 @@ class HadoopMatrixGeneratorInputFormat extends FileInputFormat[Text, NullWritabl
     // Create a number of input splits equivalent to the number of tasks
     val splits: util.ArrayList[InputSplit] = new util.ArrayList[InputSplit]
 
-    for (i <- 0 to numSplits) {
+    for (i <- 1 to numSplits) {
       splits.add(new FakeInputSplit())
     }
 
@@ -30,7 +30,6 @@ class HadoopMatrixGeneratorInputFormat extends FileInputFormat[Text, NullWritabl
     rr.initialize(split, context)
     rr
   }
-
 }
 
 object HadoopMatrixGeneratorInputFormat {

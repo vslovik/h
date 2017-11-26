@@ -1,12 +1,11 @@
 package org.unipi.matrixnorm
 
 import org.apache.hadoop.fs.FileSystem
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.{Text, NullWritable}
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
-import org.apache.hadoop.mapreduce.{Job, Mapper, Reducer}
+import org.apache.hadoop.mapreduce.{Job, Mapper}
 
 object HadoopMatrixGenerator {
 
