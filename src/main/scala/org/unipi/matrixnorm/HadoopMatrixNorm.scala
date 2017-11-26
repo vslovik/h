@@ -1,6 +1,9 @@
 package org.unipi.matrixnorm
 
+import java.io.{IOException, DataInput, DataOutput}
 import java.lang
+import java.lang.Comparable
+
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.{IntWritable, LongWritable, Text}
@@ -10,53 +13,100 @@ import org.apache.hadoop.mapreduce.Reducer
 import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
-import org.apache.hadoop.io.{ObjectWritable, WritableComparable}
+import org.apache.hadoop.io.{IntWritable, ObjectWritable, WritableComparable, WritableComparator}
 import org.unipi.matrixgen.MatrixGenerator
+
 import scala.collection.JavaConverters._
 
-class RowKey(val matrixIndex: Integer, val rowIndex: Integer)
+class RowKey(var matrixIndex: Integer, var rowIndex: Integer) extends WritableComparable[RowKey] {
+
+  @throws[IOException]
+  override def readFields(in: DataInput): Unit = {
+    this.matrixIndex = in.readInt
+    this.rowIndex = in.readInt
+  }
+
+  @throws[IOException]
+  override def write(out: DataOutput): Unit = {
+    val data = Array(this.matrixIndex.toString, this.rowIndex.toString).mkString(" ")
+    out.writeBytes(data)
+  }
+
+  override def compareTo(o: RowKey): Int = {
+    if (this.matrixIndex < o.matrixIndex) -1
+    else if (this.matrixIndex == o.matrixIndex) {
+
+      if (this.rowIndex < o.rowIndex)-1
+      else if (this.rowIndex == o.rowIndex) 0
+      else 1
+
+    }
+    else 1
+  }
+}
 class PartitionerKey(val matrixIndex: Integer, val colIndex: Integer)
-class MapperKey(val matrixIndex: Integer, val colIndex: Integer, val flag: Boolean) extends Comparable[MapperKey] {
-  def compareTo(mv: MapperKey):Boolean = {
-    if(this.matrixIndex != mv.matrixIndex)
-      this.matrixIndex > mv.matrixIndex
-    else if(this.colIndex != mv.colIndex)
-      this.colIndex > mv.colIndex
-    else if(this.flag != mv.flag)
-      this.flag > mv.flag
-    false
+class MapperKey(var matrixIndex: Integer, var colIndex: Integer, var flag: Boolean) extends WritableComparable[MapperKey] {
+
+  @throws[IOException]
+  override def readFields(in: DataInput): Unit = {
+    this.matrixIndex = in.readInt
+    this.colIndex = in.readInt
+    this.flag = in.readBoolean
   }
-}
-class MapperValue(val matrixIndex: Integer, val rowIndex: Integer, val colValue: Double) extends Comparable[MapperValue] {
-  def compareTo(mv: MapperValue):Boolean = {
-    if(this.matrixIndex != mv.matrixIndex)
-      this.matrixIndex > mv.matrixIndex
-    else if(this.rowIndex != mv.rowIndex)
-      this.rowIndex > mv.rowIndex
-    else if(this.colValue != mv.colValue)
-      this.colValue > mv.colValue
-    false
+
+  @throws[IOException]
+  override def write(out: DataOutput): Unit = {
+    val data = Array(this.matrixIndex.toString, this.colIndex.toString, this.flag.toString).mkString(" ")
+    out.writeBytes(data)
   }
+
+  override def compareTo(o: MapperKey): Int = {
+    if (this.matrixIndex < o.matrixIndex) -1
+    else if (this.matrixIndex == o.matrixIndex) {
+
+      if (this.colIndex < o.colIndex)-1
+      else if (this.colIndex == o.colIndex) {
+
+        if (this.flag < o.flag) -1
+        else if (this.flag == o.flag) 0
+        else 1
+
+      }
+      else 1
+    }
+    else 1
+
+  }
+
+  private def compare(thisValue: Integer, thatValue: Integer): Integer = {
+    if (thisValue < thatValue) -1
+    else if (thisValue < thatValue) 0
+    else 1
+  }
+
 }
+
+class MapperValue(val matrixIndex: Integer, val rowIndex: Integer, val colValue: Double)
+
 class ReducerValue(val matrixIndex: Integer, val colIndex: Integer, val colValue: Double)
 class RowComposerValue(val matrixIndex: Integer, val row: Array[Double])
 
 object HadoopMatrixNorm {
 
-  class MatrixNormMapper extends Mapper[LongWritable, Text, ObjectWritable, ObjectWritable] {
+  class MatrixNormMapper extends Mapper[LongWritable, Text, MapperKey, ObjectWritable] {
 
     private var matrixIndex = 0
 
-    override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, ObjectWritable, ObjectWritable]#Context): Unit = {
+    override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, MapperKey, ObjectWritable]#Context): Unit = {
       val matrix = (new MatrixGenerator).deserialize(value.toString)
       for (rowIndex <- matrix.indices) {
         for (columnIndex <- matrix(rowIndex).indices) {
           context.write(
-            new ObjectWritable(new MapperKey(matrixIndex, columnIndex, false)),
+            new MapperKey(matrixIndex, columnIndex, false),
             new ObjectWritable(new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex)))
           )
           context.write(
-            new ObjectWritable(new MapperKey(matrixIndex, columnIndex, true)),
+            new MapperKey(matrixIndex, columnIndex, true),
             new ObjectWritable(new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex)))
           )
         }
@@ -65,23 +115,20 @@ object HadoopMatrixNorm {
     }
   }
 
-  class ColumnIndexPartitioner extends HashPartitioner[ObjectWritable, ObjectWritable] {
-    override def getPartition(key: ObjectWritable, value: ObjectWritable, numReduceTasks: Int): Int = {
-      val k = key.get() match { case j: MapperKey => j}
-      val partitionerKey = new ObjectWritable(new PartitionerKey(k.matrixIndex: Integer, k.colIndex))
-      super.getPartition(partitionerKey, value, numReduceTasks)
+  class ColumnIndexPartitioner extends HashPartitioner[MapperKey, ObjectWritable] {
+    override def getPartition(key: MapperKey, value: ObjectWritable, numReduceTasks: Int): Int = {
+      super.getPartition(new MapperKey(key.matrixIndex, key.colIndex, false), value, numReduceTasks)
     }
   }
 
-  class MatrixNormReducer extends Reducer[ObjectWritable, ObjectWritable, ObjectWritable, ObjectWritable] {
+  class MatrixNormReducer extends Reducer[MapperKey, ObjectWritable, RowKey, ObjectWritable] {
 
     private var min = Double.MaxValue
     private var max = Double.MinPositiveValue
 
-    override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, ObjectWritable, ObjectWritable]#Context): Unit = {
+    override def reduce(key: MapperKey, values: lang.Iterable[ObjectWritable], context: Reducer[MapperKey, ObjectWritable, RowKey, ObjectWritable]#Context): Unit = {
       val i$ = values.iterator
-      val k = key.get() match { case j: MapperKey => j}
-      if(!k.flag) {
+      if(!key.flag) {
         while ( {i$.hasNext}) {
           val v = i$.next
           val value = v.get() match { case j: MapperValue => j}
@@ -98,28 +145,27 @@ object HadoopMatrixNorm {
           val value = v.get() match { case j: MapperValue => j }
           val newValue = (value.colValue - min) / (max - min)
           context.write(
-            new ObjectWritable(new RowKey(k.matrixIndex, value.rowIndex)),
-            new ObjectWritable(new ReducerValue(k.matrixIndex, k.colIndex, newValue))
+            new RowKey(key.matrixIndex, value.rowIndex),
+            new ObjectWritable(new ReducerValue(key.matrixIndex, key.colIndex, newValue))
           )
         }
       }
     }
   }
 
-  class MatrixNormComposer extends Reducer[ObjectWritable, ObjectWritable, IntWritable, String] {
+  class MatrixNormComposer extends Reducer[RowKey, ObjectWritable, IntWritable, String] {
 
     private var currentMatrixIndex = 0
     private var matrix = new java.util.TreeMap[Int, Array[Double]]
     private val mg = new MatrixGenerator
 
-    override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, IntWritable, String]#Context): Unit = {
-      val k = key.get() match { case j: RowKey => j}
+    override def reduce(key: RowKey, values: lang.Iterable[ObjectWritable], context: Reducer[RowKey, ObjectWritable, IntWritable, String]#Context): Unit = {
       val row: Array[Double] = values.iterator.asScala.toArray.map { v => v.get() match { case j: ReducerValue => j.colValue }}
-      if (k.matrixIndex != currentMatrixIndex) {
+      if (key.matrixIndex != currentMatrixIndex) {
         context.write(new IntWritable(currentMatrixIndex), mg.serialize(matrix.values.toArray))
         matrix = new java.util.TreeMap[Int, Array[Double]]
       }
-      matrix.put(k.rowIndex, row)
+      matrix.put(key.rowIndex, row)
     }
   }
 
@@ -130,7 +176,7 @@ object HadoopMatrixNorm {
 
     job.setMapperClass(classOf[MatrixNormMapper])
 
-    job.setMapOutputKeyClass(classOf[ObjectWritable])
+    job.setMapOutputKeyClass(classOf[MapperKey])
     job.setMapOutputValueClass(classOf[ObjectWritable])
 
     job.setPartitionerClass(classOf[ColumnIndexPartitioner])

@@ -1,9 +1,8 @@
 package org.unipi.matrixgen
 
 import java.io.IOException
-
 import org.apache.hadoop.io.{NullWritable, Text}
-import org.apache.hadoop.mapreduce._
+import org.apache.hadoop.mapreduce.{Job, JobContext, InputSplit, RecordReader, TaskAttemptContext}
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 
 class MatrixGenInputFormat extends FileInputFormat[Text, NullWritable] {
