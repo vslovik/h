@@ -1,11 +1,12 @@
-package org.unipi.matrixnorm
+package org.unipi.matrixgen
 
-import org.apache.hadoop.mapreduce._
-import org.apache.hadoop.io._
-import java.io._
+import java.io.IOException
+
+import org.apache.hadoop.io.{NullWritable, Text}
+import org.apache.hadoop.mapreduce.{InputSplit, RecordReader, TaskAttemptContext}
 import org.scalacheck.Gen
 
-class HadoopMatrixGeneratorRecordReader extends RecordReader[Text, NullWritable] {
+class MatrixGenRecordReader extends RecordReader[Text, NullWritable] {
 
   private var numRecordsToCreate = 0
   private var createdRecords = 0
@@ -28,14 +29,12 @@ class HadoopMatrixGeneratorRecordReader extends RecordReader[Text, NullWritable]
   @throws[IOException]
   @throws[InterruptedException]
   override def initialize(split: InputSplit, context: TaskAttemptContext): Unit = {
-    // Get the number of records to create from the configuration
-    this.numRecordsToCreate = context.getConfiguration.getInt(HadoopMatrixGeneratorInputFormat.NUM_RECORDS_PER_TASK, -1)
+    this.numRecordsToCreate = context.getConfiguration.getInt(MatrixGenInputFormat.NUM_RECORDS_PER_TASK, -1)
   }
 
   @throws[IOException]
   @throws[InterruptedException]
   override def nextKeyValue: Boolean = {
-    // If we still have records to create
     if (createdRecords < numRecordsToCreate) {
       val rows = minRows + r.nextInt(maxRows - minRows)
       val cols = minCols + r.nextInt(maxCols - minCols)
@@ -45,7 +44,6 @@ class HadoopMatrixGeneratorRecordReader extends RecordReader[Text, NullWritable]
       createdRecords += 1
       return true
     }
-    // We are done creating records
     false
   }
 
@@ -63,7 +61,5 @@ class HadoopMatrixGeneratorRecordReader extends RecordReader[Text, NullWritable]
 
   @throws[IOException]
   override def close(): Unit = {
-    // nothing to do here...
   }
-
 }

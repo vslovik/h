@@ -1,20 +1,16 @@
-package org.unipi.matrixnorm
+package org.unipi.matrixgen
 
-import org.apache.hadoop.mapreduce.InputSplit
-import org.apache.hadoop.io.Writable
 import java.io._
+import org.apache.hadoop.io.Writable
+import org.apache.hadoop.mapreduce.InputSplit
 
 class FakeInputSplit extends InputSplit with Writable {
 
   @throws[IOException]
-  def readFields(var1: DataInput): Unit = {
-
-  }
+  def readFields(var1: DataInput): Unit = {}
 
   @throws[IOException]
-  def write(var1: DataOutput): Unit = {
-
-  }
+  def write(var1: DataOutput): Unit = {}
 
   @throws[IOException]
   @throws[InterruptedException]

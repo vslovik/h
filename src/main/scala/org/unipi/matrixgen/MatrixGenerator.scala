@@ -1,6 +1,7 @@
-package org.unipi.matrixnorm
+package org.unipi.matrixgen
 
 import org.scalacheck._
+
 import scala.math.BigDecimal
 
 class MatrixGenerator {
@@ -26,7 +27,6 @@ class MatrixGenerator {
 
   def deserialize(s: String): List[List[Double]] = {
     val items = s.split("\t")
-    // val rows = Integer.parseInt(items(0)) ToDo assert: check rows
     items.drop(2).toList.map{
       y => y.toDouble
     }.grouped(Integer.parseInt(items(1))).toList

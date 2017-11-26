@@ -1,10 +1,9 @@
 package org.unipi.matrixnorm
 
 import java.lang
-
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
-import org.apache.hadoop.io._
+import org.apache.hadoop.io.{IntWritable, LongWritable, Text}
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.Mapper
 import org.apache.hadoop.mapreduce.Reducer
@@ -12,6 +11,7 @@ import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.apache.hadoop.io.ObjectWritable
+import org.unipi.matrixgen.MatrixGenerator
 import scala.collection.JavaConverters._
 
 class RowKey(val matrixIndex: Integer, val rowIndex: Integer)
@@ -28,25 +28,19 @@ object HadoopMatrixNorm {
     private var matrixIndex = 0
 
     override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, ObjectWritable, ObjectWritable]#Context): Unit = {
-
       val matrix = (new MatrixGenerator).deserialize(value.toString)
-
       for (rowIndex <- matrix.indices) {
         for (columnIndex <- matrix(rowIndex).indices) {
-
           context.write(
             new ObjectWritable(new MapperKey(matrixIndex, columnIndex, false)),
             new ObjectWritable(new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex)))
           )
-
           context.write(
             new ObjectWritable(new MapperKey(matrixIndex, columnIndex, true)),
             new ObjectWritable(new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex)))
           )
-          
         }
       }
-
       matrixIndex += 1
     }
   }
@@ -65,13 +59,9 @@ object HadoopMatrixNorm {
     private var max = Double.MinPositiveValue
 
     override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, ObjectWritable, ObjectWritable]#Context): Unit = {
-
       val i$ = values.iterator
-
       val k = key.get() match { case j: MapperKey => j}
-
       if(!k.flag) {
-
         while ( {i$.hasNext}) {
           val v = i$.next
           val value = v.get() match { case j: MapperValue => j}
@@ -82,19 +72,15 @@ object HadoopMatrixNorm {
             min = value.colValue
           }
         }
-
       } else {
-
         while ( {i$.hasNext}) {
           val v = i$.next
           val value = v.get() match { case j: MapperValue => j }
           val newValue = (value.colValue - min) / (max - min)
-
           context.write(
             new ObjectWritable(new RowKey(k.matrixIndex, value.rowIndex)),
             new ObjectWritable(new ReducerValue(k.matrixIndex, k.colIndex, newValue))
           )
-
         }
       }
     }
@@ -108,14 +94,11 @@ object HadoopMatrixNorm {
 
     override def reduce(key: ObjectWritable, values: lang.Iterable[ObjectWritable], context: Reducer[ObjectWritable, ObjectWritable, IntWritable, String]#Context): Unit = {
       val k = key.get() match { case j: RowKey => j}
-
       val row: Array[Double] = values.iterator.asScala.toArray.map { v => v.get() match { case j: ReducerValue => j.colValue }}
-
       if (k.matrixIndex != currentMatrixIndex) {
         context.write(new IntWritable(currentMatrixIndex), mg.serialize(matrix.values.toArray))
         matrix = new java.util.TreeMap[Int, Array[Double]]
       }
-
       matrix.put(k.rowIndex, row)
     }
   }

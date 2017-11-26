@@ -1,19 +1,12 @@
-package org.unipi.matrixnorm
+package org.unipi.matrixgen
 
-import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.Path
-import org.apache.hadoop.io.{Text, NullWritable}
+import org.apache.hadoop.fs.{FileSystem, Path}
+import org.apache.hadoop.io.{NullWritable, Text}
+import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
-import org.apache.hadoop.mapreduce.{Job, Mapper}
 
-object HadoopMatrixGenerator {
-
-  class MatrixMapper extends Mapper[Text, Text, Text, Text] {
-    override def map(key: Text, value: Text, context: Mapper[Text, Text, Text, Text]#Context): Unit = {
-        context.write(key, value)
-    }
-  }
+object MatrixGenDriver {
 
   def main(args: Array[String]): Unit = {
     if (args.length != 3) {
@@ -29,17 +22,14 @@ object HadoopMatrixGenerator {
 
       val job = Job.getInstance(configuration, "matrix generator")
 
-      // recursively delete the data set if it exists.
       FileSystem.get(outputDir.toUri, configuration).delete(outputDir, true)
 
       job.setJarByClass(this.getClass)
-
       job.setNumReduceTasks(0)
+      job.setInputFormatClass(classOf[MatrixGenInputFormat])
 
-      job.setInputFormatClass(classOf[HadoopMatrixGeneratorInputFormat])
-
-      HadoopMatrixGeneratorInputFormat.setNumMapTasks(job, numMapTasks)
-      HadoopMatrixGeneratorInputFormat.setNumRecordsPerTask(job, numRecordsPerTasks)
+      MatrixGenInputFormat.setNumMapTasks(job, numMapTasks)
+      MatrixGenInputFormat.setNumRecordsPerTask(job, numRecordsPerTasks)
 
       job.setOutputKeyClass(classOf[Text])
       job.setOutputValueClass(classOf[Text])
