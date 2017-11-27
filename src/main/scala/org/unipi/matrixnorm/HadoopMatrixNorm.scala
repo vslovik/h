@@ -60,28 +60,22 @@ class MapperKey(var matrixIndex: Integer, var colIndex: Integer, var flag: Boole
     out.writeBytes(data)
   }
 
-  override def compareTo(o: MapperKey): Int = {
-    if (this.matrixIndex < o.matrixIndex) -1
-    else if (this.matrixIndex == o.matrixIndex) {
+  def compareTo_(o: MapperKey): Int = {
 
-      if (this.colIndex < o.colIndex)-1
-      else if (this.colIndex == o.colIndex) {
-
-        if (this.flag < o.flag) -1
-        else if (this.flag == o.flag) 0
-        else 1
-
-      }
-      else 1
-    }
-    else 1
-
+    if(0 == this.matrixIndex.compareTo(o.matrixIndex)) {
+      if(0 == this.colIndex.compareTo(o.colIndex))
+        this.flag.compareTo(o.flag)
+      else this.colIndex.compareTo(o.colIndex)
+    } else this.matrixIndex.compareTo(o.matrixIndex)
   }
 
-  private def compare(thisValue: Integer, thatValue: Integer): Integer = {
-    if (thisValue < thatValue) -1
-    else if (thisValue < thatValue) 0
-    else 1
+  // ToDo ???
+  def compare[T](thisSeq: Seq[T], thatSeq: Seq[T])(implicit c: Comparable[T]): Int = {
+    if(0 == thisSeq.head.c.compareTo(thatSeq.head)) {
+      compare(thisSeq.drop(0), thatSeq.drop(0))
+    } else {
+      thisSeq.head.c.compareTo(thatSeq.head)
+    }
   }
 
 }
