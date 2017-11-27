@@ -1,29 +1,31 @@
 package org.unipi.matrixnorm
 
-import java.io.{IOException, DataInput, DataOutput}
+import java.io.{DataInput, DataOutput, IOException}
 import java.lang
-import java.lang.Comparable
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
-import org.apache.hadoop.io.{IntWritable, LongWritable, Text}
+import org.apache.hadoop.io.{Writable, WritableComparable, LongWritable, ObjectWritable, Text, IntWritable}
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.Mapper
 import org.apache.hadoop.mapreduce.Reducer
 import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
-import org.apache.hadoop.io.{IntWritable, ObjectWritable, WritableComparable, WritableComparator}
 import org.unipi.matrixgen.MatrixGenerator
+import util.control.Exception._
 
 import scala.collection.JavaConverters._
 
 class RowKey(var matrixIndex: Integer, var rowIndex: Integer) extends WritableComparable[RowKey] {
 
+  def this() = this(matrixIndex = 0, rowIndex = 0)
+
   @throws[IOException]
   override def readFields(in: DataInput): Unit = {
-    this.matrixIndex = in.readInt
-    this.rowIndex = in.readInt
+    val arr = in.readLine().split(" ").map(_.trim)
+    this.matrixIndex = arr(0).toInt
+    this.rowIndex = arr(1).toInt
   }
 
   @throws[IOException]
@@ -33,25 +35,22 @@ class RowKey(var matrixIndex: Integer, var rowIndex: Integer) extends WritableCo
   }
 
   override def compareTo(o: RowKey): Int = {
-    if (this.matrixIndex < o.matrixIndex) -1
-    else if (this.matrixIndex == o.matrixIndex) {
-
-      if (this.rowIndex < o.rowIndex)-1
-      else if (this.rowIndex == o.rowIndex) 0
-      else 1
-
-    }
-    else 1
+    val thisSeq = Seq[Int](this.matrixIndex, this.rowIndex)
+    val thatSeq = Seq[Int](o.matrixIndex, o.rowIndex)
+    Utils.compare(thisSeq, thatSeq)
   }
 }
 class PartitionerKey(val matrixIndex: Integer, val colIndex: Integer)
-class MapperKey(var matrixIndex: Integer, var colIndex: Integer, var flag: Boolean) extends WritableComparable[MapperKey] {
+class MapperKey(var matrixIndex: Integer, var colIndex: Integer, var flag: Integer) extends WritableComparable[MapperKey] {
+
+  def this() = this(matrixIndex = 0, colIndex = 0, flag = 0)
 
   @throws[IOException]
   override def readFields(in: DataInput): Unit = {
-    this.matrixIndex = in.readInt
-    this.colIndex = in.readInt
-    this.flag = in.readBoolean
+    val arr = in.readLine().split(" ").map(_.trim)
+    this.matrixIndex = arr(0).toInt
+    this.colIndex = arr(1).toInt
+    this.flag = arr(2).toInt
   }
 
   @throws[IOException]
@@ -60,27 +59,31 @@ class MapperKey(var matrixIndex: Integer, var colIndex: Integer, var flag: Boole
     out.writeBytes(data)
   }
 
-  def compareTo_(o: MapperKey): Int = {
-
-    if(0 == this.matrixIndex.compareTo(o.matrixIndex)) {
-      if(0 == this.colIndex.compareTo(o.colIndex))
-        this.flag.compareTo(o.flag)
-      else this.colIndex.compareTo(o.colIndex)
-    } else this.matrixIndex.compareTo(o.matrixIndex)
+  override def compareTo(o: MapperKey): Int = {
+    val thisSeq = Seq[Int](this.matrixIndex, this.colIndex, this.flag)
+    val thatSeq = Seq[Int](o.matrixIndex, o.colIndex, o.flag)
+    Utils.compare(thisSeq, thatSeq)
   }
-
-  // ToDo ???
-  def compare[T](thisSeq: Seq[T], thatSeq: Seq[T])(implicit c: Comparable[T]): Int = {
-    if(0 == thisSeq.head.c.compareTo(thatSeq.head)) {
-      compare(thisSeq.drop(0), thatSeq.drop(0))
-    } else {
-      thisSeq.head.c.compareTo(thatSeq.head)
-    }
-  }
-
 }
 
-class MapperValue(val matrixIndex: Integer, val rowIndex: Integer, val colValue: Double)
+class MapperValue(var matrixIndex: Integer, var rowIndex: Integer, var colValue: Double) extends Writable {
+
+  def this() = this(matrixIndex = 0, rowIndex = 0, colValue = 0.0)
+
+  @throws[IOException]
+  override def readFields(in: DataInput): Unit = {
+    val arr = in.readLine().split(" ").map(_.trim)
+    this.matrixIndex = BigInt(arr(0)).intValue()
+    this.rowIndex = BigInt(arr(1)).intValue()
+    this.colValue = BigDecimal(arr(2)).doubleValue()
+  }
+
+  @throws[IOException]
+  override def write(out: DataOutput): Unit = {
+    val data = Array(this.matrixIndex.toString, this.rowIndex.toString, this.colValue.toString).mkString("\t")
+    out.writeBytes(data)
+  }
+}
 
 class ReducerValue(val matrixIndex: Integer, val colIndex: Integer, val colValue: Double)
 class RowComposerValue(val matrixIndex: Integer, val row: Array[Double])
@@ -96,11 +99,11 @@ object HadoopMatrixNorm {
       for (rowIndex <- matrix.indices) {
         for (columnIndex <- matrix(rowIndex).indices) {
           context.write(
-            new MapperKey(matrixIndex, columnIndex, false),
+            new MapperKey(matrixIndex, columnIndex, 0),
             new ObjectWritable(new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex)))
           )
           context.write(
-            new MapperKey(matrixIndex, columnIndex, true),
+            new MapperKey(matrixIndex, columnIndex, 1),
             new ObjectWritable(new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex)))
           )
         }
@@ -111,7 +114,7 @@ object HadoopMatrixNorm {
 
   class ColumnIndexPartitioner extends HashPartitioner[MapperKey, ObjectWritable] {
     override def getPartition(key: MapperKey, value: ObjectWritable, numReduceTasks: Int): Int = {
-      super.getPartition(new MapperKey(key.matrixIndex, key.colIndex, false), value, numReduceTasks)
+      super.getPartition(new MapperKey(key.matrixIndex, key.colIndex, 0), value, numReduceTasks)
     }
   }
 
@@ -122,7 +125,7 @@ object HadoopMatrixNorm {
 
     override def reduce(key: MapperKey, values: lang.Iterable[ObjectWritable], context: Reducer[MapperKey, ObjectWritable, RowKey, ObjectWritable]#Context): Unit = {
       val i$ = values.iterator
-      if(!key.flag) {
+      if(key.flag == 0) {
         while ( {i$.hasNext}) {
           val v = i$.next
           val value = v.get() match { case j: MapperValue => j}
