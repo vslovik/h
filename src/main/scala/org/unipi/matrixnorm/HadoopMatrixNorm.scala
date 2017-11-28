@@ -133,12 +133,16 @@ object HadoopMatrixNorm {
     }
   }
 
-  class MatrixNormReducer extends Reducer[MapperKey, MapperValue, RowKey, ReducerValue] {
+  class MatrixNormReducer extends Reducer[MapperKey, MapperValue, IntWritable, String] {
 
     private var min = Double.MaxValue
     private var max = Double.MinPositiveValue
 
-    override def reduce(key: MapperKey, values: lang.Iterable[MapperValue], context: Reducer[MapperKey, MapperValue, RowKey, ReducerValue]#Context): Unit = {
+    private var currentMatrixIndex = 0
+    private var matrix = new java.util.TreeMap[Int, Array[Double]]
+    private val mg = new MatrixGenerator
+
+    override def reduce(key: MapperKey, values: lang.Iterable[MapperValue], context: Reducer[MapperKey, MapperValue, IntWritable, String]#Context): Unit = {
       val i$ = values.iterator
       if(key.flag == 0) {
         while ( {i$.hasNext}) {
@@ -151,31 +155,37 @@ object HadoopMatrixNorm {
           }
         }
       } else {
+        var col = new java.util.TreeMap[Int, Double]
+
         while ( {i$.hasNext}) {
           val value = i$.next match { case j: MapperValue => j }
           val newValue = (value.colValue - min) / (max - min)
-          context.write(
-            new RowKey(key.matrixIndex, value.rowIndex),
-            new ReducerValue(key.matrixIndex, key.colIndex, newValue)
-          )
+          col.put(key.colIndex,  newValue)
         }
+
+        if (key.matrixIndex != currentMatrixIndex) {
+
+          val rows = matrix.ceilingEntry(matrix.ceilingKey(0)).getValue.length
+          val cols = matrix.size()
+          val data = Array.ofDim[Double](rows, cols)
+
+          var c = 0
+          for(col <- matrix.values().asScala.toArray) {
+            var r = 0
+            for(colValue <- col) {
+              r += 1
+              data(r)(c) = colValue
+            }
+            c += 1
+          }
+
+          context.write(new IntWritable(currentMatrixIndex), mg.serialize(data))
+          matrix = new java.util.TreeMap[Int, Array[Double]]
+        }
+
+        val rows = col.size()
+        matrix.put(key.colIndex, col.values().asScala.toArray)
       }
-    }
-  }
-
-  class MatrixNormComposer extends Reducer[RowKey, ReducerValue, IntWritable, String] {
-
-    private var currentMatrixIndex = 0
-    private var matrix = new java.util.TreeMap[Int, Array[Double]]
-    private val mg = new MatrixGenerator
-
-    override def reduce(key: RowKey, values: lang.Iterable[ReducerValue], context: Reducer[RowKey, ReducerValue, IntWritable, String]#Context): Unit = {
-      val row: Array[Double] = values.iterator.asScala.toArray.map { v => v.colValue }
-      if (key.matrixIndex != currentMatrixIndex) {
-        context.write(new IntWritable(currentMatrixIndex), mg.serialize(matrix.values.toArray))
-        matrix = new java.util.TreeMap[Int, Array[Double]]
-      }
-      matrix.put(key.rowIndex, row)
     }
   }
 
@@ -190,9 +200,7 @@ object HadoopMatrixNorm {
     job.setMapOutputValueClass(classOf[MapperValue])
 
     job.setPartitionerClass(classOf[ColumnIndexPartitioner])
-
-    job.setReducerClass(classOf[MatrixNormReducer])
-    job.setReducerClass(classOf[MatrixNormComposer])
+    job.setCombinerClass(classOf[MatrixNormReducer])
 
     job.setOutputKeyClass(classOf[IntWritable])
     job.setOutputValueClass(classOf[String])
@@ -203,6 +211,3 @@ object HadoopMatrixNorm {
   }
 
 }
-
-
-
