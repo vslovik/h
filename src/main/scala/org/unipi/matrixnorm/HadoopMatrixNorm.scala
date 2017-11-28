@@ -85,7 +85,23 @@ class MapperValue(var matrixIndex: Integer, var rowIndex: Integer, var colValue:
   }
 }
 
-class ReducerValue(val matrixIndex: Integer, val colIndex: Integer, val colValue: Double)
+class ReducerValue(var matrixIndex: Integer, var colIndex: Integer, var colValue: Double) extends Writable {
+  def this() = this(matrixIndex = 0, colIndex = 0, colValue = 0.0)
+
+  @throws[IOException]
+  override def readFields(in: DataInput): Unit = {
+    val arr = in.readLine().split(" ").map(_.trim)
+    this.matrixIndex = BigInt(arr(0)).intValue()
+    this.colIndex = BigInt(arr(1)).intValue()
+    this.colValue = BigDecimal(arr(2)).doubleValue()
+  }
+
+  @throws[IOException]
+  override def write(out: DataOutput): Unit = {
+    val data = Array(this.matrixIndex.toString, this.colIndex.toString, this.colValue.toString).mkString("\t")
+    out.writeBytes(data)
+  }
+}
 
 object HadoopMatrixNorm {
 
@@ -111,18 +127,18 @@ object HadoopMatrixNorm {
     }
   }
 
-  class ColumnIndexPartitioner extends HashPartitioner[MapperKey, ObjectWritable] {
-    override def getPartition(key: MapperKey, value: ObjectWritable, numReduceTasks: Int): Int = {
+  class ColumnIndexPartitioner extends HashPartitioner[MapperKey, MapperValue] {
+    override def getPartition(key: MapperKey, value: MapperValue, numReduceTasks: Int): Int = {
       super.getPartition(new MapperKey(key.matrixIndex, key.colIndex, 0), value, numReduceTasks)
     }
   }
 
-  class MatrixNormReducer extends Reducer[MapperKey, MapperValue, RowKey, ObjectWritable] {
+  class MatrixNormReducer extends Reducer[MapperKey, MapperValue, RowKey, ReducerValue] {
 
     private var min = Double.MaxValue
     private var max = Double.MinPositiveValue
 
-    override def reduce(key: MapperKey, values: lang.Iterable[MapperValue], context: Reducer[MapperKey, MapperValue, RowKey, ObjectWritable]#Context): Unit = {
+    override def reduce(key: MapperKey, values: lang.Iterable[MapperValue], context: Reducer[MapperKey, MapperValue, RowKey, ReducerValue]#Context): Unit = {
       val i$ = values.iterator
       if(key.flag == 0) {
         while ( {i$.hasNext}) {
@@ -140,21 +156,21 @@ object HadoopMatrixNorm {
           val newValue = (value.colValue - min) / (max - min)
           context.write(
             new RowKey(key.matrixIndex, value.rowIndex),
-            new ObjectWritable(new ReducerValue(key.matrixIndex, key.colIndex, newValue))
+            new ReducerValue(key.matrixIndex, key.colIndex, newValue)
           )
         }
       }
     }
   }
 
-  class MatrixNormComposer extends Reducer[RowKey, ObjectWritable, IntWritable, String] {
+  class MatrixNormComposer extends Reducer[RowKey, ReducerValue, IntWritable, String] {
 
     private var currentMatrixIndex = 0
     private var matrix = new java.util.TreeMap[Int, Array[Double]]
     private val mg = new MatrixGenerator
 
-    override def reduce(key: RowKey, values: lang.Iterable[ObjectWritable], context: Reducer[RowKey, ObjectWritable, IntWritable, String]#Context): Unit = {
-      val row: Array[Double] = values.iterator.asScala.toArray.map { v => v.get() match { case j: ReducerValue => j.colValue }}
+    override def reduce(key: RowKey, values: lang.Iterable[ReducerValue], context: Reducer[RowKey, ReducerValue, IntWritable, String]#Context): Unit = {
+      val row: Array[Double] = values.iterator.asScala.toArray.map { v => v.colValue }
       if (key.matrixIndex != currentMatrixIndex) {
         context.write(new IntWritable(currentMatrixIndex), mg.serialize(matrix.values.toArray))
         matrix = new java.util.TreeMap[Int, Array[Double]]
@@ -171,7 +187,7 @@ object HadoopMatrixNorm {
     job.setMapperClass(classOf[MatrixNormMapper])
 
     job.setMapOutputKeyClass(classOf[MapperKey])
-    job.setMapOutputValueClass(classOf[ObjectWritable])
+    job.setMapOutputValueClass(classOf[MapperValue])
 
     job.setPartitionerClass(classOf[ColumnIndexPartitioner])
 
