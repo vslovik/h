@@ -86,25 +86,24 @@ class MapperValue(var matrixIndex: Integer, var rowIndex: Integer, var colValue:
 }
 
 class ReducerValue(val matrixIndex: Integer, val colIndex: Integer, val colValue: Double)
-class RowComposerValue(val matrixIndex: Integer, val row: Array[Double])
 
 object HadoopMatrixNorm {
 
-  class MatrixNormMapper extends Mapper[LongWritable, Text, MapperKey, ObjectWritable] {
+  class MatrixNormMapper extends Mapper[LongWritable, Text, MapperKey, MapperValue] {
 
     private var matrixIndex = 0
 
-    override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, MapperKey, ObjectWritable]#Context): Unit = {
+    override def map(key: LongWritable, value: Text, context: Mapper[LongWritable, Text, MapperKey, MapperValue]#Context): Unit = {
       val matrix = (new MatrixGenerator).deserialize(value.toString)
       for (rowIndex <- matrix.indices) {
         for (columnIndex <- matrix(rowIndex).indices) {
           context.write(
             new MapperKey(matrixIndex, columnIndex, 0),
-            new ObjectWritable(new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex)))
+            new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex))
           )
           context.write(
             new MapperKey(matrixIndex, columnIndex, 1),
-            new ObjectWritable(new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex)))
+            new MapperValue(matrixIndex, rowIndex, matrix(rowIndex)(columnIndex))
           )
         }
       }
@@ -118,17 +117,16 @@ object HadoopMatrixNorm {
     }
   }
 
-  class MatrixNormReducer extends Reducer[MapperKey, ObjectWritable, RowKey, ObjectWritable] {
+  class MatrixNormReducer extends Reducer[MapperKey, MapperValue, RowKey, ObjectWritable] {
 
     private var min = Double.MaxValue
     private var max = Double.MinPositiveValue
 
-    override def reduce(key: MapperKey, values: lang.Iterable[ObjectWritable], context: Reducer[MapperKey, ObjectWritable, RowKey, ObjectWritable]#Context): Unit = {
+    override def reduce(key: MapperKey, values: lang.Iterable[MapperValue], context: Reducer[MapperKey, MapperValue, RowKey, ObjectWritable]#Context): Unit = {
       val i$ = values.iterator
       if(key.flag == 0) {
         while ( {i$.hasNext}) {
-          val v = i$.next
-          val value = v.get() match { case j: MapperValue => j}
+          val value = i$.next match { case j: MapperValue => j}
           if(value.colValue > max) {
             max = value.colValue
           }
@@ -138,8 +136,7 @@ object HadoopMatrixNorm {
         }
       } else {
         while ( {i$.hasNext}) {
-          val v = i$.next
-          val value = v.get() match { case j: MapperValue => j }
+          val value = i$.next match { case j: MapperValue => j }
           val newValue = (value.colValue - min) / (max - min)
           context.write(
             new RowKey(key.matrixIndex, value.rowIndex),
