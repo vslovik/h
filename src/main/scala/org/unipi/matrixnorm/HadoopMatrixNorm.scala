@@ -24,13 +24,13 @@ class RowKey(var matrixIndex: Integer, var rowIndex: Integer) extends WritableCo
   @throws[IOException]
   override def readFields(in: DataInput): Unit = {
     val arr = in.readLine().split(" ").map(_.trim)
-    this.matrixIndex = arr(0).toInt
-    this.rowIndex = arr(1).toInt
+    this.matrixIndex = BigInt(arr(0)).intValue()
+    this.rowIndex = BigInt(arr(1)).intValue()
   }
 
   @throws[IOException]
   override def write(out: DataOutput): Unit = {
-    val data = Array(this.matrixIndex.toString, this.rowIndex.toString).mkString(" ")
+    val data = Array(this.matrixIndex.toString, this.rowIndex.toString).mkString("\t")
     out.writeBytes(data)
   }
 
@@ -47,15 +47,15 @@ class MapperKey(var matrixIndex: Integer, var colIndex: Integer, var flag: Integ
 
   @throws[IOException]
   override def readFields(in: DataInput): Unit = {
-    val arr = in.readLine().split(" ").map(_.trim)
-    this.matrixIndex = arr(0).toInt
-    this.colIndex = arr(1).toInt
-    this.flag = arr(2).toInt
+    val arr = in.readLine().split("\t").map(_.trim)
+    this.matrixIndex = BigInt(arr(0)).intValue()
+    this.colIndex = BigInt(arr(1)).intValue()
+    this.flag = BigInt(arr(2)).intValue()
   }
 
   @throws[IOException]
   override def write(out: DataOutput): Unit = {
-    val data = Array(this.matrixIndex.toString, this.colIndex.toString, this.flag.toString).mkString(" ")
+    val data = Array(this.matrixIndex.toString, this.colIndex.toString, this.flag.toString).mkString("\t")
     out.writeBytes(data)
   }
 
@@ -72,7 +72,7 @@ class MapperValue(var matrixIndex: Integer, var rowIndex: Integer, var colValue:
 
   @throws[IOException]
   override def readFields(in: DataInput): Unit = {
-    val arr = in.readLine().split(" ").map(_.trim)
+    val arr = in.readLine().split("\t").map(_.trim)
     this.matrixIndex = BigInt(arr(0)).intValue()
     this.rowIndex = BigInt(arr(1)).intValue()
     this.colValue = BigDecimal(arr(2)).doubleValue()
@@ -90,7 +90,7 @@ class ReducerValue(var matrixIndex: Integer, var colIndex: Integer, var colValue
 
   @throws[IOException]
   override def readFields(in: DataInput): Unit = {
-    val arr = in.readLine().split(" ").map(_.trim)
+    val arr = in.readLine().split("\t").map(_.trim)
     this.matrixIndex = BigInt(arr(0)).intValue()
     this.colIndex = BigInt(arr(1)).intValue()
     this.colValue = BigDecimal(arr(2)).doubleValue()
