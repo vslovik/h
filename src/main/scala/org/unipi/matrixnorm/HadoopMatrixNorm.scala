@@ -155,12 +155,12 @@ object HadoopMatrixNorm {
           }
         }
       } else {
-        var col = new java.util.TreeMap[Int, Double]
+        var colMap = new java.util.TreeMap[Int, Double]
 
         while ( {i$.hasNext}) {
           val value = i$.next match { case j: MapperValue => j }
           val newValue = (value.colValue - min) / (max - min)
-          col.put(key.colIndex,  newValue)
+          colMap.put(key.colIndex,  newValue)
         }
 
         if (key.matrixIndex != currentMatrixIndex) {
@@ -173,8 +173,8 @@ object HadoopMatrixNorm {
           for(col <- matrix.values().asScala.toArray) {
             var r = 0
             for(colValue <- col) {
-              r += 1
               data(r)(c) = colValue
+              r += 1
             }
             c += 1
           }
@@ -183,8 +183,8 @@ object HadoopMatrixNorm {
           matrix = new java.util.TreeMap[Int, Array[Double]]
         }
 
-        val rows = col.size()
-        matrix.put(key.colIndex, col.values().asScala.toArray)
+        val rows = colMap.size()
+        matrix.put(key.colIndex, colMap.values().asScala.toArray)
       }
     }
   }
