@@ -1,9 +1,7 @@
-// https://alvinalexander.com/scala/scala-for-loop-examples-syntax-yield-foreach
 package org.unipi.matrixnorm
 
 import java.io.{DataInput, DataOutput, IOException}
 import java.lang
-
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io._
@@ -14,8 +12,6 @@ import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.unipi.matrixgen.MatrixGenerator
-
-import util.control.Exception._
 import scala.collection.JavaConverters._
 
 class RowKey(var matrixIndex: Integer, var rowIndex: Integer) extends WritableComparable[RowKey] {

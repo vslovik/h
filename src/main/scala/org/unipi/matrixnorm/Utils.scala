@@ -1,4 +1,3 @@
-// https://stackoverflow.com/questions/19386964/i-want-to-get-the-type-of-a-variable-at-runtime
 package org.unipi.matrixnorm
 
 object Utils extends App {
