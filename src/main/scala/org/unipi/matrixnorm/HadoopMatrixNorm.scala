@@ -1,3 +1,4 @@
+// https://alvinalexander.com/scala/scala-for-loop-examples-syntax-yield-foreach
 package org.unipi.matrixnorm
 
 import java.io.{DataInput, DataOutput, IOException}
@@ -139,7 +140,7 @@ object HadoopMatrixNorm {
     private var max = Double.MinPositiveValue
 
     private var currentMatrixIndex = 0
-    private var matrix = new java.util.TreeMap[Int, Array[Double]]
+    private var treeMap = new java.util.TreeMap[Int, Array[Double]]
 
     def setMinMax(values: lang.Iterable[MapperValue]):Unit = {
       val i$ = values.iterator
@@ -166,22 +167,22 @@ object HadoopMatrixNorm {
       colMap.values().asScala.toArray
     }
 
-    def emitMatrix(context: Reducer[MapperKey, MapperValue, NullWritable, String]#Context):Unit = {
-      val rows = matrix.ceilingEntry(matrix.ceilingKey(0)).getValue.length
-      val cols = matrix.size()
-      val data = Array.ofDim[Double](rows, cols)
-      var c = 0
-      for(col <- matrix.values().asScala.toArray) {
-        var r = 0
-        for(colValue <- col) {
-          data(r)(c) = colValue
-          r += 1
+    def treeMapTo2DList():List[List[Double]] = {
+      val rows = treeMap.ceilingEntry(treeMap.ceilingKey(0)).getValue.length
+      val cols = treeMap.size()
+      val matrix = Array.ofDim[Double](rows, cols)
+      for((col, c) <- treeMap.values().asScala.toArray.zipWithIndex) {
+        for ((colValue, r) <- col.zipWithIndex) {
+          matrix(r)(c) = colValue
         }
-        c += 1
       }
+      matrix.map(_.toList).toList
+    }
+
+    def emitMatrix(context: Reducer[MapperKey, MapperValue, NullWritable, String]#Context):Unit = {
       context.write(
         NullWritable.get(),
-        (new MatrixGenerator).serialize(data.map(_.toList).toList)
+        (new MatrixGenerator).serialize(treeMapTo2DList())
       )
     }
 
@@ -191,13 +192,13 @@ object HadoopMatrixNorm {
       if (key.flag == 0) {
         setMinMax(values)
       } else {
-        matrix.put(key.colIndex, keepColumn(values))
+        treeMap.put(key.colIndex, keepColumn(values))
       }
 
       if (key.matrixIndex != currentMatrixIndex) {
         emitMatrix(context)
         currentMatrixIndex = key.matrixIndex
-        matrix = new java.util.TreeMap[Int, Array[Double]]
+        treeMap = new java.util.TreeMap[Int, Array[Double]]
       }
     }
 
@@ -206,7 +207,6 @@ object HadoopMatrixNorm {
     override  def cleanup(context: Reducer[MapperKey, MapperValue, NullWritable, String]#Context): Unit = {
       emitMatrix(context)
     }
-
   }
 
   def main(args: Array[String]): Unit = {
