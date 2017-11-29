@@ -5,7 +5,7 @@ import java.lang
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
-import org.apache.hadoop.io.{Writable, WritableComparable, LongWritable, ObjectWritable, Text, IntWritable}
+import org.apache.hadoop.io._
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.Mapper
 import org.apache.hadoop.mapreduce.Reducer
@@ -13,8 +13,8 @@ import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.unipi.matrixgen.MatrixGenerator
-import util.control.Exception._
 
+import util.control.Exception._
 import scala.collection.JavaConverters._
 
 class RowKey(var matrixIndex: Integer, var rowIndex: Integer) extends WritableComparable[RowKey] {
@@ -133,7 +133,7 @@ object HadoopMatrixNorm {
     }
   }
 
-  class MatrixNormReducer extends Reducer[MapperKey, MapperValue, IntWritable, String] {
+  class MatrixNormReducer extends Reducer[MapperKey, MapperValue, NullWritable, String] {
 
     private var min = Double.MaxValue
     private var max = Double.MinPositiveValue
@@ -166,7 +166,7 @@ object HadoopMatrixNorm {
       colMap.values().asScala.toArray
     }
 
-    def emitMatrix(context: Reducer[MapperKey, MapperValue, IntWritable, String]#Context):Unit = {
+    def emitMatrix(context: Reducer[MapperKey, MapperValue, NullWritable, String]#Context):Unit = {
       val rows = matrix.ceilingEntry(matrix.ceilingKey(0)).getValue.length
       val cols = matrix.size()
       val data = Array.ofDim[Double](rows, cols)
@@ -180,12 +180,13 @@ object HadoopMatrixNorm {
         c += 1
       }
       context.write(
-        new IntWritable(currentMatrixIndex),
+        NullWritable.get(),
         (new MatrixGenerator).serialize(data.map(_.toList).toList)
       )
     }
 
-    override def reduce(key: MapperKey, values: lang.Iterable[MapperValue], context: Reducer[MapperKey, MapperValue, IntWritable, String]#Context): Unit = {
+    override def reduce(key: MapperKey, values: lang.Iterable[MapperValue],
+                        context: Reducer[MapperKey, MapperValue, NullWritable, String]#Context): Unit = {
 
       if (key.flag == 0) {
         setMinMax(values)
@@ -198,12 +199,11 @@ object HadoopMatrixNorm {
         currentMatrixIndex = key.matrixIndex
         matrix = new java.util.TreeMap[Int, Array[Double]]
       }
-
     }
 
     @throws[IOException]
     @throws[InterruptedException]
-    override  def cleanup(context: Reducer[MapperKey, MapperValue, IntWritable, String]#Context): Unit = {
+    override  def cleanup(context: Reducer[MapperKey, MapperValue, NullWritable, String]#Context): Unit = {
       emitMatrix(context)
     }
 
