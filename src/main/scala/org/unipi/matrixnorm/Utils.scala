@@ -1,3 +1,4 @@
+// https://stackoverflow.com/questions/19386964/i-want-to-get-the-type-of-a-variable-at-runtime
 package org.unipi.matrixnorm
 
 import org.unipi.matrixgen.MatrixGenerator
@@ -19,28 +20,30 @@ object Utils extends App {
 
   def mapToArray(): Unit = {
     val mg = new MatrixGenerator
-    var matrix = new java.util.TreeMap[Int, Array[Double]]
+    var matrix = new java.util.TreeMap[Int, List[Double]]
     var colMap = new java.util.TreeMap[Int, Double]
     for(i <- Seq(0, 1, 2, 3))
       colMap.put(i,  4)
-    matrix.put(0, colMap.values().asScala.toArray)
+    matrix.put(0, colMap.values().asScala.toList)
 
     val rows = matrix.ceilingEntry(matrix.ceilingKey(0)).getValue.length
     val cols = matrix.size()
-    val data = Array.ofDim[Double](rows, cols)
+    var data = Array.ofDim[Double](rows, cols)
 
     var c = 0
-    for(col <- matrix.values().asScala.toArray) {
+    for(col <- matrix.values().asScala.toList) {
       var r = 0
       for(colValue <- col) {
+        println(colValue)
         data(r)(c) = colValue
         r += 1
       }
       c += 1
     }
 
-    println(data)
-    //println(mg.serialize(data))
+    val m = data.map(_.toList).toList
+    println(m)
+    println(mg.serialize(m))
   }
 
   mapToArray()
