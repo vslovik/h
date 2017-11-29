@@ -159,11 +159,30 @@ object HadoopMatrixNorm {
       val i$ = values.iterator
       while ({i$.hasNext}) {
         val value = i$.next match { case j: MapperValue => j }
-        //val newValue = (value.colValue - min) / (max - min)
+//        val newValue = (value.colValue - min) / (max - min)
         val newValue = value.colValue
         colMap.put(value.rowIndex,  newValue)
       }
       colMap.values().asScala.toArray
+    }
+
+    def emitMatrix(context: Reducer[MapperKey, MapperValue, IntWritable, String]#Context):Unit = {
+      val rows = matrix.ceilingEntry(matrix.ceilingKey(0)).getValue.length
+      val cols = matrix.size()
+      val data = Array.ofDim[Double](rows, cols)
+      var c = 0
+      for(col <- matrix.values().asScala.toArray) {
+        var r = 0
+        for(colValue <- col) {
+          data(r)(c) = colValue
+          r += 1
+        }
+        c += 1
+      }
+      context.write(
+        new IntWritable(currentMatrixIndex),
+        (new MatrixGenerator).serialize(data.map(_.toList).toList)
+      )
     }
 
     override def reduce(key: MapperKey, values: lang.Iterable[MapperValue], context: Reducer[MapperKey, MapperValue, IntWritable, String]#Context): Unit = {
@@ -174,36 +193,20 @@ object HadoopMatrixNorm {
         matrix.put(key.colIndex, keepColumn(values))
       }
 
-
       if (key.matrixIndex != currentMatrixIndex) {
-        val rows = matrix.ceilingEntry(matrix.ceilingKey(0)).getValue.length
-        val cols = matrix.size()
-
-
-        val data = Array.ofDim[Double](rows, cols)
-        var c = 0
-        for(col <- matrix.values().asScala.toArray) {
-          var r = 0
-          for(colValue <- col) {
-            data(r)(c) = colValue
-            r += 1
-          }
-          c += 1
-        }
-
-
-        context.write(
-          new IntWritable(currentMatrixIndex),
-          (new MatrixGenerator).serialize(data.map(_.toList).toList)
-        )
-
+        emitMatrix(context)
         currentMatrixIndex = key.matrixIndex
         matrix = new java.util.TreeMap[Int, Array[Double]]
-
-
       }
 
     }
+
+    @throws[IOException]
+    @throws[InterruptedException]
+    override  def cleanup(context: Reducer[MapperKey, MapperValue, IntWritable, String]#Context): Unit = {
+      emitMatrix(context)
+    }
+
   }
 
   def main(args: Array[String]): Unit = {
