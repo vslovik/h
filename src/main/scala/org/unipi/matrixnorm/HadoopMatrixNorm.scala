@@ -14,30 +14,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.unipi.matrixgen.MatrixGenerator
 import scala.collection.JavaConverters._
 
-class RowKey(var matrixIndex: Integer, var rowIndex: Integer) extends WritableComparable[RowKey] {
-
-  def this() = this(matrixIndex = 0, rowIndex = 0)
-
-  @throws[IOException]
-  override def readFields(in: DataInput): Unit = {
-    val arr = in.readLine().split(" ").map(_.trim)
-    this.matrixIndex = BigInt(arr(0)).intValue()
-    this.rowIndex = BigInt(arr(1)).intValue()
-  }
-
-  @throws[IOException]
-  override def write(out: DataOutput): Unit = {
-    val data = Array(this.matrixIndex.toString, this.rowIndex.toString).mkString("\t")
-    out.writeBytes(data)
-  }
-
-  override def compareTo(o: RowKey): Int = {
-    val thisSeq = Seq[Int](this.matrixIndex, this.rowIndex)
-    val thatSeq = Seq[Int](o.matrixIndex, o.rowIndex)
-    Utils.compare(thisSeq, thatSeq)
-  }
-}
-class PartitionerKey(val matrixIndex: Integer, val colIndex: Integer)
 class MapperKey(var matrixIndex: Integer, var colIndex: Integer, var flag: Integer) extends WritableComparable[MapperKey] {
 
   def this() = this(matrixIndex = 0, colIndex = 0, flag = 0)
@@ -78,24 +54,6 @@ class MapperValue(var matrixIndex: Integer, var rowIndex: Integer, var colValue:
   @throws[IOException]
   override def write(out: DataOutput): Unit = {
     val data = Array(this.matrixIndex.toString, this.rowIndex.toString, this.colValue.toString).mkString("\t")
-    out.writeBytes(data)
-  }
-}
-
-class ReducerValue(var matrixIndex: Integer, var colIndex: Integer, var colValue: Double) extends Writable {
-  def this() = this(matrixIndex = 0, colIndex = 0, colValue = 0.0)
-
-  @throws[IOException]
-  override def readFields(in: DataInput): Unit = {
-    val arr = in.readLine().split("\t").map(_.trim)
-    this.matrixIndex = BigInt(arr(0)).intValue()
-    this.colIndex = BigInt(arr(1)).intValue()
-    this.colValue = BigDecimal(arr(2)).doubleValue()
-  }
-
-  @throws[IOException]
-  override def write(out: DataOutput): Unit = {
-    val data = Array(this.matrixIndex.toString, this.colIndex.toString, this.colValue.toString).mkString("\t")
     out.writeBytes(data)
   }
 }
