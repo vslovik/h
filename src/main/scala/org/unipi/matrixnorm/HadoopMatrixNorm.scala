@@ -70,8 +70,8 @@ object HadoopMatrixNorm {
       val i$ = values.iterator
       while ({i$.hasNext}) {
         val value = i$.next match { case j: MapperValue => j }
-//        val newValue = (value.colValue - min) / (max - min)
-        val newValue = value.colValue
+        val newValue = (value.colValue - min) / (max - min)
+//        val newValue = value.colValue
         colMap.put(value.rowIndex,  newValue)
       }
       colMap.values().asScala.toArray
