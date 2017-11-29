@@ -26,6 +26,9 @@ object Utils extends App {
       colMap.put(i,  4)
     matrix.put(0, colMap.values().asScala.toList)
 
+
+
+
     val rows = matrix.ceilingEntry(matrix.ceilingKey(0)).getValue.length
     val cols = matrix.size()
     var data = Array.ofDim[Double](rows, cols)
@@ -42,6 +45,8 @@ object Utils extends App {
     }
 
     val m = data.map(_.toList).toList
+
+
     println(m)
     println(mg.serialize(m))
   }

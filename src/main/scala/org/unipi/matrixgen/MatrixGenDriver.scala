@@ -28,6 +28,8 @@ object MatrixGenDriver {
       job.setNumReduceTasks(0)
       job.setInputFormatClass(classOf[MatrixGenInputFormat])
 
+      job.setOutputFormatClass(classOf[MatrixGenInputFormat])
+
       MatrixGenInputFormat.setNumMapTasks(job, numMapTasks)
       MatrixGenInputFormat.setNumRecordsPerTask(job, numRecordsPerTasks)
 

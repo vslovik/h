@@ -15,13 +15,19 @@ class MatrixGenerator {
       squareList.grouped(cols).toList
     }
 
+  def serializeList(l: List[List[Double]]):String = {
+    l.flatten.map{
+      j: Double => decimal(j)
+    }.mkString(Array(l.size, l.head.size).mkString("", "\t", "\t"), "\t", "")
+  }
+
   def serialize(matrix: Any): String = {
     matrix match {
       case Some(i) =>  i match {
-        case y: List[List[Double]] => y.flatten.map{
-          j: Double => decimal(j)
-        }.mkString(Array(y.size, y.head.size).mkString("", "\t", "\t"), "\t", "")
+        case y: List[List[Double]] => serializeList(y)
       }
+      case x: List[List[Double]] => serializeList(x)
+      case _ => "Unknown list value type"
     }
   }
 
