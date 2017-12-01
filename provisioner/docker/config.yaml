@@ -1,0 +1,3 @@
+docker:
+        memory_limit: "4g"
+components: [hdfs, mapreduce]
