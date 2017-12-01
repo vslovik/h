@@ -1,3 +1,9 @@
 docker:
-        memory_limit: "4g"
-components: [hdfs, mapreduce]
+    image: "centos"
+    memory_limit: "4g"
+
+repo: "-"
+distro: centos
+components: [hdfs, yarn, mapreduce]
+enable_local_repo: true
+smoke_test_components: [hdfs, yarn, mapreduce]

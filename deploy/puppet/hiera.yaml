@@ -1,0 +1,7 @@
+---
+:yaml:
+  :datadir: /etc/puppet/hieradata
+:hierarchy:
+  - site
+  - "matrixnorm/%{hadoop_hiera_ha_path}"
+  - matrixnorm/cluster
