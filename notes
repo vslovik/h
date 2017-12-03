@@ -1,0 +1,59 @@
+https://www.digitalocean.com/community/tutorials/how-to-install-puppet-4-on-ubuntu-16-04
+
+valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ ./docker-hadoop.sh -p
+WARNING: The DOCKER_IMAGE variable is not set. Defaulting to a blank string.
+WARNING: The MEM_LIMIT variable is not set. Defaulting to a blank string.
+3ab63a614634df9642c2eb798b0fb11b5c3c619ababf0c16a3645fe0901ce4dd
+43e3d1400808f0a33b107cf294f01111060a2469d1b9e51af505623ff87d29c3
+Warning: This method is deprecated, please use match expressions with Stdlib::Compat::Bool instead. They are described at https://docs.puppet.com/puppet/latest/reference/lang_data_type.html#match-expressions.
+   (at /etc/puppet/modules/stdlib/lib/puppet/functions/deprecation.rb:25:in `deprecation')
+Warning: This method is deprecated, please use match expressions with Stdlib::Compat::Bool instead. They are described at https://docs.puppet.com/puppet/latest/reference/lang_data_type.html#match-expressions.
+   (at /etc/puppet/modules/stdlib/lib/puppet/functions/deprecation.rb:25:in `deprecation')
+Warning: This method is deprecated, please use match expressions with Stdlib::Compat::Array instead. They are described at https://docs.puppet.com/puppet/latest/reference/lang_data_type.html#match-expressions.
+   (at /etc/puppet/modules/stdlib/lib/puppet/functions/deprecation.rb:25:in `deprecation')
+Notice: Scope(Class[Node_with_components]): Roles to deploy: [namenode, datanode]
+Warning: This method is deprecated, please use match expressions with Stdlib::Compat::Array instead. They are described at https://docs.puppet.com/puppet/latest/reference/lang_data_type.html#match-expressions.
+   (at /etc/puppet/modules/stdlib/lib/puppet/functions/deprecation.rb:25:in `deprecation')
+Notice: Scope(Class[Node_with_components]): Roles to deploy: [datanode]
+Notice: Compiled catalog for 3ab63a614634.org.unipi.matrixnorm in environment production in 0.82 seconds
+Notice: Compiled catalog for 43e3d1400808.org.unipi.matrixnorm in environment production in 0.86 seconds
+Notice: /Stage[main]/Hadoop_cluster_node/User[testuser]/ensure: created
+Notice: /Stage[main]/Hadoop_cluster_node/User[testuser]/ensure: created
+Notice: /Stage[main]/Hadoop_cluster_node/User[jenkins]/ensure: created
+Notice: /Stage[main]/Bigtop_repo/Yumrepo[Bigtop_0]/ensure: created
+Notice: /Stage[main]/Hadoop::Mapred_app/Hadoop::Create_storage_dir[/data/2/mapred]/Exec[mkdir /data/2/mapred]/returns: executed successfully
+Notice: /Stage[main]/Hadoop::Mapred_app/Hadoop::Create_storage_dir[/data/1/mapred]/Exec[mkdir /data/1/mapred]/returns: executed successfully
+Notice: /Stage[main]/Hadoop_cluster_node/User[jenkins]/ensure: created
+Notice: /Stage[main]/Bigtop_repo/Yumrepo[Bigtop_0]/ensure: created
+Notice: /Stage[main]/Hadoop::Mapred_app/Hadoop::Create_storage_dir[/data/2/mapred]/Exec[mkdir /data/2/mapred]/returns: executed successfully
+Notice: /Stage[main]/Hadoop::Mapred_app/Hadoop::Create_storage_dir[/data/1/mapred]/Exec[mkdir /data/1/mapred]/returns: executed successfully
+Notice: /Stage[main]/Hadoop_cluster_node/User[hudson]/ensure: created
+Notice: /Stage[main]/Hadoop_cluster_node/User[hudson]/ensure: created
+Notice: /Stage[main]/Jdk/Package[jdk]/ensure: created
+Notice: /Stage[main]/Jdk/Package[jdk]/ensure: created
+Notice: /Stage[main]/Hadoop::Common/Package[hadoop]/ensure: created
+Notice: /Stage[main]/Hadoop::Common_mapred_app/Package[hadoop-mapreduce]/ensure: created
+Notice: /Stage[main]/Hadoop::Common/File[/etc/hadoop/conf/hadoop-env.sh]/content: content changed '{md5}829beb2d3c16fa22040afdc0fa277ba1' to '{md5}b4e97a45010e60de2c7d4ca3abecfdde'
+Notice: /Stage[main]/Hadoop::Mapred_app/File[/data/2/mapred]/owner: owner changed 'root' to 'yarn'
+Notice: /Stage[main]/Hadoop::Mapred_app/File[/data/2/mapred]/group: group changed 'root' to 'yarn'
+Notice: /Stage[main]/Hadoop::Common/Package[hadoop]/ensure: created
+Notice: /Stage[main]/Hadoop::Common_mapred_app/Package[hadoop-mapreduce]/ensure: created
+Notice: /Stage[main]/Hadoop::Common/File[/etc/hadoop/conf/hadoop-env.sh]/content: content changed '{md5}829beb2d3c16fa22040afdc0fa277ba1' to '{md5}b4e97a45010e60de2c7d4ca3abecfdde'
+Notice: /Stage[main]/Hadoop::Mapred_app/File[/data/2/mapred]/owner: owner changed 'root' to 'yarn'
+Notice: /Stage[main]/Hadoop::Mapred_app/File[/data/2/mapred]/group: group changed 'root' to 'yarn'
+Notice: /Stage[main]/Hadoop::Common_hdfs/Package[hadoop-hdfs]/ensure: created
+Notice: /Stage[main]/Hadoop::Common_hdfs/File[/etc/hadoop/conf/core-site.xml]/content: content changed '{md5}315d2770c60bc9a0b3c7dc04e41fda76' to '{md5}0d0cae6de9a94dab247cfafeaddcffa3'
+Notice: /Stage[main]/Hadoop::Common_mapred_app/File[/etc/hadoop/conf/taskcontroller.cfg]/ensure: defined content as '{md5}fa9d342175e04ccf0fa1aba8291bedba'
+Notice: /Stage[main]/Hadoop::Common_hdfs/File[/etc/hadoop/conf/hdfs-site.xml]/content: content changed '{md5}06f0cc5cad0018c16ef3dcb404efb74e' to '{md5}c0f6aceaa39987f4d3d1f3092a574984'
+Notice: /Stage[main]/Hadoop::Common_mapred_app/File[/etc/hadoop/conf/mapred-site.xml]/content: content changed '{md5}1b058ae210b2e2dafd3407b6bf7dad43' to '{md5}4e5391768036ac8e8dac90a3d1cab8cf'
+Notice: /Stage[main]/Hadoop::Mapred_app/File[/data/1/mapred]/owner: owner changed 'root' to 'yarn'
+Notice: /Stage[main]/Hadoop::Mapred_app/File[/data/1/mapred]/group: group changed 'root' to 'yarn'
+Notice: Finished catalog run in 174.21 seconds
+Notice: /Stage[main]/Hadoop::Common_hdfs/Package[hadoop-hdfs]/ensure: created
+Notice: /Stage[main]/Hadoop::Common_hdfs/File[/etc/hadoop/conf/core-site.xml]/content: content changed '{md5}315d2770c60bc9a0b3c7dc04e41fda76' to '{md5}c817adf47515aee70213998743fad505'
+Notice: /Stage[main]/Hadoop::Common_mapred_app/File[/etc/hadoop/conf/taskcontroller.cfg]/ensure: defined content as '{md5}fa9d342175e04ccf0fa1aba8291bedba'
+Notice: /Stage[main]/Hadoop::Common_hdfs/File[/etc/hadoop/conf/hdfs-site.xml]/content: content changed '{md5}06f0cc5cad0018c16ef3dcb404efb74e' to '{md5}ca4367ac20f9be1a35b642aa73268b30'
+Notice: /Stage[main]/Hadoop::Common_mapred_app/File[/etc/hadoop/conf/mapred-site.xml]/content: content changed '{md5}1b058ae210b2e2dafd3407b6bf7dad43' to '{md5}4e5391768036ac8e8dac90a3d1cab8cf'
+Notice: /Stage[main]/Hadoop::Mapred_app/File[/data/1/mapred]/owner: owner changed 'root' to 'yarn'
+Notice: /Stage[main]/Hadoop::Mapred_app/File[/data/1/mapred]/group: group changed 'root' to 'yarn'
+Notice: Finished catalog run in 201.58 seconds

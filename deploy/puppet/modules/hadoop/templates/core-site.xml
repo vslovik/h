@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<% namenode_hosts = Array(@hadoop_namenode_host) -%>
+<configuration>
+
+  <property>
+    <!-- URI of NN. Fully qualified. No IP.-->
+    <name>fs.defaultFS</name>
+<% if @ha != "disabled" -%>
+    <value>hdfs://<%= @nameservice_id %></value>
+<% else -%>
+    <value>hdfs://<%= namenode_hosts[0] %>:<%= @hadoop_namenode_port %></value>
+<% end -%>
+  </property>
+
+<% if @hadoop_security_group_mapping %>
+  <property>
+    <name>hadoop.security.group.mapping</name>
+    <value><%= @hadoop_security_group_mapping %></value>
+  </property>
+<% end %>
+
+<% if @hadoop_core_proxyusers %>
+<% @hadoop_core_proxyusers.sort.each do |superuser, data| %>
+  <property>
+    <name>hadoop.proxyuser.<%= superuser %>.hosts</name>
+    <value><%= data['hosts'] %></value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.<%= superuser %>.groups</name>
+    <value><%= data['groups'] %></value>
+  </property>
+<% end %>
+<% end %>
+
+</configuration>

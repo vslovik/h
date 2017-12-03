@@ -1,0 +1,15 @@
+matrixnorm::hadoop_head_node: "head.node.fqdn"
+hadoop::common_hdfs::hadoop_namenode_host: "%{hiera('matrixnorm::hadoop_head_node')}"
+hadoop::common_hdfs::hadoop_namenode_port: "8020"
+hadoop::common_yarn::hadoop_ps_host: "%{hiera('matrixnorm::hadoop_head_node')}"
+hadoop::common_yarn::hadoop_rm_host: "%{hiera('matrixnorm::hadoop_head_node')}"
+hadoop::common_yarn::hadoop_rm_port: "8032"
+
+hadoop::common_mapred_app::jobtracker_host: "%{hiera('matrixnorm::hadoop_head_node')}"
+hadoop::common_mapred_app::mapreduce_jobhistory_host: "%{hiera('matrixnorm::hadoop_head_node')}"
+# actually default but needed for hadoop::common_yarn::yarn_log_server_url here
+matrixnorm::hadoop_history_server_port: "19888"
+matrixnorm::hadoop_history_server_url: "http://%{hiera('hadoop::common_mapred_app::mapreduce_jobhistory_host')}:%{hiera('matrixnorm::hadoop_history_server_port')}"
+hadoop::common_yarn::yarn_log_server_url: "%{hiera('matrixnorm::hadoop_history_server_url')}/jobhistory/logs"
+
+matrixnorm::hadoop_namenode_uri: "hdfs://%{hiera('hadoop::common_hdfs::hadoop_namenode_host')}:%{hiera('hadoop::common_hdfs::hadoop_namenode_port')}"

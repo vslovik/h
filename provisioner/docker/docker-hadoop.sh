@@ -79,11 +79,13 @@ create() {
     components="[`echo $(get-yaml-config components) | sed 's/ /, /g'`]"
     distro=$(get-yaml-config distro)
     enable_local_repo=$(get-yaml-config enable_local_repo)
+
     generate-config "$hadoop_head_node" "$repo" "$components"
 
     # Start provisioning
     generate-hosts
     bootstrap $distro $enable_local_repo
+    provision
 }
 
 destroy() {
@@ -115,9 +117,9 @@ generate-config() {
     cat $PUPPET_DIR/hiera.yaml >> ./config/hiera.yaml
     cp -vfr $PUPPET_DIR/hieradata ./config/
     cat > ./config/hieradata/site.yaml << EOF
-bigtop::hadoop_head_node: $1
+matrixnorm::hadoop_head_node: $1
 hadoop::hadoop_storage_dirs: [/data/1, /data/2]
-bigtop::bigtop_repo_uri: $2
+matrixnorm::matrixnorm_repo_uri: $2
 hadoop_cluster_node::cluster_components: $3
 EOF
 }
@@ -148,6 +150,7 @@ provision() {
 }
 
 matrixnorm-puppet() {
+    echo $1
     docker exec $1 bash -c 'puppet apply --parser future --modulepath=/matrixnorm-home/deploy/puppet/modules:/etc/puppet/modules /matrixnorm-home/deploy/puppet/manifests'
 }
 

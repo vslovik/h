@@ -1,9 +1,9 @@
 docker:
-    image: "centos"
-    memory_limit: "4g"
+        memory_limit: "4g"
+        image: "bigtop/puppet:centos-7"
 
-repo: "-"
+repo: "http://bigtop-repos.s3.amazonaws.com/releases/1.2.0/centos/7/x86_64"
 distro: centos
 components: [hdfs, yarn, mapreduce]
-enable_local_repo: true
+enable_local_repo: false
 smoke_test_components: [hdfs, yarn, mapreduce]
