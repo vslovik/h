@@ -16,6 +16,6 @@
 class toolchain::puppet-modules-prereq {
 
   if versioncmp($::puppetversion,'3.0.0') < 0 {
-    fail("bigtop_toolchain::puppet-modules requires Puppet 3.0.0+, but found: $::puppetversion")
+    fail("toolchain::puppet-modules requires Puppet 3.0.0+, but found: $::puppetversion")
   }
 }

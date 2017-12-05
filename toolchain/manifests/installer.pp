@@ -15,6 +15,7 @@
 
 class toolchain::installer {
   include toolchain::jdk
+  include toolchain::scala
   include toolchain::maven
   include toolchain::ant
   include toolchain::gradle

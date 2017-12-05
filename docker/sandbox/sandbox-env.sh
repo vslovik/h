@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,31 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class toolchain::puppet-modules {
+BIGTOP_VERSION=1.2.0
+# REPO="YOUR CUSTOM REPO"
 
-  exec { 'install-puppet-stdlib':
-    path    => '/usr/bin:/bin',
-    command => 'puppet module install puppetlabs-stdlib',
-    creates => '/etc/puppet/modules/stdlib',
-  }
-
-  case $operatingsystem{
-    /Ubuntu|Debian/: {
-      if versioncmp($::puppetversion, '4') < 0 {
-        $version = '--version 2.4.0'
-      } else {
-        $version = ''
-      }
-      exec { 'install-puppet-apt':
-        path    => '/usr/bin:/bin',
-        command => "puppet module install puppetlabs-apt ${version}",
-        creates => '/etc/puppet/modules/apt',
-      }
-    }
-  }
-
-  stage { 'first':
-    before => Stage['main'],
-  }
-  class { 'toolchain::puppet-modules-prereq': stage => 'first' }
-}
+RPMS=( \
+    centos-6 \
+    centos-7 \
+    centos-7-aarch64 \
+    fedora-25 \
+    fedora-25-aarch64 \
+    opensuse-42.1 \
+)
+DEBS=( \
+    debian-8 \
+    debian-8-aarch64 \
+    debian-9-aarch64 \
+    ubuntu-16.04 \
+)

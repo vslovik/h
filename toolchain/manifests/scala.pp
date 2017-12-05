@@ -1,42 +1,28 @@
-# https://github.com/gini/puppet-scala/blob/master/manifests/params.pp
-# https://stackoverflow.com/questions/33953042/cant-provision-scala-sbt-from-same-file-as-jenkins-service
-class toolchain::scala(
-  $version        = '2.11.8',
-  $url            = 'org.scala-lang',
-  $package_format = 'scala-library',
-) {
+class toolchain::scala {
 
-  archive::download { "scala-${version}.${package_format}":
-    url        => "http://www.scala-lang.org/files/archive/scala-${version}.${package_format}",
-    checksum   => false,
-    src_target => '/var/tmp',
-  }
+  $scala_version = '2.11.8'
+  $scala = "scala-${scala_version}"
 
-  $package_provider = $::osfamily ? {
-    'RedHat' => 'rpm',
-    'Debian' => 'dpkg',
-    default  => fail('Unsupported OS family'),
-  }
-
-  package { "scala-${version}":
-    ensure   => installed,
-    provider => $package_provider,
-    source   => "/var/tmp/scala-${version}.${package_format}",
-    require  => Archive::Download["scala-${version}.${package_format}"],
-  }
-
-  ####
-  wget::fetch { "download scala":
-    source => "http://www.scala-lang.org/files/archive/scala-2.10.3.deb",
-    destination => "/tmp/scala-2.10.3.deb",
-    cache_dir => "/vagrant/cache/"
-  }
-
-  package { "libjansi-java": }
-
-  package { "scala":
-    provider => "dpkg",
-    source => "/tmp/scala-2.10.3.deb",
-    require => [ File["/tmp/scala-2.10.3.deb"], Package["openjdk-8-jdk"], Package["libjansi-java"] ]
+  case $::operatingsystem {
+    /Ubuntu|Debian/: {
+      exec {'download-scala':
+        command => "/usr/bin/wget http://www.scala-lang.org/files/archive/scala-${scala}.deb",
+        cwd => '/usr/src',
+        creates => "/usr/src/${scala}.deb"
+      }
+      package { 'scala':
+        ensure => 'latest',
+        source   => "/usr/src/${scala}.deb",
+        provider => 'dpkg',
+        require => Exec['download-scala']
+      }
+    }
+    default: {
+      package { 'scala':
+        ensure => 'latest',
+        source => "http://downloads.lightbend.com/scala/${scala_version}/${scala}.rpm",
+        provider => 'rpm'
+      }
+    }
   }
 }

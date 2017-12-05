@@ -58,7 +58,7 @@ class toolchain::protobuf {
              
            default: { yumrepo { "protobuf":
              baseurl => "http://download.opensuse.org/repositories/home:/mrdocs:/protobuf-rpm/CentOS_CentOS-6/",
-             descr => "Bigtop protobuf repo",
+             descr => "protobuf repo",
              enabled => 1,
              priority => 1,
              gpgcheck => 0
