@@ -16,7 +16,7 @@
 # limitations under the License.
 
 puppet apply \
-  --modulepath=/tmp/bigtop/bigtop-deploy/puppet/modules:/etc/puppet/modules /tmp/bigtop/bigtop-deploy/puppet/manifests/site.pp && \
+  --modulepath=/tmp/vslovik/deploy/puppet/modules:/etc/puppet/modules /tmp/vslovik/deploy/puppet/manifests/site.pp && \
   echo "
 ######
    Use Ctrl-P Ctrl-Q to detach the container without stopping it
