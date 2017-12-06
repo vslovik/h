@@ -6,7 +6,14 @@ org.unipi.matrixgen.MatrixGenDriver 1 1000 genn
 
 org.unipi.matrixnorm.HadoopMatrixNorm genn out4
 
+docker exec 20171206214250r28526_matrixnorm_1 bash -c "scala "
 
-sudo docker exec 20171204200225r29097_matrixnorm_1 bash -c "hadoop jar /matrixnorm-home/build/libs/org.unipi.matrixnorm-1.0-SNAPSHOT.jar org.unipi.matrixgen.MatrixGenDriver 1 1000 genn"
+gradle jar
 
-sudo docker exec 20171204200225r29097_matrixnorm_1 bash -c "hadoop jar /matrixnorm-home/build/libs/org.unipi.matrixnorm-1.0-SNAPSHOT.jar org.unipi.matrixnorm.HadoopMatrixNorm genn out"
+sudo docker exec 20171206214250r28526_matrixnorm_1 bash
+
+sudo docker exec 20171206221005r9937_matrixnorm_1  \
+bash -c "hadoop jar /matrixnorm-home/build/libs/org.unipi.matrixnorm-1.0-SNAPSHOT.jar org.unipi.matrixgen.MatrixGenDriver 1 1000 genn"
+
+sudo docker exec 20171204200225r29097_matrixnorm_1 \
+bash -c "hadoop jar /matrixnorm-home/build/libs/org.unipi.matrixnorm-1.0-SNAPSHOT.jar org.unipi.matrixnorm.HadoopMatrixNorm genn out"

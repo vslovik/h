@@ -1,6 +1,6 @@
 package org.unipi.matrixgen
 
-import org.scalacheck._
+import org.scalacheck.Gen
 
 import scala.math.BigDecimal
 

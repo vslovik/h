@@ -16,8 +16,8 @@ object MatrixGenDriver {
 
       val configuration = new Configuration
 
-      val numMapTasks: Int = args(0).toInt
-      val numRecordsPerTasks = args(1).toInt
+      val numMapTasks: Int = BigInt(args(0)).intValue()
+      val numRecordsPerTasks = BigInt(args(1)).intValue()
       val outputDir = new Path(args(2))
 
       val job = Job.getInstance(configuration, "matrix generator")
