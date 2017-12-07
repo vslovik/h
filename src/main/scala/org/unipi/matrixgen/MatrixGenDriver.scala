@@ -5,13 +5,23 @@ import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.hadoop.io.{NullWritable, Text}
 import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
+import org.apache.hadoop.util.Tool
+import org.apache.hadoop.util.ToolRunner
+import org.apache.hadoop.conf.Configured
 
-object MatrixGenDriver {
+object MatrixGenDriver extends Configured with Tool {
 
+  @throws[Exception]
   def main(args: Array[String]): Unit = {
+    val res = ToolRunner.run(new Configuration(), MatrixGenDriver, args)
+    System.exit(res)
+  }
+
+  @throws[Exception]
+  def run(args: Array[String]): Int = {
     if (args.length != 3) {
       System.err.println("USAGE : [number of map tasks] [number of records per task] [output path]")
-      System.exit(0)
+      1
     } else {
 
       val configuration = new Configuration
@@ -41,8 +51,8 @@ object MatrixGenDriver {
       job.setOutputKeyClass(classOf[Text])
       job.setOutputValueClass(classOf[NullWritable])
 
-      System.exit(if (job.waitForCompletion(true)) 0 else 1)
+      if (job.waitForCompletion(true)) 0
+      else 1
     }
   }
 }
-

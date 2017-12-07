@@ -13,8 +13,11 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat
 import org.unipi.matrixgen.MatrixGenerator
 import scala.collection.JavaConverters._
+import org.apache.hadoop.util.Tool
+import org.apache.hadoop.util.ToolRunner
+import org.apache.hadoop.conf.Configured
 
-object HadoopMatrixNorm {
+object HadoopMatrixNorm extends Configured with Tool {
 
   class MatrixNormMapper extends Mapper[LongWritable, Text, MapperKey, MapperValue] {
 
@@ -119,7 +122,14 @@ object HadoopMatrixNorm {
     }
   }
 
+  @throws[Exception]
   def main(args: Array[String]): Unit = {
+    val res = ToolRunner.run(new Configuration(), HadoopMatrixNorm, args)
+    System.exit(res)
+  }
+
+  @throws[Exception]
+  def run(args: Array[String]): Int = {
     val configuration = new Configuration
     val job = Job.getInstance(configuration,"matrix normalization")
     job.setJarByClass(this.getClass)
@@ -137,7 +147,9 @@ object HadoopMatrixNorm {
 
     FileInputFormat.addInputPath(job, new Path(args(0)))
     FileOutputFormat.setOutputPath(job, new Path(args(1)))
-    System.exit(if(job.waitForCompletion(true))  0 else 1)
+
+    if (job.waitForCompletion(true)) 0
+    else 1
   }
 
 }
