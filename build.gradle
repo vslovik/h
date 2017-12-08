@@ -48,7 +48,7 @@ dependencies {
     compile group: 'org.apache.hadoop', name: 'hadoop-client', version: '2.8.2'
     compile group: 'org.la4j', name: 'la4j', version: '0.6.0'
     compile 'org.scala-lang:scala-library:2.12.4'
-    compile group: 'org.scalacheck', name: 'scalacheck_2.11', version: '1.12.5'
+    compile group: 'org.scalacheck', name: 'scalacheck_2.12', version: '1.13.4'
     testCompile 'org.scalatest:scalatest_2.11:3.0.1'
     testRuntime 'org.pegdown:pegdown:1.4.2'
 }

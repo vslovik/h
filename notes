@@ -1,5 +1,6 @@
 sudo docker exec a9e18a0e8bd47cf16fb123491a04eb222419c30ee867725dc66b52750f22e9d9 bash -c "hadoop jar /bigtop-home/bigtop-bigpetstore/bigpetstore-mapreduce/build/libs/BigPetStore-1.3.0-SNAPSHOT-all.jar org.apache.bigtop.bigpetstore.generator.BPSGenerator 10000000 bigpetstore/gen"
 
+export LIBJARS=/matrixnorm-home/build/libs/scala-library-2.12.4.jar,/matrixnorm-home/build/libs/scalacheck_2.12-1.13.4.jar
 
 
 org.unipi.matrixgen.MatrixGenDriver 1 1000 genn
@@ -12,8 +13,24 @@ gradle jar
 
 sudo docker exec 20171206214250r28526_matrixnorm_1 bash
 
-sudo docker exec 20171206221005r9937_matrixnorm_1  \
+sudo docker exec 20171208111653r15633_matrixnorm_1  \
+bash -c "export LIBJARS=/matrixnorm-home/build/libs/scala-library-2.12.4.jar,/matrixnorm-home/build/libs/scalacheck_2.12-1.13.4.jar"
+
+sudo docker exec 20171208111653r15633_matrixnorm_1  \
+bash -c "echo $LIBJARS"
+
+sudo docker exec 20171208111653r15633_matrixnorm_1  \
 bash -c "hadoop jar /matrixnorm-home/build/libs/org.unipi.matrixnorm-1.0-SNAPSHOT.jar org.unipi.matrixgen.MatrixGenDriver 1 1000 genn"
 
-sudo docker exec 20171204200225r29097_matrixnorm_1 \
+sudo docker exec 20171208111653r15633_matrixnorm_1 \
 bash -c "hadoop jar /matrixnorm-home/build/libs/org.unipi.matrixnorm-1.0-SNAPSHOT.jar org.unipi.matrixnorm.HadoopMatrixNorm genn out"
+
+
+
+docker attach 20171208111653r15633_matrixnorm_1
+export LIBJARS=/matrixnorm-home/build/libs/scala-library-2.12.4.jar,/matrixnorm-home/build/libs/scalacheck_2.12-1.13.4.jar
+
+
+valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ docker attach 20171208111653r15633_matrixnorm_1
+
+export LIBJARS=/matrixnorm-home/build/libs/scala-library-2.12.4.jar,/matrixnorm-home/build/libs/scalacheck_2.12-1.13.4.jar

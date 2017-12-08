@@ -60,6 +60,7 @@ create() {
     echo > ./config/hosts
     export DOCKER_IMAGE=$(get-yaml-config docker image)
     export MEM_LIMIT=$(get-yaml-config docker memory_limit)
+    export LIBJARS=/matrixnorm-home/build/libs/scala-library-2.12.4.jar,/matrixnorm-home/build/libs/scalacheck_2.12-1.13.4.jar
 
     # Startup instances
     docker-compose -p $PROVISION_ID up -d --scale matrixnorm=$1 --no-recreate
