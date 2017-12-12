@@ -1,4 +1,4 @@
-valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ sudo docker exec 20171208111653r15633_matrixnorm_1  bash -c "hadoop jar /matrixnorm-home/build/libs/org.unipi.matrixnorm-1.0-SNAPSHOT-all.jar org.unipi.matrixgen.MatrixGenDriver 1 1000 genn"
+valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ docker exec 20171211224720r5630_matrixnorm_1  bash -c "hadoop jar /matrixnorm-home/build/libs/org.unipi.matrixnorm-1.0-SNAPSHOT-all.jar org.unipi.matrixgen.MatrixGenDriver 1 1000 genn"
 17/12/08 10:31:31 INFO client.RMProxy: Connecting to ResourceManager at 4b280f97fab7.org.unipi.matrixnorm/172.17.0.2:8032
 17/12/08 10:31:31 WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
 17/12/08 10:31:31 INFO mapreduce.JobSubmitter: number of splits:1
@@ -46,3 +46,17 @@ valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ sud
 		Bytes Read=0
 	File Output Format Counters
 		Bytes Written=72527
+
+
+docker exec 20171211230946r21740_matrixnorm_1 \
+bash -c "export LIBJARS=/matrixnorm-home/build/libs/scala-library-2.12.4.jar,/matrixnorm-home/build/libs/scalacheck_2.12-1.13.4.jar"
+
+docker exec 20171211224720r5630_matrixnorm_1 \
+bash -c "echo $LIBJARS"
+
+DOCKER_IMAGE
+
+docker exec 20171211224720r5630_matrixnorm_1 \
+bash -c "echo $DOCKER_IMAGE"
+
+docker exec 20171211234618r9047_matrixnorm_1 bash -c "hadoop jar /matrixnorm-home/build/libs/org.unipi.matrixnorm-1.0-SNAPSHOT-all.jar org.unipi.matrixgen.MatrixGenDriver 1 1000 genn"

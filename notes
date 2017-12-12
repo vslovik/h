@@ -34,3 +34,14 @@ export LIBJARS=/matrixnorm-home/build/libs/scala-library-2.12.4.jar,/matrixnorm-
 valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ docker attach 20171208111653r15633_matrixnorm_1
 
 export LIBJARS=/matrixnorm-home/build/libs/scala-library-2.12.4.jar,/matrixnorm-home/build/libs/scalacheck_2.12-1.13.4.jar
+
+gradle shadowJar
+
+https://salomvary.com/getting-started-with-mapreduce-tdd.html
+
+gradle test --tests \*HadoopMatrixNormMapperSpec --stacktrace
+gradle test -i
+
+https://github.com/dhughes/tiy-homework-command-line-practice
+
+http://www.scalatest.org/user_guide/testing_with_mock_objects

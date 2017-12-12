@@ -20,4 +20,10 @@ class MapperValue(var matrixIndex: Integer, var rowIndex: Integer, var colValue:
     val data = Array(this.matrixIndex.toString, this.rowIndex.toString, this.colValue.toString).mkString("\t")
     out.writeBytes(data)
   }
+
+  override def equals(that: Any): Boolean = {true}
+
+  override def hashCode: Int = {
+    1
+  }
 }
