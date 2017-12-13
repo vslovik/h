@@ -31,8 +31,12 @@ class MatrixGenerator {
     }
   }
 
+  @throws[Exception]
   def deserialize(s: String): List[List[Double]] = {
     val items = s.split("\t")
+//    val n = items.head.toInt * items(1).toInt
+//    if(n != items.length + 2)
+//      throw new IllegalArgumentException
     items.drop(2).toList.map{
       y => y.toDouble
     }.grouped(Integer.parseInt(items(1))).toList

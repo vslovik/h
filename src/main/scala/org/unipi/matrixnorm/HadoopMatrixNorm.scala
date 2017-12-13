@@ -106,6 +106,8 @@ object HadoopMatrixNorm extends Configured with Tool {
         setMinMax(values)
       } else {
         treeMap.put(key.colIndex, keepColumn(values))
+        min = Double.MaxValue
+        max = Double.MinPositiveValue
       }
 
       if (key.matrixIndex != currentMatrixIndex) {

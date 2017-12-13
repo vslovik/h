@@ -43,5 +43,4 @@ class MapperKey(var matrixIndex: Integer, var colIndex: Integer, var flag: Integ
     result = prime * result + flag
     result
   }
-
 }

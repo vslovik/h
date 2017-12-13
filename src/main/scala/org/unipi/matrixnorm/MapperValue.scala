@@ -21,11 +21,11 @@ class MapperValue(var matrixIndex: Integer, var rowIndex: Integer, var colValue:
     out.writeBytes(data)
   }
 
-  def canEqual(a: Any): Boolean = a.isInstanceOf[MapperKey]
+  def canEqual(a: Any): Boolean = a.isInstanceOf[MapperValue]
 
   override def equals(that: Any): Boolean =
     that match {
-      case that: MapperKey => that.canEqual(this) && this.hashCode == that.hashCode
+      case that: MapperValue => that.canEqual(this) && this.hashCode == that.hashCode
       case _ => false
     }
 

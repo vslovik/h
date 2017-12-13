@@ -45,3 +45,24 @@ gradle test -i
 https://github.com/dhughes/tiy-homework-command-line-practice
 
 http://www.scalatest.org/user_guide/testing_with_mock_objects
+
+-------------------------------------------------------------
+
+    val a = 5
+    val b = 2
+    assertResult(3) {
+      a - b
+    }
+
+    assert(matrix.head.head == 0.0, true)
+    assert(matrix.length == 4, true)
+
+
+
+    val k1 = new MapperKey(0, 0, 0)
+    val v1 = new MapperValue(0, 0, matrix.head.head)
+
+    val k2 = new MapperKey(0, 0, 1)
+    val v2 = new MapperValue(0, 0, matrix.head.head)
+
+--------------------------------------------------------------
