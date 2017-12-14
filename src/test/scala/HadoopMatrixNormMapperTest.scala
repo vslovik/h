@@ -7,19 +7,22 @@ import org.junit.Test
 
 class HadoopMatrixNormMapperTest extends FlatSpec with MockitoSugar {
 
-//  @Test
-//  def wrongInput(): Unit = {
-//    val mapper = new HadoopMatrixNorm.MatrixNormMapper
-//    val context = mock[mapper.Context]
-//
-//    mapper.map(
-//      key = null,
-//      value = new Text("1\t2\t1.0"),
-//      context
-//    )
-//
-//    verify(context, never()).write(new MapperKey(0, 0, 0), new MapperValue(0, 0, 1.0))
-//  }
+  @Test
+  def wrongInput(): Unit = {
+    val mapper = new HadoopMatrixNorm.MatrixNormMapper
+    val context = mock[mapper.Context]
+
+    intercept[java.lang.IllegalArgumentException] {
+      mapper.map(
+        key = null,
+        value = new Text("1\t2\t1.0"),
+        context
+      )
+    }
+
+    verify(context, never()).write(new MapperKey(0, 0, 0), new MapperValue(0, 0, 1.0))
+
+  }
 
   @Test
   def oneElementMatrixTest(): Unit = {

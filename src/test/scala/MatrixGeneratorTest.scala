@@ -39,12 +39,11 @@ class MatrixGeneratorTest extends FlatSpec with MockitoSugar {
     assert(expected == deserialized, true)
   }
 
-//  @Test
-//  def wrongInputTest(): Unit = {
-//
-//    (new MatrixGenerator).deserialize("1\t2\t1.0")
-//    intercept()
-//
-//  }
+  @Test
+  def wrongInputTest(): Unit = {
+    intercept[java.lang.IllegalArgumentException] {
+      (new MatrixGenerator).deserialize("1\t2\t1.0")
+    }
+  }
 
 }
