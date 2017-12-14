@@ -30,9 +30,9 @@ sourceSets {
     main {
         scala.srcDirs = ["src/main/scala"]
     }
-//    test {
-//        scala.srcDirs = ["src/test/scala"]
-//    }
+    test {
+        scala.srcDirs = ["src/test/scala"]
+    }
 
 }
 
@@ -62,6 +62,7 @@ dependencies {
     compile group: 'org.la4j', name: 'la4j', version: '0.6.0'
     compile group: 'org.scala-lang', name: 'scala-library', version: '2.12.4'
     compile group: 'org.scalacheck', name: 'scalacheck_2.12', version: '1.13.4'
+    compile group: 'com.chuusai', name: 'shapeless_2.12', version: '2.3.2'
     testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
     testCompile group: 'org.scalactic', name: 'scalactic_2.12', version: '3.0.4'
     testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.4'

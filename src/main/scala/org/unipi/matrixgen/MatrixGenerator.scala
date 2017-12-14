@@ -1,8 +1,10 @@
 package org.unipi.matrixgen
 
 import org.scalacheck.Gen
-
 import scala.math.BigDecimal
+import shapeless.{TypeCase, Typeable}
+
+case class Double2DList(value:  List[List[Double]])
 
 class MatrixGenerator {
 
@@ -22,12 +24,15 @@ class MatrixGenerator {
   }
 
   def serialize(matrix: Any): String = {
+    val DoubleList = TypeCase[List[List[Double]]]
+    val IntList = TypeCase[List[List[Double]]]
     matrix match {
-      case Some(i) =>  i match {
-        case y: List[List[Double]] => serializeList(y)
+      case Some(i) => i match {
+        case DoubleList(i) => serializeList(i)
+        case _ => ""
       }
-      case x: List[List[Double]] => serializeList(x)
-      case _ => "Unknown list value type"
+      case DoubleList(matrix) => serializeList(matrix)
+      case _ => ""
     }
   }
 
