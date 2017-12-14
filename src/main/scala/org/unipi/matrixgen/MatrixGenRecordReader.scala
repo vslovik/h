@@ -8,14 +8,14 @@ import org.scalacheck.Gen
 
 class MatrixGenRecordReader extends RecordReader[Text, NullWritable] {
 
-  private var numRecordsToCreate = 0
+  private var numRecordsToCreate = 100
   private var createdRecords = 0
 
-  private val minRows = 2 //ToDo 1
-  private val minCols = 2 //ToDo 1
+  private val minRows = 1
+  private val minCols = 1
 
-  private val maxRows = 5
-  private val maxCols = 5
+  private val maxRows = 50
+  private val maxCols = 50
 
   private val minValue = 1
   private val maxValue = 100
