@@ -9,6 +9,29 @@ import scala.collection.JavaConverters._
 class HadoopMatrixNormReducerTest extends FlatSpec with MockitoSugar {
 
   @Test
+  def oneElementMatrixTest(): Unit = {
+    val reducer = new HadoopMatrixNorm.MatrixNormReducer
+    val context = mock[reducer.Context]
+
+    reducer.reduce(key = new MapperKey(0, 0, 0),
+      values = Seq(new MapperValue(0, 0, 0.0)).asJava,
+      context
+    )
+
+    reducer.reduce(key = new MapperKey(0, 0, 1),
+      values = Seq(new MapperValue(0, 0, 0.0)).asJava,
+      context
+    )
+
+    verify(context, never()).write(NullWritable.get(), "1\t1\t0.0")
+
+    reducer.cleanup(context)
+
+    verify(context).write(NullWritable.get(), "1\t1\t0.0")
+
+  }
+
+  @Test
   def emitZeroMatrixTest(): Unit = {
     val reducer = new HadoopMatrixNorm.MatrixNormReducer
     val context = mock[reducer.Context]
