@@ -26,4 +26,21 @@ class MapperKey(var matrixIndex: Integer, var colIndex: Integer, var flag: Integ
     val thatSeq = Seq[Int](o.matrixIndex, o.colIndex, o.flag)
     Utils.compare(thisSeq, thatSeq)
   }
+
+  def canEqual(a: Any): Boolean = a.isInstanceOf[MapperKey]
+
+  override def equals(that: Any): Boolean =
+    that match {
+      case that: MapperKey => that.canEqual(this) && this.hashCode == that.hashCode
+      case _ => false
+    }
+
+  override def hashCode: Int = {
+    val prime = 37
+    var result = 1
+    result = prime * result + matrixIndex
+    result = prime * result + colIndex
+    result = prime * result + flag
+    result
+  }
 }

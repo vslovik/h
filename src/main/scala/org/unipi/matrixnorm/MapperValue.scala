@@ -20,4 +20,21 @@ class MapperValue(var matrixIndex: Integer, var rowIndex: Integer, var colValue:
     val data = Array(this.matrixIndex.toString, this.rowIndex.toString, this.colValue.toString).mkString("\t")
     out.writeBytes(data)
   }
+
+  def canEqual(a: Any): Boolean = a.isInstanceOf[MapperValue]
+
+  override def equals(that: Any): Boolean =
+    that match {
+      case that: MapperValue => that.canEqual(this) && this.hashCode == that.hashCode
+      case _ => false
+    }
+
+  override def hashCode: Int = {
+    val prime = 37
+    var result = 1
+    result = prime * result + matrixIndex
+    result = prime * result + rowIndex
+    result = prime * result + colValue.toInt
+    result
+  }
 }

@@ -1,0 +1,143 @@
+valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ docker exec 20171208111653r15633_matrixnorm_1  bash -c "hadoop jar /matrixnorm-home/build/libs/org.unipi.matrixnorm-1.0-SNAPSHOT-all.jar org.unipi.matrixnorm.HadoopMatrixNorm genn out"
+17/12/08 10:34:33 INFO client.RMProxy: Connecting to ResourceManager at 4b280f97fab7.org.unipi.matrixnorm/172.17.0.2:8032
+17/12/08 10:34:33 WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+17/12/08 10:34:34 INFO input.FileInputFormat: Total input paths to process : 1
+17/12/08 10:34:34 INFO mapreduce.JobSubmitter: number of splits:1
+17/12/08 10:34:34 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1512728357124_0003
+17/12/08 10:34:34 INFO impl.YarnClientImpl: Submitted application application_1512728357124_0003
+17/12/08 10:34:34 INFO mapreduce.Job: The url to track the job: http://4b280f97fab7.org.unipi.matrixnorm:20888/proxy/application_1512728357124_0003/
+17/12/08 10:34:34 INFO mapreduce.Job: Running job: job_1512728357124_0003
+17/12/08 10:34:39 INFO mapreduce.Job: Job job_1512728357124_0003 running in uber mode : false
+17/12/08 10:34:39 INFO mapreduce.Job:  map 0% reduce 0%
+17/12/08 10:34:43 INFO mapreduce.Job:  map 100% reduce 0%
+17/12/08 10:34:48 INFO mapreduce.Job:  map 100% reduce 100%
+17/12/08 10:34:48 INFO mapreduce.Job: Job job_1512728357124_0003 completed successfully
+17/12/08 10:34:48 INFO mapreduce.Job: Counters: 49
+	File System Counters
+		FILE: Number of bytes read=387168
+		FILE: Number of bytes written=1014739
+		FILE: Number of read operations=0
+		FILE: Number of large read operations=0
+		FILE: Number of write operations=0
+		HDFS: Number of bytes read=72665
+		HDFS: Number of bytes written=66430
+		HDFS: Number of read operations=6
+		HDFS: Number of large read operations=0
+		HDFS: Number of write operations=2
+	Job Counters
+		Launched map tasks=1
+		Launched reduce tasks=1
+		Data-local map tasks=1
+		Total time spent by all maps in occupied slots (ms)=2344
+		Total time spent by all reduces in occupied slots (ms)=1982
+		Total time spent by all map tasks (ms)=2344
+		Total time spent by all reduce tasks (ms)=1982
+		Total vcore-milliseconds taken by all map tasks=2344
+		Total vcore-milliseconds taken by all reduce tasks=1982
+		Total megabyte-milliseconds taken by all map tasks=2400256
+		Total megabyte-milliseconds taken by all reduce tasks=2029568
+	Map-Reduce Framework
+		Map input records=1000
+		Map output records=18146
+		Map output bytes=350870
+		Map output materialized bytes=387168
+		Input split bytes=138
+		Combine input records=0
+		Combine output records=0
+		Reduce input groups=6036
+		Reduce shuffle bytes=387168
+		Reduce input records=18146
+		Reduce output records=1000
+		Spilled Records=36292
+		Shuffled Maps =1
+		Failed Shuffles=0
+		Merged Map outputs=1
+		GC time elapsed (ms)=86
+		CPU time spent (ms)=5890
+		Physical memory (bytes) snapshot=955310080
+		Virtual memory (bytes) snapshot=5720117248
+		Total committed heap usage (bytes)=794296320
+	Shuffle Errors
+		BAD_ID=0
+		CONNECTION=0
+		IO_ERROR=0
+		WRONG_LENGTH=0
+		WRONG_MAP=0
+		WRONG_REDUCE=0
+	File Input Format Counters
+		Bytes Read=72527
+	File Output Format Counters
+		Bytes Written=66430
+
+
+valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ sudo docker exec 20171208111653r15633_matrixnorm_1  bash -c "hadoop fs -ls genn"
+Found 2 items
+-rw-r--r--   3 root hadoop          0 2017-12-08 10:31 genn/_SUCCESS
+-rw-r--r--   3 root hadoop      72527 2017-12-08 10:31 genn/part-m-00000
+
+valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ sudo docker exec 20171208111653r15633_matrixnorm_1  bash -c "hadoop fs -cat genn/part-m-00000"
+3	2	18.202	24.9998	14.93	17.0676	12.7798	12.8403
+2	2	0.2935	24.2654	17.3495	60.8572
+2	3	53.6227	69.6355	82.0388	87.2193	11.5522	13.4696
+4	4	19.6024	5.0906	60.8055	22.6151	3.6612	12.5976	26.418	36.9408	47.6779	59.3008	59.6499	29.7212	4.1653	58.9121	12.1722	23.4723
+4	3	7.2539	0.0152	0.2587	10.1619	10.245	8.0747	0.5783	4.3029	7.8609	7.5529	3.5612	8.9011
+3	3	2.5841	7.9364	27.1988	13.6565	11.7569	12.5857	9.7998	13.5744	21.7634
+4	3	32.8004	57.4072	92.0333	34.1289	1.1245	30.4797	14.2525	89.4606	73.7914	1.5135	36.8455	73.3014
+3	4	17.5226	3.9787	12.888	80.9659	65.2375	1.5095	29.8353	3.1009	83.8498	74.0295	76.0267	75.6296
+3	3	28.3974	39.8085	27.1036	54.2432	59.8746	6.4114	44.8253	5.248	54.6174
+2	2	10.2707	42.2421	29.2367	12.6993
+3	4	34.9753	20.3032	28.6569	1.225	31.7058	12.4856	24.3255	20.8946	8.4912	16.5576	20.4622	13.0277
+2	4	53.65	44.8186	0.8144	53.8127	60.4865	9.4612	49.8348	29.764
+2	3	29.5371	16.7717	10.7807	36.65	5.1964	30.8192
+4	2	6.199	1.5488	22.6568	1.4167	21.0236	28.406	2.3513	19.5411
+4	3	33.4337	37.8474	44.2105	87.3657	10.3608	68.8754	9.8047	19.1052	52.8031	39.6149	70.0612	60.8673
+4	2	78.2155	0.2452	57.5322	7.1412	55.2759	38.4607	2.3516	44.4846
+2	2	47.8785	77.9089	59.8988	12.5013
+4	3	22.6355	33.5418	19.9654	26.9469	1.1589	31.767	18.4479	15.2591	7.0749	1.9519	16.8444	24.5062
+3	3	7.5505	19.0072	53.6602	4.8031	2.6904	14.0791	6.745	12.4622	23.6846
+3	4	56.7533	43.7019	6.0946	0.8875	40.0146	62.0086	10.7541	39.5842	1.0421	0.9821	22.7314	93.2948
+3	4	0.8683	26.3594	0.4271	13.943	18.8343	25.9954	26.1441	14.8457	12.43	32.4693	5.7833	37.9669
+4	4	31.7922	18.1604	21.5938	2.1821	34.1125	28.3767	7.5379	7.8633	30.7531	22.4213	37.3753	35.9028	25.5308	10.9398	38.7892	35.9771
+2	4	58.8763	34.7535	22.8602	11.8114	94.4052	34.1947	59.8631	74.8553
+2	2	0.2846	5.2463	23.3652	17.9795
+2	2	52.5262	74.8592	74.6514	65.8617
+
+
+valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ sudo docker exec 20171208111653r15633_matrixnorm_1  bash -c "hadoop fs -ls out"
+Found 2 items
+-rw-r--r--   3 root hadoop          0 2017-12-08 10:34 out/_SUCCESS
+-rw-r--r--   3 root hadoop      66430 2017-12-08 10:34 out/part-r-00000
+
+valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ sudo docker exec 20171208111653r15633_matrixnorm_1  bash -c "hadoop fs -cat out/part-r-00000"
+3	2	1.0	1.0	0.3966	0.3509	0.0	0.005
+2	2	0.0	0.3958	0.6904	1.0
+2	3	0.6135	0.7977	0.9404	1.0	0.1295	0.1516
+4	4	0.2221	0.0552	0.6961	0.2568	0.0387	0.1415	0.3005	0.4216	0.5451	0.6788	0.6828	0.3385	0.0445	0.6744	0.1367	0.2667
+4	3	0.0801	0.0	0.0028	0.1135	0.1173	0.0924	0.0033	0.0492	0.09	0.0835	0.0407	0.1019
+3	3	0.0295	0.0908	0.3117	0.1564	0.1346	0.1442	0.1122	0.1555	0.2494
+4	3	0.376	0.6416	1.0	0.3912	0.0124	0.3311	0.1633	1.0	0.8018	0.0172	0.4118	0.7964
+3	4	0.1903	0.0431	0.1399	0.8797	0.7088	0.0162	0.3241	0.0335	0.9111	0.8043	0.826	0.8217
+3	3	0.3084	0.4325	0.2944	0.5893	0.6505	0.0695	0.487	0.0569	0.5934
+2	2	0.1115	0.4589	0.3176	0.1378
+3	4	0.3799	0.2205	0.3113	0.0131	0.3444	0.1355	0.2642	0.2269	0.0921	0.1798	0.2222	0.1414
+2	4	0.5829	0.4869	0.0087	0.5846	0.6572	0.1027	0.5414	0.3233
+2	3	0.3208	0.1821	0.117	0.3981	0.0563	0.3348
+4	2	0.0672	0.0167	0.2461	0.0152	0.2283	0.3085	0.0254	0.2122
+4	3	0.3632	0.4111	0.4803	0.9493	0.1124	0.7483	0.1064	0.2075	0.5737	0.4303	0.7612	0.6613
+4	2	0.8498	0.0025	0.6251	0.0774	0.6005	0.4178	0.0254	0.4833
+2	2	0.5202	0.8465	0.6508	0.1357
+4	3	0.2458	0.3643	0.2168	0.2927	0.0124	0.3451	0.2003	0.1657	0.0767	0.021	0.1829	0.2662
+3	3	0.0819	0.2064	0.583	0.052	0.0291	0.1528	0.0731	0.1353	0.2572
+3	4	0.6166	0.4748	0.0661	0.0094	0.4347	0.6737	0.1167	0.4242	0.0112	0.0105	0.2469	1.0
+3	4	0.0091	0.2824	0.0044	0.1493	0.2017	0.2785	0.2801	0.159	0.1331	0.3479	0.0618	0.4069
+4	4	0.3407	0.1945	0.2313	0.0232	0.3655	0.304	0.0806	0.0841	0.3295	0.2402	0.4005	0.3847	0.2735	0.1171	0.4157	0.3855
+2	4	0.6236	0.368	0.242	0.125	1.0	0.3621	0.634	0.7929
+2	2	0.0029	0.0554	0.2474	0.1903
+2	2	0.5563	0.7929	0.7907	0.6976
+2	4	0.6051	0.0841	0.1327	0.5604	0.5525	0.005	0.6808	0.5496
+2	4	0.3347	0.3162	0.3857	0.1406	0.4679	0.4225	0.3508	0.0224
+4	2	0.0124	0.0196	0.0346	0.0055	0.0393	0.0139	0.0118	0.0272
+2	2	0.3583	0.5791	0.3029	0.2229
+
+
+e6525e54b0ee.org.unipi.matrixnorm

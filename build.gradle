@@ -1,42 +1,79 @@
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+    }
+}
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
 version '1.0-SNAPSHOT'
 
-apply plugin: 'java'
-apply plugin: 'scala'
+apply plugin: "java"
+apply plugin: "idea"
+apply plugin: "scala"
+
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 repositories {
     mavenCentral()
+    maven {
+        url "http://repo.hortonworks.com/content/repositories/releases/"
+    }
 }
 
 sourceSets {
     main {
-        java.srcDirs = [];
-        scala.srcDirs = ["src/main/scala", "src/main/java"]
+        scala.srcDirs = ["src/main/scala"]
+    }
+    test {
+        scala.srcDirs = ["src/test/scala"]
+    }
+
+}
+
+tasks.withType(Test) {
+    testLogging {
+        // Uncomment this if you want to see the console output from the tests.
+        showStandardStreams = true
+        events "passed", "skipped", "failed"
+        // show standard out and standard error of the test JVM(s) on the console
+        showStandardStreams = true
     }
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'org.apache.hadoop:hadoop-mapreduce-client-core:2.8.2'
-    compile group: 'org.apache.hadoop', name: 'hadoop-common', version:'2.8.2'
+    compile group: 'org.apache.hadoop', name: 'hadoop-common', version: '2.8.2'
     compile group: 'org.apache.hadoop', name: 'hadoop-hdfs', version: '2.8.2'
     compile group: 'org.apache.hadoop', name: 'hadoop-yarn-common', version: '2.8.2'
     compile group: 'org.apache.hadoop', name: 'hadoop-minicluster', version: '2.8.2'
-    compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-core', version:'2.8.2'
+    compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-core', version: '2.8.2'
     compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-jobclient', version: '2.8.2'
     compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-app', version: '2.8.2'
     compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-shuffle', version: '2.8.2'
     compile group: 'org.apache.hadoop', name: 'hadoop-mapreduce-client-common', version: '2.8.2'
     compile group: 'org.apache.hadoop', name: 'hadoop-client', version: '2.8.2'
     compile group: 'org.la4j', name: 'la4j', version: '0.6.0'
-    compile 'org.scala-lang:scala-library:2.11.8'
-    compile group: 'org.scalacheck', name: 'scalacheck_2.11', version: '1.12.5'
-    testCompile 'org.scalatest:scalatest_2.11:3.0.1'
-    testRuntime 'org.pegdown:pegdown:1.4.2'
+    compile group: 'org.scala-lang', name: 'scala-library', version: '2.12.4'
+    compile group: 'org.scalacheck', name: 'scalacheck_2.12', version: '1.13.4'
+    compile group: 'com.chuusai', name: 'shapeless_2.12', version: '2.3.2'
+    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+    testCompile group: 'org.scalactic', name: 'scalactic_2.12', version: '3.0.4'
+    testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.4'
 }
 
+build {
+    doLast {
+        configurations.shadow.each { println it.name }
+    }
+}
 
-
-
+shadowJar {
+    exclude 'META-INF/LICENSE'
+}
