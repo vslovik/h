@@ -101,7 +101,7 @@ valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ sud
 2	4	58.8763	34.7535	22.8602	11.8114	94.4052	34.1947	59.8631	74.8553
 2	2	0.2846	5.2463	23.3652	17.9795
 2	2	52.5262	74.8592	74.6514	65.8617
-
+...
 
 valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ sudo docker exec 20171208111653r15633_matrixnorm_1  bash -c "hadoop fs -ls out"
 Found 2 items
@@ -138,6 +138,4 @@ valeriya@valeriya-MS-7817:~/project/org.unipi.matrixnorm/provisioner/docker$ sud
 2	4	0.3347	0.3162	0.3857	0.1406	0.4679	0.4225	0.3508	0.0224
 4	2	0.0124	0.0196	0.0346	0.0055	0.0393	0.0139	0.0118	0.0272
 2	2	0.3583	0.5791	0.3029	0.2229
-
-
-e6525e54b0ee.org.unipi.matrixnorm
+...
