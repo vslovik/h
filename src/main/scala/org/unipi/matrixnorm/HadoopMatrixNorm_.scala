@@ -17,7 +17,7 @@ import org.apache.hadoop.util.Tool
 import org.apache.hadoop.util.ToolRunner
 import org.apache.hadoop.conf.Configured
 
-object HadoopMatrixNorm extends Configured with Tool {
+object HadoopMatrixNorm_ extends Configured with Tool {
 
   class MatrixNormMapper extends Mapper[LongWritable, Text, MapperKey, MapperValue] {
 
@@ -126,7 +126,7 @@ object HadoopMatrixNorm extends Configured with Tool {
 
   @throws[Exception]
   def main(args: Array[String]): Unit = {
-    val res = ToolRunner.run(new Configuration(), HadoopMatrixNorm, args)
+    val res = ToolRunner.run(new Configuration(), HadoopMatrixNorm_, args)
     System.exit(res)
   }
 

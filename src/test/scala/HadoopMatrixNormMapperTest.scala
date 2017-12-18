@@ -1,4 +1,4 @@
-import org.unipi.matrixnorm.{HadoopMatrixNorm, MapperKey, MapperValue}
+import org.unipi.matrixnorm.{HadoopMatrixNorm_, MapperKey, MapperValue}
 import org.apache.hadoop.io._
 import org.mockito.Mockito._
 import org.scalatest._
@@ -9,7 +9,7 @@ class HadoopMatrixNormMapperTest extends FlatSpec with MockitoSugar {
 
   @Test
   def wrongInput(): Unit = {
-    val mapper = new HadoopMatrixNorm.MatrixNormMapper
+    val mapper = new HadoopMatrixNorm_.MatrixNormMapper
     val context = mock[mapper.Context]
 
     intercept[java.lang.IllegalArgumentException] {
@@ -26,7 +26,7 @@ class HadoopMatrixNormMapperTest extends FlatSpec with MockitoSugar {
 
   @Test
   def oneElementMatrixTest(): Unit = {
-    val mapper = new HadoopMatrixNorm.MatrixNormMapper
+    val mapper = new HadoopMatrixNorm_.MatrixNormMapper
     val context = mock[mapper.Context]
 
     mapper.map(
@@ -42,7 +42,7 @@ class HadoopMatrixNormMapperTest extends FlatSpec with MockitoSugar {
 
   @Test
   def zeroMatrixTest(): Unit = {
-    val mapper = new HadoopMatrixNorm.MatrixNormMapper
+    val mapper = new HadoopMatrixNorm_.MatrixNormMapper
     val context = mock[mapper.Context]
 
     mapper.map(
@@ -65,7 +65,7 @@ class HadoopMatrixNormMapperTest extends FlatSpec with MockitoSugar {
 
   @Test
   def nonZeroMatrixTest(): Unit = {
-    val mapper = new HadoopMatrixNorm.MatrixNormMapper
+    val mapper = new HadoopMatrixNorm_.MatrixNormMapper
     val context = mock[mapper.Context]
 
     mapper.map(

@@ -3,14 +3,14 @@ import org.junit.Test
 import org.mockito.Mockito._
 import org.scalatest._
 import org.scalatest.mockito.MockitoSugar
-import org.unipi.matrixnorm.{HadoopMatrixNorm, MapperKey, MapperValue}
+import org.unipi.matrixnorm.{HadoopMatrixNorm_, MapperKey, MapperValue}
 import scala.collection.JavaConverters._
 
 class HadoopMatrixNormReducerTest extends FlatSpec with MockitoSugar {
 
   @Test
   def oneElementMatrixTest(): Unit = {
-    val reducer = new HadoopMatrixNorm.MatrixNormReducer
+    val reducer = new HadoopMatrixNorm_.MatrixNormReducer
     val context = mock[reducer.Context]
 
     reducer.reduce(key = new MapperKey(0, 0, 0),
@@ -33,7 +33,7 @@ class HadoopMatrixNormReducerTest extends FlatSpec with MockitoSugar {
 
   @Test
   def emitZeroMatrixTest(): Unit = {
-    val reducer = new HadoopMatrixNorm.MatrixNormReducer
+    val reducer = new HadoopMatrixNorm_.MatrixNormReducer
     val context = mock[reducer.Context]
 
     reducer.reduce(key = new MapperKey(0, 0, 0),
@@ -63,7 +63,7 @@ class HadoopMatrixNormReducerTest extends FlatSpec with MockitoSugar {
 
   @Test
   def emitMatrixTest(): Unit = {
-    val reducer = new HadoopMatrixNorm.MatrixNormReducer
+    val reducer = new HadoopMatrixNorm_.MatrixNormReducer
     val context = mock[reducer.Context]
 
     reducer.reduce(key = new MapperKey(0, 0, 0),

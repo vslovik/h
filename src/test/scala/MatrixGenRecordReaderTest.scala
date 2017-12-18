@@ -3,14 +3,14 @@ import org.junit.Test
 import org.scalatest._
 import org.scalatest.mockito.MockitoSugar
 import org.unipi.matrixgen.{FakeInputSplit, MatrixGenRecordReader, MatrixGenerator}
-import org.unipi.matrixnorm.HadoopMatrixNorm
+import org.unipi.matrixnorm.HadoopMatrixNorm_
 
 class MatrixGenRecordReaderTest extends FlatSpec with MockitoSugar {
 
   @Test
   def wrongInput(): Unit = {
     val reader = new MatrixGenRecordReader
-    val mapper = new HadoopMatrixNorm.MatrixNormMapper
+    val mapper = new HadoopMatrixNorm_.MatrixNormMapper
     val context = mock[mapper.Context]
     val mg = new MatrixGenerator
 

@@ -1,13 +1,13 @@
 import org.junit.Test
 import org.scalatest._
 import org.scalatest.mockito.MockitoSugar
-import org.unipi.matrixnorm.{HadoopMatrixNorm, MapperKey, MapperValue}
+import org.unipi.matrixnorm.{HadoopMatrixNorm_, MapperKey, MapperValue}
 
 class HadoopMatrixNormPartitionerTest extends FlatSpec with MockitoSugar {
 
   @Test
   def columnIndexPartitioningTest(): Unit = {
-    val partitioner = new HadoopMatrixNorm.ColumnIndexPartitioner
+    val partitioner = new HadoopMatrixNorm_.ColumnIndexPartitioner
     val partition1 = partitioner.getPartition(
       new MapperKey(0, 0, 0),
       new MapperValue(0, 0, 9.0),
