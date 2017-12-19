@@ -7,10 +7,9 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.stream.*;
 
-
 public class Utils {
 
-    public static int compare(ArrayList<Integer> thisSeq, ArrayList<Integer> thatSeq) throws IllegalArgumentException {
+   public static int compare(ArrayList<Integer> thisSeq, ArrayList<Integer> thatSeq) throws IllegalArgumentException {
 
         if (thisSeq.size() != thatSeq.size()) {
             throw new IllegalArgumentException("Arguments have to be of the same length");
@@ -42,7 +41,7 @@ public class Utils {
 
         Stream<Stream<Double>> splitArray = startIndicies.map(index -> inputArray.subList(index, index + splitSize).stream());
 
-        return splitArray.map(a -> a.toArray(Integer[]::new)).toArray(Double[][]::new);
+        return splitArray.map(a -> a.toArray(Double[]::new)).toArray(Double[][]::new);
     }
 
     public static <T> List<T> twoDArrayToList(T[][] twoDArray) {
@@ -64,8 +63,27 @@ public class Utils {
     }
 
     public static String serialize(Double[][] matrix) {
-        return "";
+
+        return String.join("\t", Integer.toString(matrix.length), Integer.toString(matrix[0].length), toString(matrix));
     }
+
+    public static String toString(Object[] a) {
+        if (a == null)
+            return "";
+
+        int iMax = a.length - 1;
+        if (iMax == -1)
+            return "";
+
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; ; i++) {
+            b.append(String.valueOf(a[i]));
+            if (i == iMax)
+                return b.toString();
+            b.append("\t");
+        }
+    }
+
 
     public static Double[][] deserialize(String s) throws IllegalArgumentException {
         String[] items = s.split("\t");

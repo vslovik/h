@@ -12,6 +12,17 @@ class MatrixGenerator {
     BigDecimal(d).setScale(precision, BigDecimal.RoundingMode.HALF_UP).toDouble
   }
 
+  def generateMatrix(limit: Int, rows: Int, cols: Int): List[List[Double]] = {
+    val DoubleList = TypeCase[List[List[Double]]]
+    matrix(Gen.choose(0, limit))(rows, cols).sample match {
+      case Some(i) => i match {
+        case DoubleList(i) => i
+      }
+      case DoubleList(matrix) => matrix
+      case _ => List(List(0.0))
+    }
+  }
+
   def matrix[Double](g: Gen[Double])(rows: Int, cols: Int): Gen[List[List[Double]]] =
     Gen.listOfN(rows * cols, g).map { squareList =>
       squareList.grouped(cols).toList
@@ -34,17 +45,6 @@ class MatrixGenerator {
       case DoubleList(matrix) => serializeList(matrix)
       case _ => ""
     }
-  }
-
-  @throws[Exception]
-  def deserialize(s: String): List[List[Double]] = {
-    val items = s.split("\t")
-    val n = items.head.toInt * items(1).toInt
-    if(n != items.length - 2)
-      throw new IllegalArgumentException
-    items.drop(2).toList.map{
-      y => y.toDouble
-    }.grouped(Integer.parseInt(items(1))).toList
   }
 
 }

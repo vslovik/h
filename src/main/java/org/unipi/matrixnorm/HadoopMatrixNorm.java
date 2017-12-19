@@ -156,7 +156,7 @@ public class HadoopMatrixNorm extends Configured implements Tool {
 
     public int run(String[] args) throws Exception {
         Configuration conf = new Configuration();
-        Job job = new Job(conf, "matrix normalization");
+        Job job = Job.getInstance(conf, "matrix normalization");
         job.setJarByClass(MatrixNormMapper.class);
         job.setMapperClass(MatrixNormMapper.class);
         job.setMapOutputKeyClass(MapperKey.class);
