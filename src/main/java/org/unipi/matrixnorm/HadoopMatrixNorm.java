@@ -13,15 +13,11 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.partition.HashPartitioner;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.unipi.matrixgen.MatrixGenerator;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.hadoop.conf.Configured;
-import java.util.List;
-import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.Map;
-import java.util.ArrayList;
 
 public class HadoopMatrixNorm extends Configured implements Tool {
 
@@ -29,9 +25,6 @@ public class HadoopMatrixNorm extends Configured implements Tool {
 
         private int matrixIndex = 0;
 
-
-
-        @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
             try {
@@ -61,7 +54,7 @@ public class HadoopMatrixNorm extends Configured implements Tool {
     }
 
     public static class ColumnIndexPartitioner extends HashPartitioner<MapperKey, MapperValue> {
-        @Override
+
         public int getPartition(MapperKey key, MapperValue value, int numReduceTasks) {
             return super.getPartition(new MapperKey(key.matrixIndex, key.colIndex, 0), value, numReduceTasks);
         }
@@ -97,22 +90,30 @@ public class HadoopMatrixNorm extends Configured implements Tool {
             return colMap.values().toArray(new Double[colMap.values().size()]);
         }
 
-        private List<List<Double>> treeMapTo2DList() {
+        private Double[][] treeMapTo2DArray() {
 
-            ArrayList<List<Double>> matrix = new ArrayList<>();
+            int rows = treeMap.entrySet().size();
+            int cols = treeMap.firstEntry().getValue().length;
+
+            Double[][] matrix = new Double[rows][cols];
 
             for(Map.Entry<Integer, Double[]> entry : treeMap.entrySet()) {
-                Double[] row = entry.getValue();
-                matrix.add(Arrays.asList(row));
+
+                Object[] a = new Integer[1];
+                Integer b=1;
+                a[0]=b;
+                Integer[] c = (Integer[]) a;
+
+                matrix[entry.getKey()] = entry.getValue();
             }
 
             return matrix;
         }
 
         private void emitMatrix(Context context) throws InterruptedException{
-            MatrixGenerator mg = new MatrixGenerator();
+
             try {
-                String str = mg.serialize(treeMapTo2DList());
+                String str = Utils.serialize(treeMapTo2DArray());
                 context.write(
                         NullWritable.get(),
                         str

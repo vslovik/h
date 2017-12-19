@@ -1,11 +1,13 @@
 package org.unipi.matrixnorm;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.stream.*;
+import java.text.DecimalFormat;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Utils {
 
@@ -29,6 +31,45 @@ public class Utils {
         return thisSeq.get(0).compareTo(thatSeq.get(0));
     }
 
+    public static String serialize(Double[][] matrix) {
+
+        return String.join("\t", Integer.toString(matrix.length), Integer.toString(matrix[0].length), toString(matrix));
+    }
+
+    public static Double[][] generateMatrix(int limit, int rows, int cols) {
+        Double[][] matrix = new Double[rows][cols];
+
+        for(int r = 0; r < rows; r++) {
+            for(int c = 0; c < rows; c++) {
+                double leftLimit = 0D;
+                double rightLimit = (double) limit;
+                matrix[r][c] = leftLimit + new Random().nextDouble() * (rightLimit - leftLimit);
+            }
+        }
+
+        return matrix;
+    }
+
+    private static String toString(Double[][] a) {
+
+        if (a == null)
+            return "";
+
+        int iMax = a.length - 1;
+        if (iMax == -1)
+            return "";
+
+        DecimalFormat format = new DecimalFormat("#.####");
+
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; ; i++) {
+            b.append(format.format(a[i]));
+            if (i == iMax)
+                return b.toString();
+            b.append("\t");
+        }
+    }
+
     public static Double[][] splitArray(Double[] array, int splitSize) {
         List<Double> inputArray = Arrays.asList(array);
 
@@ -43,47 +84,6 @@ public class Utils {
 
         return splitArray.map(a -> a.toArray(Double[]::new)).toArray(Double[][]::new);
     }
-
-    public static <T> List<T> twoDArrayToList(T[][] twoDArray) {
-        List<T> list = new ArrayList<T>();
-        for (T[] array : twoDArray) {
-            list.addAll(Arrays.asList(array));
-        }
-
-        return list;
-    }
-
-    public static List<List<Double>> twoDArrayToList(Double[][] twoDArray) {
-        ArrayList<List<Double>> matrix = new ArrayList<>();
-        for (Double[] array : twoDArray) {
-            matrix.add(Arrays.asList(array));
-        }
-
-        return matrix;
-    }
-
-    public static String serialize(Double[][] matrix) {
-
-        return String.join("\t", Integer.toString(matrix.length), Integer.toString(matrix[0].length), toString(matrix));
-    }
-
-    public static String toString(Object[] a) {
-        if (a == null)
-            return "";
-
-        int iMax = a.length - 1;
-        if (iMax == -1)
-            return "";
-
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; ; i++) {
-            b.append(String.valueOf(a[i]));
-            if (i == iMax)
-                return b.toString();
-            b.append("\t");
-        }
-    }
-
 
     public static Double[][] deserialize(String s) throws IllegalArgumentException {
         String[] items = s.split("\t");

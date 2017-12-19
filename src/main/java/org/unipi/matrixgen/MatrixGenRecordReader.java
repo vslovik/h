@@ -27,7 +27,6 @@ class MatrixGenRecordReader extends RecordReader<Text, NullWritable> {
     private Text key = new Text();
     private NullWritable value = NullWritable.get();
 
-    private MatrixGenerator mg = new MatrixGenerator();
     private Random r = new Random();
 
     public void initialize(InputSplit split, TaskAttemptContext context)
@@ -42,7 +41,7 @@ class MatrixGenRecordReader extends RecordReader<Text, NullWritable> {
             int rows = minRows + r.nextInt(maxRows - minRows);
             int cols = minCols + r.nextInt(maxCols - minCols);
             int limit = minValue + r.nextInt(maxValue - minValue);
-            String serializedMatrix = mg.serialize(mg.generateMatrix(limit, rows, cols)); // ToDo generate string
+            String serializedMatrix = Utils.serialize(Utils.generateMatrix(limit, rows, cols));
             key.set(serializedMatrix);
             createdRecords += 1;
 

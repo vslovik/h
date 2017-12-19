@@ -28,9 +28,11 @@ repositories {
 
 sourceSets {
     main {
+        java.srcDirs = ["src/main/java"]
         scala.srcDirs = ["src/main/scala"]
     }
     test {
+        java.srcDirs = ["src/test/java"]
         scala.srcDirs = ["src/test/scala"]
     }
 
