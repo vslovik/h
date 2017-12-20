@@ -1,5 +1,6 @@
 package org.unipi.matrixnorm;
 
+import com.sun.istack.NotNull;
 import org.apache.hadoop.io.WritableComparable;
 
 import java.io.DataInput;
@@ -11,9 +12,9 @@ import java.util.ArrayList;
 
 public class MapperKey implements WritableComparable<MapperKey> {
 
-    public int matrixIndex = 0;
-    public int colIndex    = 0;
-    public int flag        = 0;
+    int matrixIndex = 0;
+    int colIndex    = 0;
+    int flag        = 0;
 
     public MapperKey(int matrixIndex, int colIndex, int flag) {
         this.matrixIndex = matrixIndex;
@@ -45,6 +46,7 @@ public class MapperKey implements WritableComparable<MapperKey> {
         thisSeq.add(this.flag);
 
         ArrayList<Integer> thatSeq = new ArrayList<>();
+
         thatSeq.add(o.matrixIndex);
         thatSeq.add(o.colIndex);
         thatSeq.add(o.flag);

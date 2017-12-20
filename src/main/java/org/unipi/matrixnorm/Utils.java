@@ -13,7 +13,7 @@ import java.text.DecimalFormat;
 
 public class Utils {
 
-   public static int compare(ArrayList<Integer> thisSeq, ArrayList<Integer> thatSeq) throws IllegalArgumentException {
+   static int compare(ArrayList<Integer> thisSeq, ArrayList<Integer> thatSeq) throws IllegalArgumentException {
 
         if (thisSeq.size() != thatSeq.size()) {
             throw new IllegalArgumentException("Arguments have to be of the same length");
@@ -72,7 +72,7 @@ public class Utils {
         }
     }
 
-    public static Double[][] splitArray(Double[] array, int splitSize) {
+    private static Double[][] splitArray(Double[] array, int splitSize) {
         List<Double> inputArray = Arrays.asList(array);
 
         Stream<Integer> startIndicies =

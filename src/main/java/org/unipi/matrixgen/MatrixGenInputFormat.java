@@ -16,8 +16,8 @@ import java.util.ArrayList;
 
 class MatrixGenInputFormat extends FileInputFormat<Text, NullWritable> {
 
-    public static final String NUM_MAP_TASKS = "random.generator.map.tasks";
-    public static final String NUM_RECORDS_PER_TASK = "random.generator.num.records.per.map.task";
+    private static final String NUM_MAP_TASKS = "random.generator.map.tasks";
+    static final String NUM_RECORDS_PER_TASK = "random.generator.num.records.per.map.task";
 
     public List<InputSplit> getSplits(JobContext job) throws IOException {
 
@@ -39,11 +39,11 @@ class MatrixGenInputFormat extends FileInputFormat<Text, NullWritable> {
         return rr;
     }
 
-    public static void setNumMapTasks(Job job, int i) {
+    static void setNumMapTasks(Job job, int i) {
         job.getConfiguration().setInt(NUM_MAP_TASKS, i);
     }
 
-    public static void setNumRecordsPerTask(Job job, int i) {
+    static void setNumRecordsPerTask(Job job, int i) {
         job.getConfiguration().setInt(NUM_RECORDS_PER_TASK, i);
     }
 }

@@ -10,9 +10,9 @@ import java.util.Arrays;
 
 public class MapperValue implements Writable {
 
-    public int matrixIndex = 0;
-    public int rowIndex    = 0;
-    public double colValue = 0;
+    private int matrixIndex = 0;
+    int rowIndex    = 0;
+    double colValue = 0;
 
     public MapperValue(int matrixIndex, int rowIndex, double colValue) {
         this.matrixIndex = matrixIndex;

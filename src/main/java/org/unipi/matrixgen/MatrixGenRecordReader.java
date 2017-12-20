@@ -1,7 +1,6 @@
 package org.unipi.matrixgen;
 
 import org.unipi.matrixnorm.Utils;
-
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
@@ -16,15 +15,6 @@ public class MatrixGenRecordReader extends RecordReader<Text, NullWritable> {
     private int numRecordsToCreate = 100;
     private int createdRecords = 0;
 
-    private static int minRows = 1;
-    private static int minCols = 1;
-
-    private static int maxRows = 50;
-    private static int maxCols = 50;
-
-    private static int minValue = 1;
-    private static int maxValue = 100;
-
     private Text key = new Text();
     private NullWritable value = NullWritable.get();
 
@@ -34,10 +24,19 @@ public class MatrixGenRecordReader extends RecordReader<Text, NullWritable> {
             throws IOException, InterruptedException {
 
         this.numRecordsToCreate = context.getConfiguration().getInt(MatrixGenInputFormat.NUM_RECORDS_PER_TASK, -1);
-
     }
 
     public boolean nextKeyValue() throws IOException, InterruptedException {
+
+        int minRows = 1;
+        int minCols = 1;
+
+        int maxRows = 50;
+        int maxCols = 50;
+
+        int minValue = 1;
+        int maxValue = 100;
+
         if (createdRecords < numRecordsToCreate) {
             int rows = minRows + r.nextInt(maxRows - minRows);
             int cols = minCols + r.nextInt(maxCols - minCols);
