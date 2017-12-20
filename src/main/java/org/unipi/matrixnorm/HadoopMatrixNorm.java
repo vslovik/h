@@ -30,6 +30,7 @@ public class HadoopMatrixNorm extends Configured implements Tool {
 
         private int matrixIndex = 0;
 
+        @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
             try {

@@ -1,9 +1,10 @@
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.mapreduce.Mapper;
 import org.unipi.matrixnorm.HadoopMatrixNorm;
 import org.unipi.matrixnorm.MapperKey;
 import org.unipi.matrixnorm.MapperValue;
 
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper.Context;
 
 import java.io.IOException;
 
@@ -20,12 +21,13 @@ import org.mockito.InOrder;
 public class HadoopMatrixNormMapperTest {
 
     private HadoopMatrixNorm.MatrixNormMapper mapper;
-    private Context context;
+    private HadoopMatrixNorm.MatrixNormMapper.Context context;
 
     @Before
     public void init() throws IOException, InterruptedException {
-        mapper = new HadoopMatrixNorm.MatrixNormMapper();
-        context = mock(Context.class);
+        mapper = (new HadoopMatrixNorm.MatrixNormMapper());
+
+        context = mock(HadoopMatrixNorm.MatrixNormMapper.Context.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -56,7 +58,6 @@ public class HadoopMatrixNormMapperTest {
                 eq(new MapperKey(0, 0, 1)),
                 eq(new MapperValue(0, 0, 1.0))
         );
-
     }
 
     @Test

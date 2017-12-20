@@ -21,12 +21,12 @@ import org.mockito.InOrder;
 public class HadoopMatrixNormReducerTest {
 
     private HadoopMatrixNorm.MatrixNormReducer reducer;
-    private Reducer.Context context;
+    private HadoopMatrixNorm.MatrixNormReducer.Context context;
 
     @Before
     public void init() throws IOException, InterruptedException {
         reducer = new HadoopMatrixNorm.MatrixNormReducer();
-        context = mock(Reducer.Context.class);
+        context = mock(HadoopMatrixNorm.MatrixNormReducer.Context.class);
     }
 
     @Test
@@ -93,7 +93,10 @@ public class HadoopMatrixNormReducerTest {
 
         reducer.reduce(new MapperKey(0, 1, 1), values3, context);
 
-        inOrder.verify(context,never()).write(NullWritable.get(), "4\t2\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0");
+        inOrder.verify(
+                context,never()).write(NullWritable.get(),
+                "4\t2\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0"
+        );
 
         reducer.cleanup(context);
 
@@ -141,11 +144,17 @@ public class HadoopMatrixNormReducerTest {
 
         reducer.reduce(new MapperKey(0, 1, 1), values3, context);
 
-        inOrder.verify(context, never()).write(NullWritable.get(), "4\t2\t1.0\t1.0\t0.0\t0.1667\t0.1111\t0.0\t0.3333\t1.0");
+        inOrder.verify(context, never()).write(
+                NullWritable.get(),
+                "4\t2\t1.0\t1.0\t0.0\t0.1667\t0.1111\t0.0\t0.3333\t1.0"
+        );
 
         reducer.cleanup(context);
 
-        inOrder.verify(context).write(NullWritable.get(), "4\t2\t1.0\t1.0\t0.0\t0.1667\t0.1111\t0.0\t0.3333\t1.0");
+        inOrder.verify(context).write(
+                NullWritable.get(),
+                "4\t2\t1.0\t1.0\t0.0\t0.1667\t0.1111\t0.0\t0.3333\t1.0"
+        );
 
     }
 }
