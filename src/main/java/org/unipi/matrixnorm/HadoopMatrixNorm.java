@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class HadoopMatrixNorm extends Configured implements Tool {
 
-    class MatrixNormMapper extends Mapper<LongWritable, Text, MapperKey, MapperValue> {
+    public static class MatrixNormMapper extends Mapper<LongWritable, Text, MapperKey, MapperValue> {
 
         private int matrixIndex = 0;
 
@@ -124,7 +124,7 @@ public class HadoopMatrixNorm extends Configured implements Tool {
         }
 
         @Override
-        protected void reduce(MapperKey key, Iterable<MapperValue> values,
+        public void reduce(MapperKey key, Iterable<MapperValue> values,
                               Context context) throws IOException, InterruptedException {
 
             if (key.flag == 0) {
@@ -144,7 +144,7 @@ public class HadoopMatrixNorm extends Configured implements Tool {
         }
 
         @Override
-        protected void cleanup(Context context) throws IOException, InterruptedException {
+        public void cleanup(Context context) throws IOException, InterruptedException {
             emitMatrix(context);
         }
 

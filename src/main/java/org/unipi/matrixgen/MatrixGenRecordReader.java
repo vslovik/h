@@ -8,7 +8,7 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.unipi.matrixnorm.Utils;
-import scala.util.Random;
+import java.util.Random;
 
 class MatrixGenRecordReader extends RecordReader<Text, NullWritable> {
 
