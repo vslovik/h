@@ -1,33 +1,23 @@
 import org.unipi.matrixnorm.HadoopMatrixNorm;
 import org.unipi.matrixnorm.MapperKey;
 import org.unipi.matrixnorm.MapperValue;
-import org.apache.hadoop.io.*;
-import org.junit.Test;
-import org.junit.Assert;
 
-import org.unipi.matrixnorm.MapperKey;
-import org.unipi.matrixnorm.MapperValue;
-import org.apache.hadoop.io.*;
-import org.mockito.Mockito.*;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper.Context;
+
+import java.io.IOException;
+
+import org.junit.Test;
+import org.junit.Before;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.never;
 
-import java.io.IOException;
-
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Counter;
-import org.apache.hadoop.mapreduce.Mapper.Context;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.InOrder;
 
-class HadoopMatrixNormMapperTest {
+public class HadoopMatrixNormMapperTest {
 
     private HadoopMatrixNorm.MatrixNormMapper mapper;
     private Context context;
@@ -38,35 +28,16 @@ class HadoopMatrixNormMapperTest {
         context = mock(Context.class);
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void wrongInput() throws IOException, InterruptedException {
 
         mapper.map(null, new Text("1\t2\t1.0"), context);
 
-//        try {
-//            mustThrowException();
-//            fail();
-//        } catch (Exception e) {
-//            // expected
-//            // could also check for message of exception, etc.
-//        }
-
-//        val context = mock[mapper.Context]
-//
-//        intercept[java.lang.IllegalArgumentException] {
-//            mapper.map(
-//                    key = null,
-//                    value = new Text("1\t2\t1.0"),
-//                    context
-//            )
-//        }
-//
         InOrder inOrder = inOrder(context);
-//        inOrder.verify(context, never(0)).write(
-//                new MapperKey(0, 0, 0),
-//                new MapperValue(0, 0, 1.0)
-//        );
-
+        inOrder.verify(context, never()).write(
+                eq(new MapperKey(0, 0, 0)),
+                eq(new MapperValue(0, 0, 1.0))
+        );
     }
 
     @Test

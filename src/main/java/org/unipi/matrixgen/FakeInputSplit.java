@@ -1,8 +1,11 @@
 package org.unipi.matrixgen;
 
-import java.io.*;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.InputSplit;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 
 public class FakeInputSplit extends InputSplit implements Writable {
 

@@ -1,19 +1,22 @@
-import org.apache.hadoop.io.*;
-import org.apache.hadoop.mapreduce.Reducer;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mockito.*;
 import org.unipi.matrixnorm.HadoopMatrixNorm;
 import org.unipi.matrixnorm.MapperKey;
 import org.unipi.matrixnorm.MapperValue;
 
-import java.util.ArrayList;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.mapreduce.Reducer;
 
+import java.util.ArrayList;
 import java.io.IOException;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
+
+import org.mockito.InOrder;
 
 public class HadoopMatrixNormReducerTest {
 
@@ -35,18 +38,18 @@ public class HadoopMatrixNormReducerTest {
         values.add(new MapperValue(0, 0, 0.0));
 
         reducer.reduce(
-                new MapperKey(0, 0, 0),
-                values,
+                eq(new MapperKey(0, 0, 0)),
+                eq(values),
                 context
         );
 
         reducer.reduce(
-                new MapperKey(0, 0, 1),
-                values,
+                eq(new MapperKey(0, 0, 1)),
+                eq(values),
                 context
         );
 
-        //inOrder.verify(context, never()).write(NullWritable.get(), "1\t1\t0.0");
+        inOrder.verify(context, never()).write(NullWritable.get(), "1\t1\t0.0");
 
         reducer.cleanup(context);
 
@@ -90,7 +93,7 @@ public class HadoopMatrixNormReducerTest {
 
         reducer.reduce(new MapperKey(0, 1, 1), values3, context);
 
-        //inOrder.verify(context, never()).write(NullWritable.get(), "4\t2\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0");
+        inOrder.verify(context,never()).write(NullWritable.get(), "4\t2\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0");
 
         reducer.cleanup(context);
 
@@ -138,7 +141,7 @@ public class HadoopMatrixNormReducerTest {
 
         reducer.reduce(new MapperKey(0, 1, 1), values3, context);
 
-        //inOrder.verify(context, never()).write(NullWritable.get(), "4\t2\t1.0\t1.0\t0.0\t0.1667\t0.1111\t0.0\t0.3333\t1.0");
+        inOrder.verify(context, never()).write(NullWritable.get(), "4\t2\t1.0\t1.0\t0.0\t0.1667\t0.1111\t0.0\t0.3333\t1.0");
 
         reducer.cleanup(context);
 

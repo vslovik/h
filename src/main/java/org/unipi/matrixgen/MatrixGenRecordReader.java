@@ -1,16 +1,17 @@
 package org.unipi.matrixgen;
 
-import java.io.IOException;
+import org.unipi.matrixnorm.Utils;
 
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.unipi.matrixnorm.Utils;
+
+import java.io.IOException;
 import java.util.Random;
 
-class MatrixGenRecordReader extends RecordReader<Text, NullWritable> {
+public class MatrixGenRecordReader extends RecordReader<Text, NullWritable> {
 
     private int numRecordsToCreate = 100;
     private int createdRecords = 0;
