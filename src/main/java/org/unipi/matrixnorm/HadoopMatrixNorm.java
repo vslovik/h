@@ -21,8 +21,6 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
 import java.io.IOException;
-import java.util.TreeMap;
-import java.util.Map;
 
 public class HadoopMatrixNorm extends Configured implements Tool {
 
@@ -68,62 +66,14 @@ public class HadoopMatrixNorm extends Configured implements Tool {
 
     public static class MatrixNormReducer extends Reducer<MapperKey, MapperValue, NullWritable, String> {
 
-        private double min = Double.MIN_VALUE;
-        private double max = Double.MAX_VALUE;
-
         private int currentMatrixIndex = 0;
-        private TreeMap<Integer, Double[]> treeMap = new TreeMap<>();
-
-        private void setMinMax(Iterable<MapperValue> values) {
-            for (MapperValue value : values) {
-                if(value.colValue > max) {
-                    max = value.colValue;
-                }
-                if(value.colValue < min) {
-                    min = value.colValue;
-                }
-            }
-        }
-
-        private Double[] keepColumn(Iterable<MapperValue> values) {
-            TreeMap<Integer, Double> colMap = new TreeMap<>();
-            for (MapperValue value : values) {
-                double newValue = (value.colValue - min) / (max - min);
-                //double newValue = value.colValue;
-                colMap.put(value.rowIndex,  newValue);
-            }
-
-            return colMap.values().toArray(new Double[colMap.values().size()]);
-        }
-
-        private Double[][] treeMapTo2DArray() {
-
-            int rows = treeMap.entrySet().size();
-            int cols = treeMap.firstEntry().getValue().length;
-
-            Double[][] matrix = new Double[rows][cols];
-
-            for(Map.Entry<Integer, Double[]> entry : treeMap.entrySet()) {
-
-                Object[] a = new Integer[1];
-                Integer b=1;
-                a[0]=b;
-                Integer[] c = (Integer[]) a;
-
-                matrix[entry.getKey()] = entry.getValue();
-            }
-
-            return matrix;
-        }
+        private MatrixStorage storage = new MatrixStorage();
 
         private void emitMatrix(Context context) throws InterruptedException{
 
             try {
-                String str = Utils.serialize(treeMapTo2DArray());
-                context.write(
-                        NullWritable.get(),
-                        str
-                );
+                String str = Utils.serialize(storage.get());
+                context.write(NullWritable.get(), str);
             } catch(Exception e) {
                 throw new InterruptedException();
             }
@@ -134,19 +84,15 @@ public class HadoopMatrixNorm extends Configured implements Tool {
                               Context context) throws IOException, InterruptedException {
 
             if (key.flag == 0) {
-                setMinMax(values);
+                storage.keepMinMax(values);
             } else {
-                treeMap.put(key.colIndex, keepColumn(values));
-                min = Double.MIN_VALUE;
-                max = Double.MAX_VALUE;
+                storage.put(key.colIndex, values);
             }
 
             if (key.matrixIndex != currentMatrixIndex) {
                 emitMatrix(context);
                 currentMatrixIndex = key.matrixIndex;
-                treeMap = new TreeMap<>();
             }
-
         }
 
         @Override

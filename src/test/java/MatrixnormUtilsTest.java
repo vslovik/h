@@ -18,7 +18,7 @@ class MatrixnormUtilsTest {
         };
 
         String serialized = Utils.serialize(matrix);
-        String expected = "4\t2\t9.0\t6.0\t0.0\t1.0\t1.0\t0.0\t3.0\t6.0";
+        String expected = "4\t2\t9\t6\t0\t1\t1\t0\t3\t6";
 
         assertEquals(expected, serialized);
     }

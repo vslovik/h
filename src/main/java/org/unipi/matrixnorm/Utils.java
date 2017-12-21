@@ -1,15 +1,13 @@
 package org.unipi.matrixnorm;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 public class Utils {
 
@@ -38,6 +36,13 @@ public class Utils {
         int rows = matrix.length;
         int cols = matrix[0].length;
 
+        Locale locale  = new Locale("en", "UK");
+        String pattern = "#.####";
+
+        DecimalFormat format = (DecimalFormat)
+        NumberFormat.getNumberInstance(locale);
+        format.applyPattern(pattern);
+
         StringBuilder b = new StringBuilder();
 
         b.append(Integer.toString(rows)).append("\t").append(Integer.toString(cols));
@@ -45,7 +50,7 @@ public class Utils {
         for (Double[] row : matrix) {
             for (int c = 0; c < cols; c++) {
                 b.append("\t");
-                b.append(row[c]);
+                b.append(format.format(row[c]));
             }
         }
 
@@ -97,5 +102,31 @@ public class Utils {
         Double[] values = Arrays.asList(items).subList(2, items.length).stream().map(Double::parseDouble).toArray(Double[]::new);
 
         return Utils.splitArray(values, cols);
+    }
+
+    public static void main(String[] args) throws Exception {
+        Double[][] matrix = generateMatrix(100, 2, 2);
+        System.out.println(serialize(matrix));
+
+        Double[][] matrix1 = deserialize("4\t2\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0");
+        for(Double[] row: matrix1) {
+            for(Double item: row) {
+                System.out.print(item);
+            }
+            System.out.println();
+        }
+
+        System.out.println(serialize(matrix1));
+
+        Double[][] matrix2 = deserialize("4\t2\t1\t1\t0\t0.1667\t0.1111\t0\t0.3333\t1");
+        for(Double[] row: matrix1) {
+            for(Double item: row) {
+                System.out.print(item);
+            }
+            System.out.println();
+        }
+
+        System.out.println(serialize(matrix2));
+
     }
 }

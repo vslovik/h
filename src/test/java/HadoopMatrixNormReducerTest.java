@@ -30,6 +30,7 @@ class HadoopMatrixNormReducerTest {
         context = mock(HadoopMatrixNorm.MatrixNormReducer.Context.class);
     }
 
+    @Test
     void oneElementMatrixTest() throws IOException, InterruptedException {
 
         InOrder inOrder = inOrder(context);
@@ -51,17 +52,18 @@ class HadoopMatrixNormReducerTest {
 
         inOrder.verify(context, never()).write(
                 eq(NullWritable.get()),
-                eq("1\t1\t0.0")
+                eq("1\t1\t0")
         );
 
         reducer.cleanup(context);
 
         inOrder.verify(context).write(
                 eq(NullWritable.get()),
-                eq("1\t1\t0.0")
+                eq("1\t1\t0")
         );
     }
 
+    @Test
     void emitZeroMatrixTest() throws IOException, InterruptedException {
 
         InOrder inOrder = inOrder(context);
@@ -100,18 +102,19 @@ class HadoopMatrixNormReducerTest {
 
         inOrder.verify(
                 context,never()).write(
-                        eq(NullWritable.get()),
-                eq("4\t2\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0")
+                eq(NullWritable.get()),
+                eq("4\t2\t0\t0\t0\t0\t0\t0\t0\t0")
         );
 
         reducer.cleanup(context);
 
         inOrder.verify(context).write(
                 eq(NullWritable.get()),
-                eq("4\t2\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0")
+                eq("4\t2\t0\t0\t0\t0\t0\t0\t0\t0")
         );
     }
 
+    @Test
     void emitMatrixTest() throws IOException, InterruptedException {
 
         InOrder inOrder = inOrder(context);
@@ -150,15 +153,15 @@ class HadoopMatrixNormReducerTest {
         reducer.reduce(new MapperKey(0, 1, 1), values3, context);
 
         inOrder.verify(context, never()).write(
-                NullWritable.get(),
-                "4\t2\t1.0\t1.0\t0.0\t0.1667\t0.1111\t0.0\t0.3333\t1.0"
+                eq(NullWritable.get()),
+                eq("4\t2\t1\t1\t0\t0.1667\t0.1111\t0\t0.3333\t1")
         );
 
         reducer.cleanup(context);
 
         inOrder.verify(context).write(
-                NullWritable.get(),
-                "4\t2\t1.0\t1.0\t0.0\t0.1667\t0.1111\t0.0\t0.3333\t1.0"
+                eq(NullWritable.get()),
+                eq("4\t2\t1\t1\t0\t0.1667\t0.1111\t0\t0.3333\t1")
         );
 
     }
