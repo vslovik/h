@@ -2,6 +2,7 @@ import org.unipi.matrixnorm.Utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 class MatrixnormUtilsTest {
@@ -37,8 +38,13 @@ class MatrixnormUtilsTest {
         assertArrayEquals(expected, deserialized);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void wrongInputTest() {
-        Utils.deserialize("1\t2\t1.0");
+    @Test
+    void wrongInputTest() {
+
+        assertThrows(IllegalArgumentException.class,
+                ()->{
+                    Utils.deserialize("1\t2\t1.0");
+                });
+
     }
 }

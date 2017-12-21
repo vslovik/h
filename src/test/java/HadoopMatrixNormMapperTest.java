@@ -6,8 +6,9 @@ import org.apache.hadoop.io.Text;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -28,10 +29,13 @@ class HadoopMatrixNormMapperTest {
         context = mock(HadoopMatrixNorm.MatrixNormMapper.Context.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void wrongInput() throws IOException, InterruptedException {
+    @Test
+    void wrongInput() throws IOException, InterruptedException {
 
-        mapper.map(null, new Text("1\t2\t1.0"), context);
+        assertThrows(IllegalArgumentException.class,
+                () -> {
+                    mapper.map(null, new Text("1\t2\t1.0"), context);
+                });
 
         InOrder inOrder = inOrder(context);
         inOrder.verify(context, never()).write(
