@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 class MatrixnormUtilsTest {
 
-    @Test
     void serializeTest() {
 
         Double[][] matrix = {

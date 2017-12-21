@@ -7,9 +7,10 @@ import org.apache.hadoop.io.NullWritable;
 import java.util.ArrayList;
 import java.io.IOException;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -18,19 +19,18 @@ import static org.mockito.Mockito.never;
 
 import org.mockito.InOrder;
 
-public class HadoopMatrixNormReducerTest {
+class HadoopMatrixNormReducerTest {
 
     private HadoopMatrixNorm.MatrixNormReducer reducer;
     private HadoopMatrixNorm.MatrixNormReducer.Context context;
 
-    @BeforeAll
-    public void init() throws IOException, InterruptedException {
+    @BeforeEach
+    void init() throws IOException, InterruptedException {
         reducer = new HadoopMatrixNorm.MatrixNormReducer();
         context = mock(HadoopMatrixNorm.MatrixNormReducer.Context.class);
     }
 
-    @Test
-    public void oneElementMatrixTest() throws IOException, InterruptedException {
+    void oneElementMatrixTest() throws IOException, InterruptedException {
 
         InOrder inOrder = inOrder(context);
 
@@ -56,8 +56,7 @@ public class HadoopMatrixNormReducerTest {
         inOrder.verify(context).write(NullWritable.get(), "1\t1\t0.0");
     }
 
-    @Test
-    public void emitZeroMatrixTest() throws IOException, InterruptedException {
+    void emitZeroMatrixTest() throws IOException, InterruptedException {
 
         InOrder inOrder = inOrder(context);
 
@@ -106,8 +105,7 @@ public class HadoopMatrixNormReducerTest {
         );
     }
 
-    @Test
-    public void emitMatrixTest() throws IOException, InterruptedException {
+    void emitMatrixTest() throws IOException, InterruptedException {
 
         InOrder inOrder = inOrder(context);
 

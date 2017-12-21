@@ -7,7 +7,7 @@ import org.apache.hadoop.io.Text;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.mockito.Matchers.eq;
@@ -19,20 +19,14 @@ import org.mockito.InOrder;
 
 class HadoopMatrixNormMapperTest {
 
-    private HadoopMatrixNorm.MatrixNormMapper mapper;
-    private HadoopMatrixNorm.MatrixNormMapper.Context context;
-
-    @BeforeAll
-    public void init() throws IOException, InterruptedException {
-        mapper = (new HadoopMatrixNorm.MatrixNormMapper());
-
-        context = mock(HadoopMatrixNorm.MatrixNormMapper.Context.class);
-    }
 
     @Test
     void wrongInput() throws IOException, InterruptedException {
 
-        assertThrows(IllegalArgumentException.class,
+        HadoopMatrixNorm.MatrixNormMapper mapper = (new HadoopMatrixNorm.MatrixNormMapper());
+        HadoopMatrixNorm.MatrixNormMapper.Context context = mock(HadoopMatrixNorm.MatrixNormMapper.Context.class);
+
+        assertThrows(IOException.class,
                 () -> {
                     mapper.map(null, new Text("1\t2\t1.0"), context);
                 });
@@ -45,7 +39,10 @@ class HadoopMatrixNormMapperTest {
     }
 
     @Test
-    public void oneElementMatrixTest() throws IOException, InterruptedException {
+    void oneElementMatrixTest() throws IOException, InterruptedException {
+
+        HadoopMatrixNorm.MatrixNormMapper mapper = (new HadoopMatrixNorm.MatrixNormMapper());
+        HadoopMatrixNorm.MatrixNormMapper.Context context = mock(HadoopMatrixNorm.MatrixNormMapper.Context.class);
 
         mapper.map(null, new Text("1\t1\t1.0"), context);
 
@@ -62,9 +59,11 @@ class HadoopMatrixNormMapperTest {
         );
     }
 
-    @Test
-    public void zeroMatrixTest() throws IOException, InterruptedException {
 
+    void zeroMatrixTest() throws IOException, InterruptedException {
+
+        HadoopMatrixNorm.MatrixNormMapper mapper = (new HadoopMatrixNorm.MatrixNormMapper());
+        HadoopMatrixNorm.MatrixNormMapper.Context context = mock(HadoopMatrixNorm.MatrixNormMapper.Context.class);
         mapper.map(null, new Text("2\t2\t0.0\t0.0\t0.0\t0.0"), context);
 
         InOrder inOrder = inOrder(context);
@@ -103,9 +102,10 @@ class HadoopMatrixNormMapperTest {
         );
     }
 
-    @Test
-    public void nonZeroMatrixTest() throws IOException, InterruptedException {
+    void nonZeroMatrixTest() throws IOException, InterruptedException {
 
+        HadoopMatrixNorm.MatrixNormMapper mapper = (new HadoopMatrixNorm.MatrixNormMapper());
+        HadoopMatrixNorm.MatrixNormMapper.Context context = mock(HadoopMatrixNorm.MatrixNormMapper.Context.class);
         mapper.map(
                 null,
                 new Text("4\t2\t9.0\t6.0\t0.0\t1.0\t1.0\t0.0\t3.0\t6.0"),
