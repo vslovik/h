@@ -36,4 +36,23 @@ public class MapperValue implements Writable {
         out.writeBytes(Arrays.toString(array));
     }
 
+    public boolean equals(Object o) {
+        if (o == null || !this.getClass().equals(o.getClass())) {
+            return false;
+        }
+        MapperValue other = (MapperValue) o;
+        return this.hashCode() == other.hashCode();
+    }
+
+    public int hashCode() {
+        int prime = 37;
+        int result = 1;
+        result = prime * result + matrixIndex;
+        result = prime * result + rowIndex;
+
+        long l = Double.doubleToLongBits(colValue);
+
+        result = prime * result + (int)(l ^ (l >>> 32));;
+        return result;
+    }
 }

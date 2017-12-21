@@ -38,22 +38,28 @@ class HadoopMatrixNormReducerTest {
         values.add(new MapperValue(0, 0, 0.0));
 
         reducer.reduce(
-                eq(new MapperKey(0, 0, 0)),
-                eq(values),
+                new MapperKey(0, 0, 0),
+                values,
                 context
         );
 
         reducer.reduce(
-                eq(new MapperKey(0, 0, 1)),
-                eq(values),
+                new MapperKey(0, 0, 1),
+                values,
                 context
         );
 
-        inOrder.verify(context, never()).write(NullWritable.get(), "1\t1\t0.0");
+        inOrder.verify(context, never()).write(
+                eq(NullWritable.get()),
+                eq("1\t1\t0.0")
+        );
 
         reducer.cleanup(context);
 
-        inOrder.verify(context).write(NullWritable.get(), "1\t1\t0.0");
+        inOrder.verify(context).write(
+                eq(NullWritable.get()),
+                eq("1\t1\t0.0")
+        );
     }
 
     void emitZeroMatrixTest() throws IOException, InterruptedException {
@@ -93,15 +99,16 @@ class HadoopMatrixNormReducerTest {
         reducer.reduce(new MapperKey(0, 1, 1), values3, context);
 
         inOrder.verify(
-                context,never()).write(NullWritable.get(),
-                "4\t2\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0"
+                context,never()).write(
+                        eq(NullWritable.get()),
+                eq("4\t2\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0")
         );
 
         reducer.cleanup(context);
 
         inOrder.verify(context).write(
-                NullWritable.get(),
-                "4\t2\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0"
+                eq(NullWritable.get()),
+                eq("4\t2\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0\t0.0")
         );
     }
 

@@ -54,4 +54,24 @@ public class MapperKey implements WritableComparable<MapperKey> {
         return Utils.compare(thisSeq, thatSeq);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !this.getClass().equals(o.getClass())) {
+            return false;
+        }
+        MapperKey other = (MapperKey) o;
+        return this.hashCode() == other.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        int prime = 37;
+        int result = 1;
+        result = prime * result + matrixIndex;
+        result = prime * result + colIndex;
+        result = prime * result + flag;
+
+        return result;
+    }
+
 }

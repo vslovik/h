@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 class MatrixGenRecordReaderTest {
 
+    @Test
     void wrongInput() throws IOException, InterruptedException {
         MatrixGenRecordReader reader = new MatrixGenRecordReader();
 

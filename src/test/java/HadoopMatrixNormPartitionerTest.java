@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 class HadoopMatrixNormPartitionerTest {
 
+    @Test
     void columnIndexPartitioningTest() {
         HadoopMatrixNorm.ColumnIndexPartitioner partitioner = new HadoopMatrixNorm.ColumnIndexPartitioner();
 

@@ -35,7 +35,21 @@ public class Utils {
 
     public static String serialize(Double[][] matrix) {
 
-        return String.join("\t", Integer.toString(matrix.length), Integer.toString(matrix[0].length), toString(matrix));
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+
+        StringBuilder b = new StringBuilder();
+
+        b.append(Integer.toString(rows)).append("\t").append(Integer.toString(cols));
+
+        for (Double[] row : matrix) {
+            for (int c = 0; c < cols; c++) {
+                b.append("\t");
+                b.append(row[c]);
+            }
+        }
+
+        return b.toString();
     }
 
     public static Double[][] generateMatrix(int limit, int rows, int cols) {
@@ -50,26 +64,6 @@ public class Utils {
         }
 
         return matrix;
-    }
-
-    private static String toString(Double[][] a) {
-
-        if (a == null)
-            return "";
-
-        int iMax = a.length - 1;
-        if (iMax == -1)
-            return "";
-
-        DecimalFormat format = new DecimalFormat("#.####");
-
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; ; i++) {
-            b.append(format.format(a[i]));
-            if (i == iMax)
-                return b.toString();
-            b.append("\t");
-        }
     }
 
     private static Double[][] splitArray(Double[] array, int splitSize) {
@@ -98,7 +92,6 @@ public class Utils {
         if(n != items.length - 2)
             throw new IllegalArgumentException();
 
-        int rows = Integer.parseInt(items[0]);
         int cols = Integer.parseInt(items[1]);
 
         Double[] values = Arrays.asList(items).subList(2, items.length).stream().map(Double::parseDouble).toArray(Double[]::new);
