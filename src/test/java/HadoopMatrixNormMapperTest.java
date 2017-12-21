@@ -1,5 +1,3 @@
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.mapreduce.Mapper;
 import org.unipi.matrixnorm.HadoopMatrixNorm;
 import org.unipi.matrixnorm.MapperKey;
 import org.unipi.matrixnorm.MapperValue;
@@ -8,8 +6,8 @@ import org.apache.hadoop.io.Text;
 
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -18,12 +16,12 @@ import static org.mockito.Mockito.never;
 
 import org.mockito.InOrder;
 
-public class HadoopMatrixNormMapperTest {
+class HadoopMatrixNormMapperTest {
 
     private HadoopMatrixNorm.MatrixNormMapper mapper;
     private HadoopMatrixNorm.MatrixNormMapper.Context context;
 
-    @Before
+    @BeforeAll
     public void init() throws IOException, InterruptedException {
         mapper = (new HadoopMatrixNorm.MatrixNormMapper());
 

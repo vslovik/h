@@ -1,12 +1,13 @@
 import org.unipi.matrixnorm.Utils;
 
-import org.junit.Test;
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import org.junit.jupiter.api.Test;
 
-public class MatrixnormUtilsTest {
+class MatrixnormUtilsTest {
 
     @Test
-    public void serializeTest() {
+    void serializeTest() {
 
         Double[][] matrix = {
                 {9.0, 6.0},
@@ -18,11 +19,11 @@ public class MatrixnormUtilsTest {
         String serialized = Utils.serialize(matrix);
         String expected = "4\t2\t9.0\t6.0\t0.0\t1.0\t1.0\t0.0\t3.0\t6.0";
 
-        Assert.assertEquals(expected, serialized);
+        assertEquals(expected, serialized);
     }
 
     @Test
-    public void deserializeTest() {
+    void deserializeTest() {
 
         Double[][] deserialized = Utils.deserialize("4\t2\t9.0\t6.0\t0.0\t1.0\t1.0\t0.0\t3.0\t6.0");
 
@@ -33,7 +34,7 @@ public class MatrixnormUtilsTest {
                 {3.0, 6.0}
         };
 
-        Assert.assertArrayEquals(expected, deserialized);
+        assertArrayEquals(expected, deserialized);
     }
 
     @Test(expected = IllegalArgumentException.class)

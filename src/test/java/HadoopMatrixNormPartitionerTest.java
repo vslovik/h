@@ -2,8 +2,8 @@ import org.unipi.matrixnorm.HadoopMatrixNorm;
 import org.unipi.matrixnorm.MapperKey;
 import org.unipi.matrixnorm.MapperValue;
 
-import org.junit.Test;
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class HadoopMatrixNormPartitionerTest {
 
@@ -22,6 +22,6 @@ public class HadoopMatrixNormPartitionerTest {
                 2
         );
 
-        Assert.assertEquals(partition1, partition2);
+        assertEquals(partition1, partition2);
     }
 }

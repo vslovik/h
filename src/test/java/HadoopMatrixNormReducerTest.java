@@ -3,13 +3,13 @@ import org.unipi.matrixnorm.MapperKey;
 import org.unipi.matrixnorm.MapperValue;
 
 import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.mapreduce.Reducer;
 
 import java.util.ArrayList;
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -23,7 +23,7 @@ public class HadoopMatrixNormReducerTest {
     private HadoopMatrixNorm.MatrixNormReducer reducer;
     private HadoopMatrixNorm.MatrixNormReducer.Context context;
 
-    @Before
+    @BeforeAll
     public void init() throws IOException, InterruptedException {
         reducer = new HadoopMatrixNorm.MatrixNormReducer();
         context = mock(HadoopMatrixNorm.MatrixNormReducer.Context.class);

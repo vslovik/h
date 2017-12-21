@@ -28,15 +28,15 @@ repositories {
     }
 }
 
-sourceSets {
-    main {
-        java.srcDirs = ["src/main/java"]
-    }
-    test {
-        java.srcDirs = ["src/test/java"]
-    }
-
-}
+//sourceSets {
+//    main {
+//        java.srcDirs = ["src/main/java"]
+//    }
+//    test {
+//        java.srcDirs = ["src/test/java"]
+//    }
+//
+//}
 
 tasks.withType(Test) {
     testLogging {
@@ -60,10 +60,17 @@ dependencies {
     compile 'org.apache.hadoop:hadoop-mapreduce-client-shuffle:2.8.2'
     compile 'org.apache.hadoop:hadoop-mapreduce-client-common:2.8.2'
     compile 'org.apache.hadoop:hadoop-client:2.8.2'
-    testCompile 'junit:junit:4.12'
+//    testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.7.22'
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.0.0"
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.0")
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.0.1"
+
+    testCompile(
+            'org.junit.jupiter:junit-jupiter-api:5.0.1'
+    )
+    testRuntime(
+            'org.junit.jupiter:junit-jupiter-engine:5.0.1'
+    )
+
     // to run JUnit 3/4 tests:
 //    testImplementation("junit:junit:4.12")
 //    testRuntime("org.junit.vintage:junit-vintage-engine:4.12.0")

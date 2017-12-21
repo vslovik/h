@@ -6,8 +6,10 @@ import org.apache.hadoop.io.NullWritable;
 
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 public class MatrixGenRecordReaderTest {
 
@@ -18,16 +20,16 @@ public class MatrixGenRecordReaderTest {
         double progress = 0.0;
         int i = 0;
         while (reader.nextKeyValue()) {
-            Assert.assertEquals(reader.getCurrentKey().getClass(), Text.class);
-            Assert.assertEquals(reader.getCurrentValue().getClass(), NullWritable.get().getClass());
-            Assert.assertTrue(reader.getProgress() > progress);
+            assertEquals(reader.getCurrentKey().getClass(), Text.class);
+            assertEquals(reader.getCurrentValue().getClass(), NullWritable.get().getClass());
+            assertTrue(reader.getProgress() > progress);
             progress = reader.getProgress();
             Double[][] matrix = Utils.deserialize(reader.getCurrentKey().toString());
-            Assert.assertTrue(matrix.length > 0);
-            Assert.assertTrue(matrix[0].length > 0);
+            assertTrue(matrix.length > 0);
+            assertTrue(matrix[0].length > 0);
             i += 1;
         }
 
-        Assert.assertTrue(100 == i);
+        assertTrue(100 == i);
     }
 }
