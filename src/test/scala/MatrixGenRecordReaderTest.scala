@@ -8,7 +8,7 @@ import org.unipi.matrixnorm.HadoopMatrixNorm
 class MatrixGenRecordReaderTest extends FlatSpec with MockitoSugar {
 
   @Test
-  def wrongInput(): Unit = {
+  def readAll(): Unit = {
     val reader = new MatrixGenRecordReader
     val mapper = new HadoopMatrixNorm.MatrixNormMapper
     val context = mock[mapper.Context]
