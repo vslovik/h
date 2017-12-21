@@ -28,20 +28,22 @@ public class MatrixGenRecordReader extends RecordReader<Text, NullWritable> {
 
     public boolean nextKeyValue() throws IOException, InterruptedException {
 
-        int minRows = 1;
-        int minCols = 1;
-
-        int maxRows = 50;
-        int maxCols = 50;
-
-        int minValue = 1;
-        int maxValue = 100;
-
         if (createdRecords < numRecordsToCreate) {
+
+            int minRows = 1;
+            int minCols = 1;
+
+            int maxRows = 50;
+            int maxCols = 50;
+
+            int minValue = 1;
+            int maxValue = 100;
+
             int rows = minRows + r.nextInt(maxRows - minRows);
             int cols = minCols + r.nextInt(maxCols - minCols);
             int limit = minValue + r.nextInt(maxValue - minValue);
             String serializedMatrix = Utils.serialize(Utils.generateMatrix(limit, rows, cols));
+
             key.set(serializedMatrix);
             createdRecords += 1;
 

@@ -61,7 +61,7 @@ public class Utils {
         Double[][] matrix = new Double[rows][cols];
 
         for(int r = 0; r < rows; r++) {
-            for(int c = 0; c < rows; c++) {
+            for(int c = 0; c < cols; c++) {
                 double leftLimit = 0D;
                 double rightLimit = (double) limit;
                 matrix[r][c] = leftLimit + new Random().nextDouble() * (rightLimit - leftLimit);
@@ -104,6 +104,24 @@ public class Utils {
         return Utils.splitArray(values, cols);
     }
 
+    public static String nextSerializedMatrix(Random r) {
+
+        int minRows = 1;
+        int minCols = 1;
+
+        int maxRows = 50;
+        int maxCols = 50;
+
+        int minValue = 1;
+        int maxValue = 100;
+
+        int rows = minRows + r.nextInt(maxRows - minRows);
+        int cols = minCols + r.nextInt(maxCols - minCols);
+        int limit = minValue + r.nextInt(maxValue - minValue);
+
+        return Utils.serialize(Utils.generateMatrix(limit, rows, cols));
+    }
+
     public static void main(String[] args) throws Exception {
         Double[][] matrix = generateMatrix(100, 2, 2);
         System.out.println(serialize(matrix));
@@ -128,5 +146,9 @@ public class Utils {
 
         System.out.println(serialize(matrix2));
 
+        Random r = new Random();
+
+        System.out.println(nextSerializedMatrix(r));
     }
+
 }
