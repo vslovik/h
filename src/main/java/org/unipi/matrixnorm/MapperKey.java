@@ -40,18 +40,19 @@ public class MapperKey implements WritableComparable<MapperKey> {
 
     public int compareTo(MapperKey o) {
 
-        ArrayList<Integer> thisSeq = new ArrayList<>();
-        thisSeq.add(this.matrixIndex);
-        thisSeq.add(this.colIndex);
-        thisSeq.add(this.flag);
+        int result = Integer.compare(this.matrixIndex, o.matrixIndex);
+        if (0 == result) {
 
-        ArrayList<Integer> thatSeq = new ArrayList<>();
+            result = Integer.compare(this.colIndex, o.colIndex);
+            if(0 == result) {
 
-        thatSeq.add(o.matrixIndex);
-        thatSeq.add(o.colIndex);
-        thatSeq.add(o.flag);
+                return Integer.compare(this.flag, o.flag);
+            }
 
-        return Utils.compare(thisSeq, thatSeq);
+            return result;
+        }
+
+        return result;
     }
 
     @Override
