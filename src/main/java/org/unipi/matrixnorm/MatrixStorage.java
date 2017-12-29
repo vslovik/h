@@ -67,10 +67,10 @@ public class MatrixStorage {
         MatrixStorage storage = new MatrixStorage();
 
         ArrayList<MapperValue> values = new ArrayList<>();
-        values.add(new MapperValue(0, 0, 0.0));
-        values.add(new MapperValue(0, 1, 0.0));
-        values.add(new MapperValue(0, 2, 0.0));
-        values.add(new MapperValue(0, 3, 0.0));
+        values.add(new MapperValue(0, 0.0));
+        values.add(new MapperValue(1, 0.0));
+        values.add(new MapperValue(2, 0.0));
+        values.add(new MapperValue(3, 0.0));
 
         storage.keepMinMax(values);
         storage.put(0, values);
@@ -81,19 +81,19 @@ public class MatrixStorage {
         System.out.println(Utils.serialize(storage.get()));
 
         ArrayList<MapperValue> values1 = new ArrayList<>();
-        values1.add(new MapperValue(0, 0, 9.0));
-        values1.add(new MapperValue(0, 1, 0.0));
-        values1.add(new MapperValue(0, 2, 1.0));
-        values1.add(new MapperValue(0, 3, 3.0));
+        values1.add(new MapperValue(0, 9.0));
+        values1.add(new MapperValue(1, 0.0));
+        values1.add(new MapperValue(2, 1.0));
+        values1.add(new MapperValue(3, 3.0));
 
         storage.keepMinMax(values1);
         storage.put(0, values1);
 
         ArrayList<MapperValue> values2 = new ArrayList<>();
-        values2.add(new MapperValue(0, 0, 6.0));
-        values2.add(new MapperValue(0, 1, 1.0));
-        values2.add(new MapperValue(0, 2, 0.0));
-        values2.add(new MapperValue(0, 3, 6.0));
+        values2.add(new MapperValue(0, 6.0));
+        values2.add(new MapperValue(1, 1.0));
+        values2.add(new MapperValue(2, 0.0));
+        values2.add(new MapperValue(3, 6.0));
 
         storage.keepMinMax(values2);
         storage.put(1, values2);

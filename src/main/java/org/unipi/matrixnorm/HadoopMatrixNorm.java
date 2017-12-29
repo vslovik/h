@@ -39,11 +39,11 @@ public class HadoopMatrixNorm extends Configured implements Tool {
                     for (int columnIndex = 0; columnIndex < matrix[0].length; columnIndex++) {
                         context.write(
                                 new MapperKey(matrixIndex, columnIndex, 0),
-                                new MapperValue(matrixIndex, rowIndex, matrix[rowIndex][columnIndex])
+                                new MapperValue(rowIndex, matrix[rowIndex][columnIndex])
                         );
                         context.write(
                                 new MapperKey(matrixIndex, columnIndex, 1),
-                                new MapperValue(matrixIndex, rowIndex, matrix[rowIndex][columnIndex])
+                                new MapperValue(rowIndex, matrix[rowIndex][columnIndex])
                         );
                     }
                 }

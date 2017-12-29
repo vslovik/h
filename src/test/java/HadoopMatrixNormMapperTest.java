@@ -39,7 +39,7 @@ class HadoopMatrixNormMapperTest {
         InOrder inOrder = inOrder(context);
         inOrder.verify(context, never()).write(
                 eq(new MapperKey(0, 0, 0)),
-                eq(new MapperValue(0, 0, 1.0))
+                eq(new MapperValue(0, 1.0))
         );
     }
 
@@ -52,12 +52,12 @@ class HadoopMatrixNormMapperTest {
 
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 0)),
-                eq(new MapperValue(0, 0, 1.0))
+                eq(new MapperValue( 0, 1.0))
         );
 
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 1)),
-                eq(new MapperValue(0, 0, 1.0))
+                eq(new MapperValue( 0, 1.0))
         );
     }
 
@@ -70,35 +70,35 @@ class HadoopMatrixNormMapperTest {
 
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 0)),
-                eq(new MapperValue(0, 0, 0.0))
+                eq(new MapperValue( 0, 0.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 1)),
-                eq(new MapperValue(0, 0, 0.0))
+                eq(new MapperValue( 0, 0.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 0)),
-                eq(new MapperValue(0, 0, 0.0))
+                eq(new MapperValue( 0, 0.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 1)),
-                eq(new MapperValue(0, 0, 0.0))
+                eq(new MapperValue(0, 0.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 0)),
-                eq(new MapperValue(0, 1, 0.0))
+                eq(new MapperValue( 1, 0.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 1)),
-                eq(new MapperValue(0, 1, 0.0))
+                eq(new MapperValue( 1, 0.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 0)),
-                eq(new MapperValue(0, 1, 0.0))
+                eq(new MapperValue( 1, 0.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 1)),
-                eq(new MapperValue(0, 1, 0.0))
+                eq(new MapperValue( 1, 0.0))
         );
     }
 
@@ -114,70 +114,70 @@ class HadoopMatrixNormMapperTest {
 
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 0)),
-                eq(new MapperValue(0, 0, 9.0))
+                eq(new MapperValue( 0, 9.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 1)),
-                eq(new MapperValue(0, 0, 9.0))
+                eq(new MapperValue( 0, 9.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 0)),
-                eq(new MapperValue(0, 0, 6.0))
+                eq(new MapperValue( 0, 6.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 1)),
-                eq(new MapperValue(0, 0, 6.0))
+                eq(new MapperValue( 0, 6.0))
         );
 
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 0)),
-                eq(new MapperValue(0, 1, 0.0))
+                eq(new MapperValue( 1, 0.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 1)),
-                eq(new MapperValue(0, 1, 0.0))
+                eq(new MapperValue( 1, 0.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 0)),
-                eq(new MapperValue(0, 1, 1.0))
+                eq(new MapperValue( 1, 1.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 1)),
-                eq(new MapperValue(0, 1, 1.0))
+                eq(new MapperValue( 1, 1.0))
         );
 
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 0)),
-                eq(new MapperValue(0, 2, 1.0))
+                eq(new MapperValue( 2, 1.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 1)),
-                eq(new MapperValue(0, 2, 1.0))
+                eq(new MapperValue( 2, 1.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 0)),
-                eq(new MapperValue(0, 2, 0.0))
+                eq(new MapperValue( 2, 0.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 1)),
-                eq(new MapperValue(0, 2, 0.0))
+                eq(new MapperValue( 2, 0.0))
         );
 
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 0)),
-                eq(new MapperValue(0, 3, 3.0))
+                eq(new MapperValue( 3, 3.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 0, 1)),
-                eq(new MapperValue(0, 3, 3.0))
+                eq(new MapperValue( 3, 3.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 0)),
-                eq(new MapperValue(0, 3, 6.0))
+                eq(new MapperValue( 3, 6.0))
         );
         inOrder.verify(context).write(
                 eq(new MapperKey(0, 1, 1)),
-                eq(new MapperValue(0, 3, 6.0))
+                eq(new MapperValue( 3, 6.0))
         );
     }
 

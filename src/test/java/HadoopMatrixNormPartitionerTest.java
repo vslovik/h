@@ -11,7 +11,7 @@ class HadoopMatrixNormPartitionerTest {
     void columnIndexPartitioningTest() {
         HadoopMatrixNorm.ColumnIndexPartitioner partitioner = new HadoopMatrixNorm.ColumnIndexPartitioner();
 
-        MapperValue value = new MapperValue(0, 0, 9.0);
+        MapperValue value = new MapperValue(0, 9.0);
 
         int partition1 = partitioner.getPartition(
                 new MapperKey(0, 0, 0),

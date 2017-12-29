@@ -10,14 +10,12 @@ import java.util.Arrays;
 
 public class MapperValue implements Writable {
 
-    int matrixIndex = 0;
     int rowIndex    = 0;
     double colValue = 0;
 
-    public MapperValue(int matrixIndex, int rowIndex, double colValue) {
-        this.matrixIndex = matrixIndex;
-        this.rowIndex    = rowIndex;
-        this.colValue    = colValue;
+    public MapperValue(int rowIndex, double colValue) {
+        this.rowIndex = rowIndex;
+        this.colValue = colValue;
     }
 
     public void readFields(DataInput in) throws IOException {
@@ -26,13 +24,12 @@ public class MapperValue implements Writable {
                 in.readLine().split("\t")
         ).map(String::trim).toArray(Double[]::new);
 
-        this.matrixIndex = arr[0].intValue();
-        this.rowIndex    = arr[1].intValue();
-        this.colValue    = arr[2];
+        this.rowIndex = arr[0].intValue();
+        this.colValue = arr[1];
     }
 
     public void write(DataOutput out) throws IOException {
-        double[] array = new double[] {this.matrixIndex, this.rowIndex, this.colValue};
+        double[] array = new double[] {this.rowIndex, this.colValue};
         out.writeBytes(Arrays.toString(array));
     }
 
@@ -47,7 +44,6 @@ public class MapperValue implements Writable {
     public int hashCode() {
         int prime = 37;
         int result = 1;
-        result = prime * result + matrixIndex;
         result = prime * result + rowIndex;
 
         long l = Double.doubleToLongBits(colValue);

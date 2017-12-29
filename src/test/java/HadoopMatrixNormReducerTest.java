@@ -36,7 +36,7 @@ class HadoopMatrixNormReducerTest {
         InOrder inOrder = inOrder(context);
 
         ArrayList<MapperValue> values = new ArrayList<>();
-        values.add(new MapperValue(0, 0, 0.0));
+        values.add(new MapperValue(0, 0.0));
 
         reducer.reduce(
                 new MapperKey(0, 0, 0),
@@ -69,34 +69,34 @@ class HadoopMatrixNormReducerTest {
         InOrder inOrder = inOrder(context);
 
         ArrayList<MapperValue> values0 = new ArrayList<>();
-        values0.add(new MapperValue(0, 0, 0.0));
-        values0.add(new MapperValue(0, 1, 0.0));
-        values0.add(new MapperValue(0, 2, 0.0));
-        values0.add(new MapperValue(0, 3, 0.0));
+        values0.add(new MapperValue(0, 0.0));
+        values0.add(new MapperValue(1, 0.0));
+        values0.add(new MapperValue(2, 0.0));
+        values0.add(new MapperValue(3, 0.0));
 
         reducer.reduce(new MapperKey(0, 0, 0), values0, context);
 
         ArrayList<MapperValue> values1 = new ArrayList<>();
-        values1.add(new MapperValue(0, 0, 0.0));
-        values1.add(new MapperValue(0, 1, 0.0));
-        values1.add(new MapperValue(0, 2, 0.0));
-        values1.add(new MapperValue(0, 3, 0.0));
+        values1.add(new MapperValue(0, 0.0));
+        values1.add(new MapperValue(1, 0.0));
+        values1.add(new MapperValue(2, 0.0));
+        values1.add(new MapperValue(3, 0.0));
 
         reducer.reduce(new MapperKey(0, 0, 1), values1, context);
 
         ArrayList<MapperValue> values2 = new ArrayList<>();
-        values2.add(new MapperValue(0, 0, 0.0));
-        values2.add(new MapperValue(0, 1, 0.0));
-        values2.add(new MapperValue(0, 2, 0.0));
-        values2.add(new MapperValue(0, 3, 0.0));
+        values2.add(new MapperValue(0, 0.0));
+        values2.add(new MapperValue(1, 0.0));
+        values2.add(new MapperValue(2, 0.0));
+        values2.add(new MapperValue(3, 0.0));
 
         reducer.reduce(new MapperKey(0, 1, 0), values2, context);
 
         ArrayList<MapperValue> values3 = new ArrayList<>();
-        values3.add(new MapperValue(0, 0, 0.0));
-        values3.add(new MapperValue(0, 1, 0.0));
-        values3.add(new MapperValue(0, 2, 0.0));
-        values3.add(new MapperValue(0, 3, 0.0));
+        values3.add(new MapperValue(0, 0.0));
+        values3.add(new MapperValue(1, 0.0));
+        values3.add(new MapperValue(2, 0.0));
+        values3.add(new MapperValue(3, 0.0));
 
         reducer.reduce(new MapperKey(0, 1, 1), values3, context);
 
@@ -120,35 +120,35 @@ class HadoopMatrixNormReducerTest {
         InOrder inOrder = inOrder(context);
 
         ArrayList<MapperValue> values0 = new ArrayList<>();
-        values0.add(new MapperValue(0, 0, 9.0));
-        values0.add(new MapperValue(0, 1, 0.0));
-        values0.add(new MapperValue(0, 2, 1.0));
-        values0.add(new MapperValue(0, 3, 3.0));
+        values0.add(new MapperValue(0, 9.0));
+        values0.add(new MapperValue(1, 0.0));
+        values0.add(new MapperValue(2, 1.0));
+        values0.add(new MapperValue(3, 3.0));
 
         reducer.reduce(new MapperKey(0, 0, 0), values0, context);
 
         ArrayList<MapperValue> values1 = new ArrayList<>();
-        values1.add(new MapperValue(0, 0, 9.0));
-        values1.add(new MapperValue(0, 1, 0.0));
-        values1.add(new MapperValue(0, 2, 1.0));
-        values1.add(new MapperValue(0, 3, 3.0));
+        values1.add(new MapperValue(0, 9.0));
+        values1.add(new MapperValue(1, 0.0));
+        values1.add(new MapperValue(2, 1.0));
+        values1.add(new MapperValue(3, 3.0));
 
         reducer.reduce(new MapperKey(0, 0, 1), values1, context);
 
         ArrayList<MapperValue> values2 = new ArrayList<>();
 
-        values2.add(new MapperValue(0, 0, 6.0));
-        values2.add(new MapperValue(0, 1, 1.0));
-        values2.add(new MapperValue(0, 2, 0.0));
-        values2.add(new MapperValue(0, 3, 6.0));
+        values2.add(new MapperValue(0, 6.0));
+        values2.add(new MapperValue(1, 1.0));
+        values2.add(new MapperValue(2, 0.0));
+        values2.add(new MapperValue(3, 6.0));
 
         reducer.reduce(new MapperKey(0, 1, 0), values2, context);
 
         ArrayList<MapperValue> values3 = new ArrayList<>();
-        values3.add(new MapperValue(0, 0, 6.0));
-        values3.add(new MapperValue(0, 1, 1.0));
-        values3.add(new MapperValue(0, 2, 0.0));
-        values3.add(new MapperValue(0, 3, 6.0));
+        values3.add(new MapperValue(0, 6.0));
+        values3.add(new MapperValue(1, 1.0));
+        values3.add(new MapperValue(2, 0.0));
+        values3.add(new MapperValue(3, 6.0));
 
         reducer.reduce(new MapperKey(0, 1, 1), values3, context);
 
