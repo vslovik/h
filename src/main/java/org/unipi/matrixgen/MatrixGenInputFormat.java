@@ -25,7 +25,7 @@ class MatrixGenInputFormat extends FileInputFormat<Text, NullWritable> {
 
         ArrayList<InputSplit> splits = new ArrayList<>();
 
-        for (int i = 1; i < numSplits; i++) {
+        for (int i = 0; i < numSplits; i++) {
             splits.add(new FakeInputSplit());
         }
 

@@ -24,17 +24,17 @@ public class MapperKey implements WritableComparable<MapperKey> {
 
     public void readFields(DataInput in) throws IOException {
 
-        String[] arr = Arrays.stream(
+        Integer[] arr = Arrays.stream(
                 in.readLine().split("\t")
-        ).map(String::trim).toArray(String[]::new);
+        ).map(String::trim).toArray(Integer[]::new);
 
-        this.matrixIndex = Integer.parseInt(arr[0]);
-        this.colIndex    = Integer.parseInt(arr[1]);
-        this.flag        = Integer.parseInt(arr[2]);
+        this.matrixIndex = arr[0];
+        this.colIndex    = arr[1];
+        this.flag        = arr[2];
     }
 
     public void write(DataOutput out) throws IOException {
-        String[] array = new String[] {Integer.toString(this.matrixIndex), Integer.toString(this.colIndex), Integer.toString(this.flag)};
+        Integer[] array = new Integer[] {this.matrixIndex, this.colIndex, this.flag};
         out.writeBytes(Arrays.toString(array));
     }
 

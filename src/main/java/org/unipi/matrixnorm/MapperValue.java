@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class MapperValue implements Writable {
 
-    private int matrixIndex = 0;
+    int matrixIndex = 0;
     int rowIndex    = 0;
     double colValue = 0;
 
@@ -22,17 +22,17 @@ public class MapperValue implements Writable {
 
     public void readFields(DataInput in) throws IOException {
 
-        String[] arr = Arrays.stream(
+        Double[] arr = Arrays.stream(
                 in.readLine().split("\t")
-        ).map(String::trim).toArray(String[]::new);
+        ).map(String::trim).toArray(Double[]::new);
 
-        this.matrixIndex = Integer.parseInt(arr[0]);
-        this.rowIndex    = Integer.parseInt(arr[1]);
-        this.colValue    = Double.parseDouble(arr[2]);
+        this.matrixIndex = arr[0].intValue();
+        this.rowIndex    = arr[1].intValue();
+        this.colValue    = arr[2];
     }
 
     public void write(DataOutput out) throws IOException {
-        String[] array = new String[] {Integer.toString(this.matrixIndex), Integer.toString(this.rowIndex), Double.toString(this.colValue)};
+        double[] array = new double[] {this.matrixIndex, this.rowIndex, this.colValue};
         out.writeBytes(Arrays.toString(array));
     }
 
@@ -52,7 +52,7 @@ public class MapperValue implements Writable {
 
         long l = Double.doubleToLongBits(colValue);
 
-        result = prime * result + (int)(l ^ (l >>> 32));;
+        result = prime * result + (int)(l ^ (l >>> 32));
         return result;
     }
 }
