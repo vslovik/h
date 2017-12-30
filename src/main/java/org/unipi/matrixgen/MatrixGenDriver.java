@@ -47,9 +47,6 @@ class MatrixGenDriver extends Configured implements Tool {
             MatrixGenInputFormat.setNumMapTasks(job, numMapTasks);
             MatrixGenInputFormat.setNumRecordsPerTask(job, numRecordsPerTasks);
 
-            job.setOutputKeyClass(Text.class);
-            job.setOutputValueClass(Text.class);
-
             FileOutputFormat.setOutputPath(job, outputDir);
 
             job.setOutputKeyClass(Text.class);
