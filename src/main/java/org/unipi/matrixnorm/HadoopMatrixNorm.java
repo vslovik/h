@@ -108,19 +108,25 @@ public class HadoopMatrixNorm extends Configured implements Tool {
     }
 
     public int run(String[] args) throws Exception {
-        Configuration conf = new Configuration();
-        Job job = Job.getInstance(conf, "matrix normalization");
-        job.setJarByClass(MatrixNormMapper.class);
-        job.setMapperClass(MatrixNormMapper.class);
-        job.setMapOutputKeyClass(MapperKey.class);
-        job.setMapOutputValueClass(MapperValue.class);
-        job.setPartitionerClass(ColumnIndexPartitioner.class);
-        job.setReducerClass(MatrixNormReducer.class);
-        job.setOutputKeyClass(IntWritable.class);
-        job.setOutputValueClass(String.class);
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        if (job.waitForCompletion(true)) return 0;
-        else return 1;
+        if (args.length != 2) {
+            System.err.println("USAGE : [input path] [output path]");
+            return 1;
+        } else {
+
+            Configuration conf = new Configuration();
+            Job job = Job.getInstance(conf, "matrix normalization");
+            job.setJarByClass(HadoopMatrixNorm.class);
+            job.setMapperClass(MatrixNormMapper.class);
+            job.setMapOutputKeyClass(MapperKey.class);
+            job.setMapOutputValueClass(MapperValue.class);
+            job.setPartitionerClass(ColumnIndexPartitioner.class);
+            job.setReducerClass(MatrixNormReducer.class);
+            job.setOutputKeyClass(IntWritable.class);
+            job.setOutputValueClass(String.class);
+            FileInputFormat.addInputPath(job, new Path(args[0]));
+            FileOutputFormat.setOutputPath(job, new Path(args[1]));
+            if (job.waitForCompletion(true)) return 0;
+            else return 1;
+        }
     }
 }

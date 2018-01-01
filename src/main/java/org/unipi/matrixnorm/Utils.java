@@ -11,7 +11,7 @@ import java.text.NumberFormat;
 
 public class Utils {
 
-   static int compare(ArrayList<Integer> thisSeq, ArrayList<Integer> thatSeq) throws IllegalArgumentException {
+   private static int compare(ArrayList<Integer> thisSeq, ArrayList<Integer> thatSeq) throws IllegalArgumentException {
 
         if (thisSeq.size() != thatSeq.size()) {
             throw new IllegalArgumentException("Arguments have to be of the same length");
@@ -104,7 +104,7 @@ public class Utils {
         return Utils.splitArray(values, cols);
     }
 
-    public static String nextSerializedMatrix(Random r) {
+    private static String nextSerializedMatrix(Random r) {
 
         int minRows = 1;
         int minCols = 1;
