@@ -28,11 +28,12 @@ public class MatrixPNorm extends Configured implements Tool {
 
     public static class MatrixPNormMapper extends Mapper<Integer, Text, Integer, Double> {
 
+        // ToDo throw IO exception if row length is of different size, deserialization fail
         @Override
         public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
             try {
 
-                Double p = context.getConfiguration().getDouble("power", 0.0);
+                Double p = context.getConfiguration().getDouble("power", 2.0);
 
                 int rowIndex = key;
                 Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
@@ -49,7 +50,7 @@ public class MatrixPNorm extends Configured implements Tool {
         }
     }
 
-    public static class MatrixPNormCombiner extends Reducer<Integer, Double, Integer, Double> {
+    public static class MatrixPNormCombiner extends Reducer<Integer, Double, NullWritable, Double> {
 
         @Override
         public void reduce(Integer key, Iterable<Double> values,
@@ -60,19 +61,17 @@ public class MatrixPNorm extends Configured implements Tool {
                 sum += value;
             }
 
-            context.write(key, sum);
+            context.write(NullWritable.get(), sum);
         }
     }
 
-    public static class MatrixPNormReducer extends Reducer<Integer, Double, NullWritable, Double> {
-
-        double maxColValue = 0.0;
+    public static class MatrixPNormReducer extends Reducer<NullWritable, Double, NullWritable, Double> {
 
         @Override
-        public void reduce(Integer key, Iterable<Double> values,
+        public void reduce(NullWritable key, Iterable<Double> values,
                            Context context) throws IOException, InterruptedException {
 
-            Double p = context.getConfiguration().getDouble("power", 0.0);
+            Double p = context.getConfiguration().getDouble("power", 2.0);
 
             Double sum = 0.0;
             for (Double value : values) {
@@ -80,12 +79,6 @@ public class MatrixPNorm extends Configured implements Tool {
             }
 
             context.write(NullWritable.get(), pow(sum, 1.0 / p));
-
-        }
-
-        @Override
-        public void cleanup(Reducer<Integer, Double, NullWritable, Double>.Context context) throws IOException, InterruptedException {
-            context.write(NullWritable.get(), maxColValue);
         }
     }
 

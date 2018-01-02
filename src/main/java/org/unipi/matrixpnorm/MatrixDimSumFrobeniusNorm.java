@@ -84,7 +84,11 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
             } else {
                 trace += sum / gamma;
             }
+        }
 
+        @Override
+        public void cleanup(Reducer<Integer, Double, NullWritable, Double>.Context context)
+                throws IOException, InterruptedException {
             context.write(NullWritable.get(), pow(trace, 0.5));
         }
     }

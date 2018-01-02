@@ -3,13 +3,10 @@ package org.unipi.matrixpnorm;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Utils {
 
-    static Double[] deserializeArrayOfDoubles(String s) throws IllegalArgumentException {
+    public static Double[] deserializeArrayOfDoubles(String s) throws IllegalArgumentException {
         String[] items = s.split("\t");
 
         return Arrays.stream(items).map(Double::valueOf).toArray(Double[]::new);

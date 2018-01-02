@@ -21,8 +21,6 @@ import static java.lang.Math.pow;
 
 public class MatrixNaiveFrobeniusNorm extends Configured implements Tool {
 
-    private static final double PRECISION = 1E-6;
-
     public static class MatrixNaiveFrobeniusNormMapper extends Mapper<Integer, Text, Integer, Double> {
 
         @Override
@@ -32,7 +30,7 @@ public class MatrixNaiveFrobeniusNorm extends Configured implements Tool {
                 Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
 
                 for(int c = 0; c < row.length; c++) {
-                    if(row[c] > PRECISION) {
+                    if(!row[c].equals(0.0)) {
                         context.write(c, row[c] * row[c]);
                     }
                 }
@@ -54,7 +52,11 @@ public class MatrixNaiveFrobeniusNorm extends Configured implements Tool {
             for (Double value : values) {
                 trace += value;
             }
+        }
 
+        @Override
+        public void cleanup(Reducer<Integer, Double, NullWritable, Double>.Context context)
+                throws IOException, InterruptedException {
             context.write(NullWritable.get(), pow(trace, 0.5));
         }
     }

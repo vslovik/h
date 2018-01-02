@@ -15,13 +15,14 @@ import org.unipi.matrixnorm.HadoopMatrixNorm;
 
 import java.io.IOException;
 import static java.lang.Math.sqrt;
+import static java.util.Arrays.fill;
 
-public class MatrixScale extends Configured implements Tool {
+public class MatrixColumnsMagnitudes extends Configured implements Tool {
 
-    private double maxValue;
-    private Double[] magnitudes;
+    public static class MatrixColumnsMagnitudesMapper extends Mapper<Integer, Text, NullWritable, String> {
 
-    public class MatrixScaleMapper extends Mapper<Integer, Text, NullWritable, String> {
+        private double maxValue = 0.0;
+        private Double[] magnitudes;
 
         @Override
         public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
@@ -30,15 +31,16 @@ public class MatrixScale extends Configured implements Tool {
 
                 Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
 
-                if(null == magnitudes) {
+                if(key.equals(0)) {
                     magnitudes = new Double[row.length];
+                    fill(magnitudes, 0.0);
                 }
 
                 for(int c = 0; c < row.length; c++) {
                     if(row[c] > maxValue) {
                         maxValue = row[c];
                     }
-                    if(row[c] > magnitudes[c]) {
+                    if(!row[c].equals(0.0)) {
                         magnitudes[c] += row[c] * row[c];
                     }
                 }
@@ -49,7 +51,8 @@ public class MatrixScale extends Configured implements Tool {
         }
 
         @Override
-        protected void cleanup(Mapper<Integer, Text, NullWritable, String>.Context context) throws IOException, InterruptedException {
+        public void cleanup(Mapper<Integer, Text, NullWritable, String>.Context context)
+                throws IOException, InterruptedException {
 
             for(int i = 0; i < magnitudes.length; i++) {
                 magnitudes[i] = sqrt(magnitudes[i])/maxValue;
@@ -69,10 +72,10 @@ public class MatrixScale extends Configured implements Tool {
 
         Configuration conf = new Configuration();
         Job job = Job.getInstance(conf, "matrix scale");
-        job.setJarByClass(MatrixScale.class);
+        job.setJarByClass(MatrixColumnsMagnitudes.class);
         job.setNumReduceTasks(0);
 
-        job.setMapperClass(MatrixScaleMapper.class);
+        job.setMapperClass(MatrixColumnsMagnitudesMapper.class);
 
         job.setMapOutputKeyClass(NullWritable.class);
         job.setMapOutputValueClass(Double.class);
