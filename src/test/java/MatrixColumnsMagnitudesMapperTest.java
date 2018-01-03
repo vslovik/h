@@ -6,7 +6,7 @@ import org.mockito.InOrder;
 import org.unipi.matrixpnorm.MatrixColumnsMagnitudes;
 
 import java.io.IOException;
-import java.util.Random;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
@@ -23,14 +23,13 @@ class MatrixColumnsMagnitudesMapperTest {
         when(context.getConfiguration().getDouble("power", 2.0)).thenReturn(2.0);
     }
 
-//    @Test
-//    void wrongInput() throws IOException, InterruptedException {
-//
-//        assertThrows(IOException.class,
-//                () -> {
-//                    mapper.map(0, new Text("blabla"), context);
-//                });
-//    }
+    @Test
+    void wrongInput() throws IOException, InterruptedException {
+        assertThrows(
+                IOException.class,
+                () -> mapper.map(0, new Text("blabla"), context)
+        );
+    }
 
     @Test
     void mapTest() throws IOException, InterruptedException {

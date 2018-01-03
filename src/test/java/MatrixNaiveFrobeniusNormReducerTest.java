@@ -53,7 +53,59 @@ class MatrixNaiveFrobeniusNormReducerTest {
 
         inOrder.verify(context).write(
                 eq(NullWritable.get()),
-                eq( pow(15.0, 0.5))
+                eq(pow(15.0, 0.5))
+        );
+    }
+
+    @Test
+    void allOnesMatrixReduceTest() throws IOException, InterruptedException {
+
+        InOrder inOrder = inOrder(context);
+
+        ArrayList<Double> values = new ArrayList<>();
+        values.add(1.0);
+        values.add(1.0);
+        values.add(1.0);
+
+        reducer.reduce(0, values, context);
+        reducer.reduce(1, values, context);
+        reducer.reduce(3, values, context);
+
+        inOrder.verify(context, never()).write(
+                eq(NullWritable.get()),
+                eq(pow(9.0, 0.5))
+        );
+
+        reducer.cleanup(context);
+
+        inOrder.verify(context).write(
+                eq(NullWritable.get()),
+                eq(pow(9.0, 0.5))
+        );
+    }
+
+    @Test
+    void unitaryMatrixReduceTest() throws IOException, InterruptedException {
+
+        InOrder inOrder = inOrder(context);
+
+        ArrayList<Double> values = new ArrayList<>();
+        values.add(1.0);
+
+        reducer.reduce(0, values, context);
+        reducer.reduce(1, values, context);
+        reducer.reduce(2, values, context);
+
+        inOrder.verify(context, never()).write(
+                eq(NullWritable.get()),
+                eq(pow(3.0, 0.5))
+        );
+
+        reducer.cleanup(context);
+
+        inOrder.verify(context).write(
+                eq(NullWritable.get()),
+                eq(pow(3.0, 0.5))
         );
     }
 
