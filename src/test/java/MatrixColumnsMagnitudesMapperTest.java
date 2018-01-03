@@ -58,4 +58,26 @@ class MatrixColumnsMagnitudesMapperTest {
                 eq("4\t4\t4\t4")
         );
     }
+
+    @Test
+    void unitaryMarixTest() throws IOException, InterruptedException {
+
+        mapper.map(0, new Text("1.0\t0.0\t0.0"), context);
+        mapper.map(1, new Text("0.0\t1.0\t0.0"), context);
+        mapper.map(2, new Text("0.0\t0.0\t1.0"), context);
+
+        InOrder inOrder = inOrder(context);
+
+        inOrder.verify(context, never()).write(
+                eq(NullWritable.get()),
+                eq("1\t1\t1")
+        );
+
+        mapper.cleanup(context);
+
+        inOrder.verify(context).write(
+                eq(NullWritable.get()),
+                eq("1\t1\t1")
+        );
+    }
 }
