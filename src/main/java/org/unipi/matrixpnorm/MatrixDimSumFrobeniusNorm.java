@@ -26,11 +26,18 @@ import static java.lang.Math.min;
 
 public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
 
-    private Double[] magnitudes;
-    private double gamma;
-    private Random random = new Random();
-
     public class MatrixDimSumFrobeniusNormMapper extends Mapper<Integer, Text, Integer, Double> {
+
+        private Double[] magnitudes;
+        private double gamma;
+        private Random random = new Random();
+
+        private void init(String magnitudesSerialized) {
+            if (null == magnitudes) {
+                magnitudes = Utils.deserializeArrayOfDoubles(magnitudesSerialized);
+                gamma = 2 * log(magnitudes.length);
+            }
+        }
 
         @Override
         public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
@@ -38,10 +45,7 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
 
                 double prob;
 
-                if (null == magnitudes) {
-                    magnitudes = Utils.deserializeArrayOfDoubles(context.getConfiguration().get("magnitudes_serialized"));
-                    gamma = 2 * log(magnitudes.length);
-                }
+                init(context.getConfiguration().get("magnitudes_serialized"));
 
                 Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
                 if (row.length != magnitudes.length) {
@@ -67,10 +71,21 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
     public class MatrixDimSumFrobeniusNormReducer extends Reducer<Integer, Double, NullWritable, Double> {
 
         Double trace = 0.0;
+        private Double[] magnitudes;
+        private double gamma;
+
+        private void init(String magnitudesSerialized) {
+            if (null == magnitudes) {
+                magnitudes = Utils.deserializeArrayOfDoubles(magnitudesSerialized);
+                gamma = 2 * log(magnitudes.length);
+            }
+        }
 
         @Override
         public void reduce(Integer key, Iterable<Double> values,
                            Context context) throws IOException, InterruptedException {
+
+            init(context.getConfiguration().get("magnitudes_serialized"));
 
             double sum = 0.0;
             for (Double value : values) {
