@@ -6,7 +6,6 @@ import org.unipi.matrixpnorm.MatrixPNorm;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import org.apache.hadoop.io.NullWritable;
 
 import static java.lang.Math.pow;
 import static org.mockito.Matchers.eq;
@@ -24,32 +23,29 @@ class MatrixPNormReducerTest {
         when(context.getConfiguration().getDouble("power", 2.0)).thenReturn(2.0);
     }
 
-//    @Test
-//    void reduceTest() throws IOException, InterruptedException {
-//
-//        Random r = new Random();
-//        Integer key = r.nextInt();
-//
-//        InOrder inOrder = inOrder(context);
-//
-//        ArrayList<Double> values = new ArrayList<>();
-//        values.add(1.0);
-//        values.add(2.0);
-//        values.add(3.0);
-//        values.add(4.0);
-//        values.add(5.0);
-//
-//        reducer.reduce(
-//                key,
-//                values,
-//                context
-//        );
-//
-//        inOrder.verify(context).write(
-//                eq(NullWritable.get()),
-//                eq(pow(15.0, 1.0 / 2.0))
-//        );
-//    }
+    @Test
+    void reduceTest() throws IOException, InterruptedException {
+
+        InOrder inOrder = inOrder(context);
+
+        ArrayList<Double> values = new ArrayList<>();
+        values.add(1.0);
+        values.add(2.0);
+        values.add(3.0);
+        values.add(4.0);
+        values.add(5.0);
+
+        reducer.reduce(
+                NullWritable.get(),
+                values,
+                context
+        );
+
+        inOrder.verify(context).write(
+                eq(NullWritable.get()),
+                eq(pow(15.0, 0.5))
+        );
+    }
 
     @Test
     void allOnesMatrixReduceTest() throws IOException, InterruptedException {
@@ -84,24 +80,6 @@ class MatrixPNormReducerTest {
         inOrder.verify(context).write(
                 eq(NullWritable.get()),
                 eq(pow(3.0, 0.5))
-        );
-    }
-
-    @Test
-    void zeroMatrixReduceTest() throws IOException, InterruptedException {
-
-        InOrder inOrder = inOrder(context);
-
-        ArrayList<Double> values = new ArrayList<>();
-        values.add(0.0);
-        values.add(0.0);
-        values.add(0.0);
-
-        reducer.reduce(NullWritable.get(), values, context);
-
-        inOrder.verify(context).write(
-                eq(NullWritable.get()),
-                eq(pow(0.0, 0.5))
         );
     }
 }

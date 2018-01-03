@@ -25,14 +25,14 @@ class MatrixPNormMapperTest {
         when(context.getConfiguration().getDouble("power", 2.0)).thenReturn(2.0);
     }
 
-//    @Test
-//    void wrongInput() throws IOException, InterruptedException {
-//
-//        assertThrows(IOException.class,
-//                () -> {
-//                    mapper.map(0, new Text("blabla"), context);
-//                });
-//    }
+    @Test
+    void wrongInput() throws IOException, InterruptedException {
+
+        assertThrows(IOException.class,
+                () -> {
+                    mapper.map(0, new Text("blabla"), context);
+                });
+    }
 
     @Test
     void mapTest() throws IOException, InterruptedException {

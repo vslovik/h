@@ -6,12 +6,10 @@ import org.unipi.matrixpnorm.MatrixPNorm;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static java.lang.Math.pow;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 class MatrixPNormCombinerTest {
 
@@ -25,10 +23,7 @@ class MatrixPNormCombinerTest {
     }
 
     @Test
-    void reduceTest() {
-
-        Random r = new Random();
-        Integer key = r.nextInt();
+    void reduceTest() throws IOException, InterruptedException {
 
         InOrder inOrder = inOrder(context);
 
@@ -39,13 +34,50 @@ class MatrixPNormCombinerTest {
         values.add(4.0);
         values.add(5.0);
 
-//        combiner.reduce(1, values, context);
-//
-//        inOrder.verify(context).write(
-//                eq(key),
-//                eq(15.0)
-//        );
+        combiner.reduce(0, values, context);
 
+        inOrder.verify(context).write(
+                eq(NullWritable.get()),
+                eq(15.0)
+        );
+    }
+
+    @Test
+    void allOnesMatrixReduceTest() throws IOException, InterruptedException {
+
+        InOrder inOrder = inOrder(context);
+
+        ArrayList<Double> values = new ArrayList<>();
+        values.add(1.0);
+        values.add(1.0);
+        values.add(1.0);
+
+        combiner.reduce(0, values, context);
+        combiner.reduce(1, values, context);
+        combiner.reduce(2, values, context);
+
+        inOrder.verify(context, times(3)).write(
+                eq(NullWritable.get()),
+                eq(3.0)
+        );
+    }
+
+    @Test
+    void unitaryMatrixReduceTest() throws IOException, InterruptedException {
+
+        InOrder inOrder = inOrder(context);
+
+        ArrayList<Double> values = new ArrayList<>();
+        values.add(1.0);
+
+        combiner.reduce(0, values, context);
+        combiner.reduce(1, values, context);
+        combiner.reduce(2, values, context);
+
+        inOrder.verify(context, times(3)).write(
+                eq(NullWritable.get()),
+                eq(1.0)
+        );
     }
 
 }

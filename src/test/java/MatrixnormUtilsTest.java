@@ -40,11 +40,9 @@ class MatrixnormUtilsTest {
 
     @Test
     void wrongInputTest() {
-
-        assertThrows(IllegalArgumentException.class,
-                ()->{
-                    Utils.deserialize("1\t2\t1.0");
-                });
-
+        assertThrows(
+                IllegalArgumentException.class,
+                ()-> Utils.deserialize("1\t2\t1.0")
+        );
     }
 }

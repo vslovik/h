@@ -25,4 +25,13 @@ class MatrixpnormUtilsTest {
 
         assertArrayEquals(expected, deserialized);
     }
+
+    @Test
+    void wrongDeserializeInputTest() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> Utils.deserializeArrayOfDoubles("blabla")
+        );
+    }
 }
