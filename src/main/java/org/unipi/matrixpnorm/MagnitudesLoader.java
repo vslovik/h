@@ -12,14 +12,12 @@ class MagnitudesLoader {
 
     static List<Double> load(String path, Configuration conf) throws IOException
     {
-        Path pt = new Path(path);
-        FileSystem fs = FileSystem.get(conf);
-        BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(pt)));
-
+        String line;
         List<Double> magnitudes = new ArrayList<>();
 
-        try {
-            String line;
+        Path pt = new Path(path);
+        FileSystem fs = FileSystem.get(conf);
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(pt)))) {
             line = br.readLine();
             while (line != null){
 
@@ -28,10 +26,23 @@ class MagnitudesLoader {
 
                 line = br.readLine();
             }
-        } finally {
-
-            br.close();
         }
+
+//        try {
+//            String line;
+//            line = br.readLine();
+//            while (line != null){
+//
+//                String[] row = line.split("\t");
+//                magnitudes.add(Double.parseDouble(row[1]));
+//
+//                line = br.readLine();
+//            }
+//        } finally {
+//
+//            br.close();
+//        }
+
 
         return magnitudes;
     }
