@@ -32,12 +32,18 @@ class MatrixDimSumFrobeniusNormTest {
         Configuration conf = new Configuration();
 
         mapperContext = mock(MatrixDimSumFrobeniusNorm.MatrixDimSumFrobeniusNormMapper.Context.class, RETURNS_DEEP_STUBS);
-        when(mapperContext.getConfiguration().get("magnitudes_serialized")).thenReturn("path");
-        when(mapperContext.getConfiguration()).thenReturn(conf);
+        when(mapperContext.getConfiguration().getDouble("gamma", 1.0)).thenReturn(2 * log(4));
+        when(mapperContext.getConfiguration().getDouble("0", 1.0)).thenReturn(4.0);
+        when(mapperContext.getConfiguration().getDouble("1", 1.0)).thenReturn(4.0);
+        when(mapperContext.getConfiguration().getDouble("2", 1.0)).thenReturn(4.0);
+        when(mapperContext.getConfiguration().getDouble("3", 1.0)).thenReturn(4.0);
 
         reducerContext = mock(MatrixDimSumFrobeniusNorm.MatrixDimSumFrobeniusNormReducer.Context.class, RETURNS_DEEP_STUBS);
-        when(reducerContext.getConfiguration().get("magnitudes_serialized")).thenReturn("path");
-        when(reducerContext.getConfiguration()).thenReturn(conf);
+        when(reducerContext.getConfiguration().getDouble("gamma", 1.0)).thenReturn(2 * log(4));
+        when(reducerContext.getConfiguration().getDouble("0", 1.0)).thenReturn(4.0);
+        when(reducerContext.getConfiguration().getDouble("1", 1.0)).thenReturn(4.0);
+        when(reducerContext.getConfiguration().getDouble("2", 1.0)).thenReturn(4.0);
+        when(reducerContext.getConfiguration().getDouble("3", 1.0)).thenReturn(4.0);
 
     }
 
