@@ -28,7 +28,6 @@ public class MatrixPNorm extends Configured implements Tool {
 
     public static class MatrixPNormMapper extends Mapper<Integer, Text, Integer, Double> {
 
-        // ToDo throw IO exception if row length is of different size, deserialization fail
         @Override
         public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
             try {
