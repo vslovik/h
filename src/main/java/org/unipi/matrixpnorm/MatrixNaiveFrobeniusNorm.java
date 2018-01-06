@@ -61,7 +61,7 @@ public class MatrixNaiveFrobeniusNorm extends Configured implements Tool {
         }
     }
 
-    public void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         int res = ToolRunner.run(new Configuration(), new MatrixNaiveFrobeniusNorm(), args);
         System.exit(res);
     }

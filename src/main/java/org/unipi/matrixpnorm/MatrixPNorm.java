@@ -81,7 +81,7 @@ public class MatrixPNorm extends Configured implements Tool {
         }
     }
 
-    public void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         int res = ToolRunner.run(new Configuration(), new MatrixPNorm(), args);
         System.exit(res);
     }
@@ -89,7 +89,7 @@ public class MatrixPNorm extends Configured implements Tool {
     public int run(String[] args) throws Exception {
 
         if (args.length != 3) {
-            System.err.println("USAGE : [input path] [output path] [p: double number or 'infinity' key word] ");
+            System.err.println("USAGE : [input path] [output path] [p: double number] ");
             return 1;
         } else {
 

@@ -102,7 +102,7 @@ public class HadoopMatrixNorm extends Configured implements Tool {
 
     }
 
-    public void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         int res = ToolRunner.run(new Configuration(), new HadoopMatrixNorm(), args);
         System.exit(res);
     }

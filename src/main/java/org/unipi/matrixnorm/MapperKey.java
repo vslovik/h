@@ -1,14 +1,11 @@
 package org.unipi.matrixnorm;
 
-import com.sun.istack.NotNull;
 import org.apache.hadoop.io.WritableComparable;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-
 import java.util.Arrays;
-import java.util.ArrayList;
 
 public class MapperKey implements WritableComparable<MapperKey> {
 
@@ -16,12 +13,15 @@ public class MapperKey implements WritableComparable<MapperKey> {
     int colIndex    = 0;
     int flag        = 0;
 
+    public MapperKey(){}
+
     public MapperKey(int matrixIndex, int colIndex, int flag) {
         this.matrixIndex = matrixIndex;
         this.colIndex    = colIndex;
         this.flag        = flag;
     }
 
+    @Override
     public void readFields(DataInput in) throws IOException {
 
         Integer[] arr = Arrays.stream(
@@ -33,11 +33,13 @@ public class MapperKey implements WritableComparable<MapperKey> {
         this.flag        = arr[2];
     }
 
+    @Override
     public void write(DataOutput out) throws IOException {
         Integer[] array = new Integer[] {this.matrixIndex, this.colIndex, this.flag};
         out.writeBytes(Arrays.toString(array));
     }
 
+    @Override
     public int compareTo(MapperKey o) {
 
         int result = Integer.compare(this.matrixIndex, o.matrixIndex);
