@@ -13,7 +13,7 @@ import org.apache.hadoop.util.ToolRunner;
 
 class MatrixRowGenDriver extends Configured implements Tool {
 
-    public void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         int res = ToolRunner.run(new Configuration(), new MatrixRowGenDriver(), args);
         System.exit(res);
     }
@@ -36,14 +36,12 @@ class MatrixRowGenDriver extends Configured implements Tool {
                 return 1;
             }
 
-            Job job = Job.getInstance(configuration, "matrix generator");
+            Job job = Job.getInstance(configuration, "matrix row generator");
 
             FileSystem.get(outputDir.toUri(), configuration).delete(outputDir, true);
 
             job.setJarByClass(MatrixRowGenDriver.class);
             job.setNumReduceTasks(0);
-            job.setInputFormatClass(MatrixRowGenInputFormat.class);
-
             job.setInputFormatClass(MatrixRowGenInputFormat.class);
 
             MatrixRowGenInputFormat.setNumMapTasks(job, numMapTasks);

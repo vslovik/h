@@ -17,7 +17,7 @@ import org.apache.hadoop.util.ToolRunner;
 
 class MatrixGenDriver extends Configured implements Tool {
 
-    public void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         int res = ToolRunner.run(new Configuration(), new MatrixGenDriver(), args);
         System.exit(res);
     }
@@ -40,8 +40,6 @@ class MatrixGenDriver extends Configured implements Tool {
 
             job.setJarByClass(MatrixGenDriver.class);
             job.setNumReduceTasks(0);
-            job.setInputFormatClass(MatrixGenInputFormat.class);
-
             job.setInputFormatClass(MatrixGenInputFormat.class);
 
             MatrixGenInputFormat.setNumMapTasks(job, numMapTasks);
