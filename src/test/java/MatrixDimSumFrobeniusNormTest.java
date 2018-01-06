@@ -2,18 +2,21 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
 import org.unipi.matrixpnorm.MatrixDimSumFrobeniusNorm;
+import org.unipi.matrixpnorm.MagnitudesLoader;
+import org.apache.hadoop.conf.Configuration;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Math.log;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 import static java.lang.Math.sqrt;
 
-class MatrixDimSumFrobeniusNormMapperTest {
+class MatrixDimSumFrobeniusNormTest {
 
     private MatrixDimSumFrobeniusNorm.MatrixDimSumFrobeniusNormMapper mapper;
     private MatrixDimSumFrobeniusNorm.MatrixDimSumFrobeniusNormReducer reducer;
@@ -26,11 +29,16 @@ class MatrixDimSumFrobeniusNormMapperTest {
         mapper  = dimSum.new MatrixDimSumFrobeniusNormMapper();
         reducer = dimSum.new MatrixDimSumFrobeniusNormReducer();
 
+        Configuration conf = new Configuration();
+
         mapperContext = mock(MatrixDimSumFrobeniusNorm.MatrixDimSumFrobeniusNormMapper.Context.class, RETURNS_DEEP_STUBS);
-        when(mapperContext.getConfiguration().get("magnitudes_serialized")).thenReturn("4\t4\t4\t4");
+        when(mapperContext.getConfiguration().get("magnitudes_serialized")).thenReturn("path");
+        when(mapperContext.getConfiguration()).thenReturn(conf);
 
         reducerContext = mock(MatrixDimSumFrobeniusNorm.MatrixDimSumFrobeniusNormReducer.Context.class, RETURNS_DEEP_STUBS);
-        when(reducerContext.getConfiguration().get("magnitudes_serialized")).thenReturn("4\t4\t4\t4");
+        when(reducerContext.getConfiguration().get("magnitudes_serialized")).thenReturn("path");
+        when(reducerContext.getConfiguration()).thenReturn(conf);
+
     }
 
     @Test
@@ -54,7 +62,6 @@ class MatrixDimSumFrobeniusNormMapperTest {
         verify(mapperContext, atMost(4)).write(3, 1.0);
     }
 
-    @Test
     void reduceTest() throws IOException, InterruptedException {
 
         ArrayList<Double> values = new ArrayList<>();

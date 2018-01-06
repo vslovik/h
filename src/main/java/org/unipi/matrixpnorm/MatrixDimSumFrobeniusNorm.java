@@ -27,35 +27,30 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
 
     public class MatrixDimSumFrobeniusNormMapper extends Mapper<Integer, Text, Integer, Double> {
 
-        private List<Double> magnitudes;
         private double gamma;
         private Random random = new Random();
 
-        private void init(Context context) throws IOException {
-            magnitudes = MagnitudesLoader.load(
-                    context.getConfiguration().get("magnitudes_path"),
-                    context.getConfiguration()
-            );
-
-            gamma = 2 * log(magnitudes.size());
+        @Override
+        public void setup(Context context) throws IOException, InterruptedException {
+            gamma = context.getConfiguration().getDouble("gamma", 1.0);
         }
 
         @Override
         public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
             try {
 
-                init(context);
+                Configuration conf = context.getConfiguration();
 
+                double colNorm;
                 double prob;
 
                 Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
-                if (row.length != magnitudes.size()) {
-                    throw new IllegalArgumentException();
-                }
 
                 for (int c = 0; c < row.length; c++) {
+
                     if(!row[c].equals(0.0)) {
-                        double factor = gamma / magnitudes.get(c);
+                        colNorm = conf.getDouble(Integer.toString(key), 1.0);
+                        double factor = gamma / colNorm;
                         prob = min(1.0, factor);
                         if (random.nextDouble() < prob) {
                             context.write(c, row[c] * row[c]);
@@ -72,32 +67,25 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
     public class MatrixDimSumFrobeniusNormReducer extends Reducer<Integer, Double, NullWritable, Double> {
 
         Double trace = 0.0;
-        private List<Double> magnitudes;
         private double gamma;
 
-        private void init(Context context) throws IOException {
-                magnitudes = MagnitudesLoader.load(
-                        context.getConfiguration().get("magnitudes_path"),
-                        context.getConfiguration()
-                );
-
-                gamma = 2 * log(magnitudes.size());
+        @Override
+        public void setup(Context context) throws IOException, InterruptedException {
+            gamma = context.getConfiguration().getDouble("gamma", 1.0);
         }
 
         @Override
         public void reduce(Integer key, Iterable<Double> values,
                            Context context) throws IOException, InterruptedException {
 
-            if (null == magnitudes) {
-                init(context);
-            }
+            double colNorm = context.getConfiguration().getDouble(Integer.toString(key), 1.0);
 
             double sum = 0.0;
             for (Double value : values) {
                 sum += value;
             }
 
-            double factor = 1.0 / magnitudes.get(key);
+            double factor = 1.0 / colNorm;
 
             if (gamma * factor > 1) {
                 trace += factor * sum;
@@ -126,7 +114,12 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
         } else {
             Configuration conf = new Configuration();
 
-            conf.set("magnitudes_path", args[0]);
+            List<Double> magnitudes = MagnitudesLoader.load(args[0], conf);
+            conf.setDouble("gamma", 2 * log(magnitudes.size()));
+
+            for(int i=0; i < magnitudes.size(); i++) {
+                conf.setDouble(Integer.toString(i), magnitudes.get(i));
+            }
 
             Job job = Job.getInstance(conf, "matrix dimsum Frobenius norm");
             job.setJarByClass(MatrixDimSumFrobeniusNorm.class);

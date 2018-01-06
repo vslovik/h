@@ -83,7 +83,7 @@ public class MatrixPNorm extends Configured implements Tool {
     }
 
     public void main(String[] args) throws Exception {
-        int res = ToolRunner.run(new Configuration(), new HadoopMatrixNorm(), args);
+        int res = ToolRunner.run(new Configuration(), new MatrixPNorm(), args);
         System.exit(res);
     }
 

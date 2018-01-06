@@ -7,6 +7,7 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
@@ -15,33 +16,25 @@ import org.unipi.matrixnorm.HadoopMatrixNorm;
 
 import java.io.IOException;
 import static java.lang.Math.sqrt;
-import static java.util.Arrays.fill;
 
 public class MatrixColumnsMagnitudes extends Configured implements Tool {
 
-    public static class MatrixColumnsMagnitudesMapper extends Mapper<Integer, Text, NullWritable, String> {
+    private double maxValue = 0.0;
 
-        private double maxValue = 0.0;
-        private Double[] magnitudes;
+    public class MatrixColumnsMagnitudesMapper extends Mapper<Integer, Text, Integer, Double> {
 
         @Override
         public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
 
             try {
-
                 Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
-
-                if(key.equals(0)) {
-                    magnitudes = new Double[row.length];
-                    fill(magnitudes, 0.0);
-                }
 
                 for(int c = 0; c < row.length; c++) {
                     if(row[c] > maxValue) {
                         maxValue = row[c];
                     }
                     if(!row[c].equals(0.0)) {
-                        magnitudes[c] += row[c] * row[c];
+                        context.write(c, row[c] * row[c]);
                     }
                 }
 
@@ -49,17 +42,22 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
                 throw new IOException();
             }
         }
+    }
 
-        @Override
-        public void cleanup(Mapper<Integer, Text, NullWritable, String>.Context context)
+    public class MatrixColumnsMagnitudesReducer extends Reducer<Integer, Double, Integer, Double> {
+
+        public void reduce(Integer key, Iterable<Double> values, Context context)
                 throws IOException, InterruptedException {
 
-            for(int i = 0; i < magnitudes.length; i++) {
-                magnitudes[i] = sqrt(magnitudes[i])/maxValue;
-                magnitudes[i] *= magnitudes[i];
+            Double sum = 0.0;
+            for (Double val : values) {
+                sum += val;
             }
 
-            context.write(NullWritable.get(), Utils.serializeArrayOfDoubles(magnitudes));
+            Double magnitude = sqrt(sum)/maxValue;
+            magnitude *= magnitude;
+
+            context.write(key, magnitude);
         }
     }
 

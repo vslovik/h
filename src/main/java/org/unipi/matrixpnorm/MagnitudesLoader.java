@@ -1,14 +1,16 @@
 package org.unipi.matrixpnorm;
 
-import java.io.*;
-import java.util.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.conf.Configuration;
 
-class MagnitudesLoader {
+public class MagnitudesLoader {
 
     static List<Double> load(String path, Configuration conf) throws IOException
     {
@@ -21,28 +23,12 @@ class MagnitudesLoader {
             line = br.readLine();
             while (line != null){
 
-                String[] row = line.split("\t");
+                String[] row = line.split("\\s+");
                 magnitudes.add(Double.parseDouble(row[1]));
 
                 line = br.readLine();
             }
         }
-
-//        try {
-//            String line;
-//            line = br.readLine();
-//            while (line != null){
-//
-//                String[] row = line.split("\t");
-//                magnitudes.add(Double.parseDouble(row[1]));
-//
-//                line = br.readLine();
-//            }
-//        } finally {
-//
-//            br.close();
-//        }
-
 
         return magnitudes;
     }
