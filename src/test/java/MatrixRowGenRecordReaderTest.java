@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MatrixRowGenRecordReaderTest {
 
     @Test
-    void wrongInput() throws IOException, InterruptedException {
+    void genReaderTest() throws IOException, InterruptedException {
         MatrixRowGenRecordReader reader = new MatrixRowGenRecordReader();
 
         double progress = 0.0;

@@ -19,8 +19,6 @@ public class MatrixRowGenRecordReader extends RecordReader<Integer, Text> {
     private int key = 0;
     private Text value = new Text();
 
-    private Random r = new Random();
-
     public void initialize(InputSplit split, TaskAttemptContext context)
             throws IOException, InterruptedException {
 
@@ -28,13 +26,28 @@ public class MatrixRowGenRecordReader extends RecordReader<Integer, Text> {
         this.numMatrixCols = context.getConfiguration().getInt(MatrixRowGenInputFormat.NUM_MATRIX_COLS, -1);
     }
 
-    private static Double[] generateMatrixRow(int valueLimit, int cols) {
+    private Double[] generateMatrixRow(int cols) {
+
+        Random rValues   = new Random();
+        Random rNonZeros = new Random();
+
+        double nonZerosLimit = 0.01;
+
+        int minValue = 1;
+        int maxValue = 100;
+
+        int valueLimit = minValue + rValues.nextInt(maxValue - minValue);
+
         Double[] row = new Double[cols];
 
         for (int c = 0; c < cols; c++) {
-            double leftLimit = 0D;
-            double rightLimit = (double) valueLimit;
-            row[c] = leftLimit + new Random().nextDouble() * (rightLimit - leftLimit);
+            if(rNonZeros.nextDouble() < nonZerosLimit) {
+                double leftLimit = 0D;
+                double rightLimit = (double) valueLimit;
+                row[c] = leftLimit + rValues.nextDouble() * (rightLimit - leftLimit);
+            } else {
+                row[c] = 0.0;
+            }
         }
 
         return row;
@@ -44,12 +57,7 @@ public class MatrixRowGenRecordReader extends RecordReader<Integer, Text> {
 
         if (createdRecords < numMatrixRowsToGenerate) {
 
-            int minValue = 1;
-            int maxValue = 100;
-
-            int valueLimit = minValue + r.nextInt(maxValue - minValue);
-
-            String serializedMatrixRow = Utils.serializeArrayOfDoubles(generateMatrixRow(valueLimit, numMatrixCols));
+            String serializedMatrixRow = Utils.serializeArrayOfDoubles(generateMatrixRow(numMatrixCols));
 
             key = createdRecords;
             value.set(serializedMatrixRow);
