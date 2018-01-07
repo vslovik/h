@@ -121,18 +121,20 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
                 conf.setDouble(Integer.toString(i), magnitudes.get(i));
             }
 
-            Job job = Job.getInstance(conf, "matrix dimsum Frobenius norm");
+            Job job = Job.getInstance(conf, "matrix DimSum Frobenius norm");
             job.setJarByClass(MatrixDimSumFrobeniusNorm.class);
 
             job.setMapperClass(MatrixDimSumFrobeniusNormMapper.class);
-
             job.setMapOutputKeyClass(Integer.class);
             job.setMapOutputValueClass(Double.class);
+
             job.setReducerClass(MatrixDimSumFrobeniusNormReducer.class);
-            job.setOutputKeyClass(IntWritable.class);
-            job.setOutputValueClass(String.class);
+            job.setOutputKeyClass(NullWritable.class);
+            job.setOutputValueClass(Double.class);
+
             FileInputFormat.addInputPath(job, new Path(args[1]));
             FileOutputFormat.setOutputPath(job, new Path(args[2]));
+
             if (job.waitForCompletion(true)) return 0;
             else return 1;
         }

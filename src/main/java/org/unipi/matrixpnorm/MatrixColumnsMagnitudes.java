@@ -69,17 +69,16 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
     public int run(String[] args) throws Exception {
 
         Configuration conf = new Configuration();
-        Job job = Job.getInstance(conf, "matrix scale");
+        Job job = Job.getInstance(conf, "matrix columns norms");
         job.setJarByClass(MatrixColumnsMagnitudes.class);
-        job.setNumReduceTasks(0);
 
         job.setMapperClass(MatrixColumnsMagnitudesMapper.class);
 
-        job.setMapOutputKeyClass(NullWritable.class);
+        job.setMapOutputKeyClass(Integer.class);
         job.setMapOutputValueClass(Double.class);
 
-        job.setOutputKeyClass(NullWritable.class);
-        job.setOutputValueClass(Integer.class);
+        job.setOutputKeyClass(Integer.class);
+        job.setOutputValueClass(Double.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));

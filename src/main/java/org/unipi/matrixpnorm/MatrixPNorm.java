@@ -97,18 +97,23 @@ public class MatrixPNorm extends Configured implements Tool {
             Configuration conf = new Configuration();
             conf.setDouble("power", p);
             Job job = Job.getInstance(conf, "matrix p-norm");
+
             job.setJarByClass(MatrixPNorm.class);
 
-            job.setMapperClass(MatrixPNorm.MatrixPNormMapper.class);
+            job.setMapperClass(MatrixPNormMapper.class);
             job.setCombinerClass(MatrixPNormCombiner.class);
 
             job.setMapOutputKeyClass(Integer.class);
             job.setMapOutputValueClass(Double.class);
+
             job.setReducerClass(MatrixPNormReducer.class);
-            job.setOutputKeyClass(IntWritable.class);
-            job.setOutputValueClass(String.class);
+
+            job.setOutputKeyClass(NullWritable.class);
+            job.setOutputValueClass(Double.class);
+
             FileInputFormat.addInputPath(job, new Path(args[0]));
             FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
             if (job.waitForCompletion(true)) return 0;
             else return 1;
         }

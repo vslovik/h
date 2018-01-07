@@ -74,18 +74,21 @@ public class MatrixNaiveFrobeniusNorm extends Configured implements Tool {
         } else {
             Configuration conf = new Configuration();
             conf.setDouble("power", 2.0);
-            Job job = Job.getInstance(conf, "matrix p-norm");
+            Job job = Job.getInstance(conf, "matrix naive Frobenius norm");
+
             job.setJarByClass(MatrixNaiveFrobeniusNorm.class);
 
             job.setMapperClass(MatrixNaiveFrobeniusNormMapper.class);
-
             job.setMapOutputKeyClass(Integer.class);
             job.setMapOutputValueClass(Double.class);
+
             job.setReducerClass(MatrixNaiveFrobeniusNormReducer.class);
-            job.setOutputKeyClass(IntWritable.class);
-            job.setOutputValueClass(String.class);
+            job.setOutputKeyClass(NullWritable.class);
+            job.setOutputValueClass(Double.class);
+
             FileInputFormat.addInputPath(job, new Path(args[0]));
             FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
             if (job.waitForCompletion(true)) return 0;
             else return 1;
         }

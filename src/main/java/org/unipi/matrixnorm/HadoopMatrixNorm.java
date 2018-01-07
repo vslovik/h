@@ -116,15 +116,21 @@ public class HadoopMatrixNorm extends Configured implements Tool {
             Configuration conf = new Configuration();
             Job job = Job.getInstance(conf, "matrix normalization");
             job.setJarByClass(HadoopMatrixNorm.class);
+
             job.setMapperClass(MatrixNormMapper.class);
             job.setMapOutputKeyClass(MapperKey.class);
             job.setMapOutputValueClass(MapperValue.class);
+
+
             job.setPartitionerClass(ColumnIndexPartitioner.class);
+
             job.setReducerClass(MatrixNormReducer.class);
-            job.setOutputKeyClass(IntWritable.class);
+            job.setOutputKeyClass(NullWritable.class);
             job.setOutputValueClass(String.class);
+
             FileInputFormat.addInputPath(job, new Path(args[0]));
             FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
             if (job.waitForCompletion(true)) return 0;
             else return 1;
         }
