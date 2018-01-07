@@ -31,28 +31,24 @@ public class HadoopMatrixNorm extends Configured implements Tool {
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
 
-            try {
+            Double[][] matrix = Utils.deserialize(value.toString());
 
-                Double[][] matrix = Utils.deserialize(value.toString());
+            for (int rowIndex = 0; rowIndex < matrix.length; rowIndex++) {
+                for (int columnIndex = 0; columnIndex < matrix[0].length; columnIndex++) {
 
-                for (int rowIndex = 0; rowIndex < matrix.length; rowIndex++) {
-                    for (int columnIndex = 0; columnIndex < matrix[0].length; columnIndex++) {
-                        context.write(
-                                new MapperKey(matrixIndex, columnIndex, 0),
-                                new MapperValue(rowIndex, matrix[rowIndex][columnIndex])
-                        );
-                        context.write(
-                                new MapperKey(matrixIndex, columnIndex, 1),
-                                new MapperValue(rowIndex, matrix[rowIndex][columnIndex])
-                        );
-                    }
+                    context.write(
+                            new MapperKey(matrixIndex, columnIndex, 0),
+                            new MapperValue(rowIndex, matrix[rowIndex][columnIndex])
+                    );
+                    context.write(
+                            new MapperKey(matrixIndex, columnIndex, 1),
+                            new MapperValue(rowIndex, matrix[rowIndex][columnIndex])
+                    );
                 }
-
-                matrixIndex += 1;
-
-            } catch (IllegalArgumentException e) {
-                throw new IOException();
             }
+
+            matrixIndex += 1;
+
         }
 
     }
@@ -69,14 +65,10 @@ public class HadoopMatrixNorm extends Configured implements Tool {
         private int currentMatrixIndex = 0;
         private MatrixStorage storage = new MatrixStorage();
 
-        private void emitMatrix(Context context) throws InterruptedException{
+        private void emitMatrix(Context context) throws IOException, InterruptedException{
 
-            try {
                 String str = Utils.serialize(storage.get());
                 context.write(NullWritable.get(), str);
-            } catch(Exception e) {
-                throw new InterruptedException();
-            }
         }
 
         @Override

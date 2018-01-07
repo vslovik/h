@@ -31,10 +31,9 @@ class HadoopMatrixNormMapperTest {
     @Test
     void wrongInput() throws IOException, InterruptedException {
 
-        assertThrows(IOException.class,
-                () -> {
-                    mapper.map(null, new Text("1\t2\t1.0"), context);
-                });
+        assertThrows(IllegalArgumentException.class,
+                () -> mapper.map(null, new Text("1\t2\t1.0"), context)
+        );
 
         InOrder inOrder = inOrder(context);
         inOrder.verify(context, never()).write(
