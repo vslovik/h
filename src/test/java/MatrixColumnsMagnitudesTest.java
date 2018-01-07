@@ -12,6 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.DoubleWritable;
+
 class MatrixColumnsMagnitudesTest {
 
     private MatrixColumnsMagnitudes.MatrixColumnsMagnitudesMapper mapper;
@@ -32,27 +36,27 @@ class MatrixColumnsMagnitudesTest {
     void wrongInput() throws IOException, InterruptedException {
         assertThrows(
                 NumberFormatException.class,
-                () -> mapper.map(0, new Text("blabla"), mapperContext)
+                () -> mapper.map(new LongWritable(0), new Text("blabla"), mapperContext)
         );
     }
 
     @Test
     void mapReduceTest() throws IOException, InterruptedException {
 
-        mapper.map(0, new Text("0.0\t1.0\t2.0\t3.0"), mapperContext);
+        mapper.map(new LongWritable(0), new Text("0.0\t1.0\t2.0\t3.0"), mapperContext);
 
         InOrder inOrder = inOrder(mapperContext);
 
-        inOrder.verify(mapperContext).write(eq(1), eq(1.0));
-        inOrder.verify(mapperContext).write(eq(2), eq(4.0));
-        inOrder.verify(mapperContext).write(eq(3), eq(9.0));
+        inOrder.verify(mapperContext).write(eq(new IntWritable(1)), eq(new DoubleWritable(1.0)));
+        inOrder.verify(mapperContext).write(eq(new IntWritable(2)), eq(new DoubleWritable(4.0)));
+        inOrder.verify(mapperContext).write(eq(new IntWritable(3)), eq(new DoubleWritable(9.0)));
 
-        ArrayList<Double> values = new ArrayList<>();
-        values.add(1.0);
+        ArrayList<DoubleWritable> values = new ArrayList<>();
+        values.add(new DoubleWritable(1.0));
 
-        reducer.reduce(1, values, reducerContext);
+        reducer.reduce(new IntWritable(1), values, reducerContext);
 
-        verify(reducerContext).write(eq(1), eq(1.0/9.0));
+        verify(reducerContext).write(eq(new IntWritable(1)), eq(new DoubleWritable(1.0/9.0)));
     }
 
 }

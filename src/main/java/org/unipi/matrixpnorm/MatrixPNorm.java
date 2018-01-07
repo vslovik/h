@@ -7,7 +7,9 @@ import org.apache.hadoop.fs.Path;
 
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.DoubleWritable;
 
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -17,7 +19,6 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import org.unipi.matrixnorm.HadoopMatrixNorm;
 
 import java.io.IOException;
 
@@ -26,52 +27,53 @@ import static java.lang.Math.abs;
 
 public class MatrixPNorm extends Configured implements Tool {
 
-    public static class MatrixPNormMapper extends Mapper<Integer, Text, Integer, Double> {
+    public static class MatrixPNormMapper extends Mapper<LongWritable, Text, IntWritable, DoubleWritable> {
 
         @Override
-        public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
+        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             Double p = context.getConfiguration().getDouble("power", 2.0);
 
-            int rowIndex = key;
             Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
 
             for (Double colValue : row) {
                 if (!colValue.equals(0.0)) {
-                    context.write(rowIndex, pow(abs(colValue), p));
+                    context.write(
+                            new IntWritable((int) key.get()),
+                            new DoubleWritable(pow(abs(colValue), p)));
                 }
             }
         }
     }
 
-    public static class MatrixPNormCombiner extends Reducer<Integer, Double, NullWritable, Double> {
+    public static class MatrixPNormCombiner extends Reducer<IntWritable, DoubleWritable, NullWritable, DoubleWritable> {
 
         @Override
-        public void reduce(Integer key, Iterable<Double> values,
+        public void reduce(IntWritable key, Iterable<DoubleWritable> values,
                            Context context) throws IOException, InterruptedException {
 
             Double sum = 0.0;
-            for (Double value : values) {
-                sum += value;
+            for (DoubleWritable value : values) {
+                sum += value.get();
             }
 
-            context.write(NullWritable.get(), sum);
+            context.write(NullWritable.get(), new DoubleWritable(sum));
         }
     }
 
-    public static class MatrixPNormReducer extends Reducer<NullWritable, Double, NullWritable, Double> {
+    public static class MatrixPNormReducer extends Reducer<NullWritable, DoubleWritable, NullWritable, DoubleWritable> {
 
         @Override
-        public void reduce(NullWritable key, Iterable<Double> values,
+        public void reduce(NullWritable key, Iterable<DoubleWritable> values,
                            Context context) throws IOException, InterruptedException {
 
             Double p = context.getConfiguration().getDouble("power", 2.0);
 
             Double sum = 0.0;
-            for (Double value : values) {
-                sum += value;
+            for (DoubleWritable value : values) {
+                sum += value.get();
             }
 
-            context.write(NullWritable.get(), pow(sum, 1.0 / p));
+            context.write(NullWritable.get(), new DoubleWritable(pow(sum, 1.0 / p)));
         }
     }
 
@@ -97,8 +99,8 @@ public class MatrixPNorm extends Configured implements Tool {
             job.setMapperClass(MatrixPNormMapper.class);
             job.setCombinerClass(MatrixPNormCombiner.class);
 
-            job.setMapOutputKeyClass(Integer.class);
-            job.setMapOutputValueClass(Double.class);
+            job.setMapOutputKeyClass(IntWritable.class);
+            job.setMapOutputValueClass(DoubleWritable.class);
 
             job.setReducerClass(MatrixPNormReducer.class);
 

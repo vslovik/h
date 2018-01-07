@@ -3,8 +3,7 @@ package org.unipi.matrixpnorm;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.NullWritable;
+
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -13,7 +12,11 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import org.unipi.matrixnorm.HadoopMatrixNorm;
+
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.DoubleWritable;
 
 import java.io.IOException;
 import java.util.Random;
@@ -25,7 +28,7 @@ import static java.lang.Math.min;
 
 public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
 
-    public class MatrixDimSumFrobeniusNormMapper extends Mapper<Integer, Text, Integer, Double> {
+    public class MatrixDimSumFrobeniusNormMapper extends Mapper<LongWritable, Text, IntWritable, DoubleWritable> {
 
         private double gamma;
         private Random random = new Random();
@@ -36,7 +39,7 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
         }
 
         @Override
-        public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
+        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             Configuration conf = context.getConfiguration();
 
             double colNorm;
@@ -47,18 +50,18 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
             for (int c = 0; c < row.length; c++) {
 
                 if (!row[c].equals(0.0)) {
-                    colNorm = conf.getDouble(Integer.toString(key), 1.0);
+                    colNorm = conf.getDouble(Integer.toString((int) key.get()), 1.0);
                     double factor = gamma / colNorm;
                     prob = min(1.0, factor);
                     if (random.nextDouble() < prob) {
-                        context.write(c, row[c] * row[c]);
+                        context.write(new IntWritable(c), new DoubleWritable(row[c] * row[c]));
                     }
                 }
             }
         }
     }
 
-    public class MatrixDimSumFrobeniusNormReducer extends Reducer<Integer, Double, NullWritable, Double> {
+    public class MatrixDimSumFrobeniusNormReducer extends Reducer<IntWritable, DoubleWritable, NullWritable, DoubleWritable> {
 
         Double trace = 0.0;
         private double gamma;
@@ -69,14 +72,14 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
         }
 
         @Override
-        public void reduce(Integer key, Iterable<Double> values,
+        public void reduce(IntWritable key, Iterable<DoubleWritable> values,
                            Context context) throws IOException, InterruptedException {
 
-            double colNorm = context.getConfiguration().getDouble(Integer.toString(key), 1.0);
+            double colNorm = context.getConfiguration().getDouble(Integer.toString(key.get()), 1.0);
 
             double sum = 0.0;
-            for (Double value : values) {
-                sum += value;
+            for (DoubleWritable value : values) {
+                sum += value.get();
             }
 
             double factor = 1.0 / colNorm;
@@ -89,9 +92,9 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
         }
 
         @Override
-        public void cleanup(Reducer<Integer, Double, NullWritable, Double>.Context context)
+        public void cleanup(Reducer<IntWritable, DoubleWritable, NullWritable, DoubleWritable>.Context context)
                 throws IOException, InterruptedException {
-            context.write(NullWritable.get(), pow(trace, 0.5));
+            context.write(NullWritable.get(), new DoubleWritable(pow(trace, 0.5)));
         }
     }
 
@@ -119,12 +122,12 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
             job.setJarByClass(MatrixDimSumFrobeniusNorm.class);
 
             job.setMapperClass(MatrixDimSumFrobeniusNormMapper.class);
-            job.setMapOutputKeyClass(Integer.class);
-            job.setMapOutputValueClass(Double.class);
+            job.setMapOutputKeyClass(IntWritable.class);
+            job.setMapOutputValueClass(DoubleWritable.class);
 
             job.setReducerClass(MatrixDimSumFrobeniusNormReducer.class);
             job.setOutputKeyClass(NullWritable.class);
-            job.setOutputValueClass(Double.class);
+            job.setOutputValueClass(DoubleWritable.class);
 
             FileInputFormat.addInputPath(job, new Path(args[1]));
             FileOutputFormat.setOutputPath(job, new Path(args[2]));

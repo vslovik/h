@@ -1,3 +1,5 @@
+import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,12 +30,12 @@ class MatrixPNormReducerTest {
 
         InOrder inOrder = inOrder(context);
 
-        ArrayList<Double> values = new ArrayList<>();
-        values.add(1.0);
-        values.add(2.0);
-        values.add(3.0);
-        values.add(4.0);
-        values.add(5.0);
+        ArrayList<DoubleWritable> values = new ArrayList<>();
+        values.add(new DoubleWritable(1.0));
+        values.add(new DoubleWritable(2.0));
+        values.add(new DoubleWritable(3.0));
+        values.add(new DoubleWritable(4.0));
+        values.add(new DoubleWritable(5.0));
 
         reducer.reduce(
                 NullWritable.get(),
@@ -43,7 +45,7 @@ class MatrixPNormReducerTest {
 
         inOrder.verify(context).write(
                 eq(NullWritable.get()),
-                eq(pow(15.0, 0.5))
+                eq(new DoubleWritable(pow(15.0, 0.5)))
         );
     }
 
@@ -52,16 +54,16 @@ class MatrixPNormReducerTest {
 
         InOrder inOrder = inOrder(context);
 
-        ArrayList<Double> values = new ArrayList<>();
-        values.add(3.0);
-        values.add(3.0);
-        values.add(3.0);
+        ArrayList<DoubleWritable> values = new ArrayList<>();
+        values.add(new DoubleWritable(3.0));
+        values.add(new DoubleWritable(3.0));
+        values.add(new DoubleWritable(3.0));
 
         reducer.reduce(NullWritable.get(), values, context);
 
         inOrder.verify(context).write(
                 eq(NullWritable.get()),
-                eq(pow(9.0, 0.5))
+                eq(new DoubleWritable(pow(9.0, 0.5)))
         );
     }
 
@@ -70,16 +72,16 @@ class MatrixPNormReducerTest {
 
         InOrder inOrder = inOrder(context);
 
-        ArrayList<Double> values = new ArrayList<>();
-        values.add(1.0);
-        values.add(1.0);
-        values.add(1.0);
+        ArrayList<DoubleWritable> values = new ArrayList<>();
+        values.add(new DoubleWritable(1.0));
+        values.add(new DoubleWritable(1.0));
+        values.add(new DoubleWritable(1.0));
 
         reducer.reduce(NullWritable.get(), values, context);
 
         inOrder.verify(context).write(
                 eq(NullWritable.get()),
-                eq(pow(3.0, 0.5))
+                eq(new DoubleWritable(pow(3.0, 0.5)))
         );
     }
 }

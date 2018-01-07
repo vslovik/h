@@ -3,7 +3,6 @@ package org.unipi.matrixpnorm;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -12,7 +11,10 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import org.unipi.matrixnorm.HadoopMatrixNorm;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.DoubleWritable;
 
 import java.io.IOException;
 import static java.lang.Math.sqrt;
@@ -21,36 +23,36 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
 
     private double maxValue = 0.0;
 
-    public class MatrixColumnsMagnitudesMapper extends Mapper<Integer, Text, Integer, Double> {
+    public class MatrixColumnsMagnitudesMapper extends Mapper<LongWritable, Text, IntWritable, DoubleWritable> {
 
         @Override
-        public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
+        public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
             for (int c = 0; c < row.length; c++) {
                 if (row[c] > maxValue) {
                     maxValue = row[c];
                 }
                 if (!row[c].equals(0.0)) {
-                    context.write(c, row[c] * row[c]);
+                    context.write(new IntWritable(c), new DoubleWritable(row[c] * row[c]));
                 }
             }
         }
     }
 
-    public class MatrixColumnsMagnitudesReducer extends Reducer<Integer, Double, Integer, Double> {
+    public class MatrixColumnsMagnitudesReducer extends Reducer<IntWritable, DoubleWritable, IntWritable, DoubleWritable> {
 
-        public void reduce(Integer key, Iterable<Double> values, Context context)
+        public void reduce(IntWritable key, Iterable<DoubleWritable> values, Context context)
                 throws IOException, InterruptedException {
 
             Double sum = 0.0;
-            for (Double val : values) {
-                sum += val;
+            for (DoubleWritable val : values) {
+                sum += val.get();
             }
 
             Double magnitude = sqrt(sum)/maxValue;
             magnitude *= magnitude;
 
-            context.write(key, magnitude);
+            context.write(key, new DoubleWritable(magnitude));
         }
     }
 
@@ -67,11 +69,11 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
 
         job.setMapperClass(MatrixColumnsMagnitudesMapper.class);
 
-        job.setMapOutputKeyClass(Integer.class);
-        job.setMapOutputValueClass(Double.class);
+        job.setMapOutputKeyClass(IntWritable.class);
+        job.setMapOutputValueClass(DoubleWritable.class);
 
-        job.setOutputKeyClass(Integer.class);
-        job.setOutputValueClass(Double.class);
+        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputValueClass(DoubleWritable.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));

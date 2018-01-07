@@ -12,6 +12,9 @@ import static java.lang.Math.pow;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.DoubleWritable;
+
 class MatrixNaiveFrobeniusNormReducerTest {
 
     private MatrixNaiveFrobeniusNorm.MatrixNaiveFrobeniusNormReducer reducer;
@@ -31,29 +34,29 @@ class MatrixNaiveFrobeniusNormReducerTest {
 
         InOrder inOrder = inOrder(context);
 
-        ArrayList<Double> values = new ArrayList<>();
-        values.add(1.0);
-        values.add(2.0);
-        values.add(3.0);
-        values.add(4.0);
-        values.add(5.0);
+        ArrayList<DoubleWritable> values = new ArrayList<>();
+        values.add(new DoubleWritable(1.0));
+        values.add(new DoubleWritable(2.0));
+        values.add(new DoubleWritable(3.0));
+        values.add(new DoubleWritable(4.0));
+        values.add(new DoubleWritable(5.0));
 
         reducer.reduce(
-                key,
+                new IntWritable(key),
                 values,
                 context
         );
 
         inOrder.verify(context, never()).write(
                 eq(NullWritable.get()),
-                eq( pow(15.0, 0.5))
+                eq(new DoubleWritable(pow(15.0, 0.5)))
         );
 
         reducer.cleanup(context);
 
         inOrder.verify(context).write(
                 eq(NullWritable.get()),
-                eq(pow(15.0, 0.5))
+                eq(new DoubleWritable(pow(15.0, 0.5)))
         );
     }
 
@@ -62,25 +65,25 @@ class MatrixNaiveFrobeniusNormReducerTest {
 
         InOrder inOrder = inOrder(context);
 
-        ArrayList<Double> values = new ArrayList<>();
-        values.add(1.0);
-        values.add(1.0);
-        values.add(1.0);
+        ArrayList<DoubleWritable> values = new ArrayList<>();
+        values.add(new DoubleWritable(1.0));
+        values.add(new DoubleWritable(1.0));
+        values.add(new DoubleWritable(1.0));
 
-        reducer.reduce(0, values, context);
-        reducer.reduce(1, values, context);
-        reducer.reduce(3, values, context);
+        reducer.reduce(new IntWritable(0), values, context);
+        reducer.reduce(new IntWritable(1), values, context);
+        reducer.reduce(new IntWritable(3), values, context);
 
         inOrder.verify(context, never()).write(
                 eq(NullWritable.get()),
-                eq(pow(9.0, 0.5))
+                eq(new DoubleWritable(pow(9.0, 0.5)))
         );
 
         reducer.cleanup(context);
 
         inOrder.verify(context).write(
                 eq(NullWritable.get()),
-                eq(pow(9.0, 0.5))
+                eq(new DoubleWritable(pow(9.0, 0.5)))
         );
     }
 
@@ -89,23 +92,23 @@ class MatrixNaiveFrobeniusNormReducerTest {
 
         InOrder inOrder = inOrder(context);
 
-        ArrayList<Double> values = new ArrayList<>();
-        values.add(1.0);
+        ArrayList<DoubleWritable> values = new ArrayList<>();
+        values.add(new DoubleWritable(1.0));
 
-        reducer.reduce(0, values, context);
-        reducer.reduce(1, values, context);
-        reducer.reduce(2, values, context);
+        reducer.reduce(new IntWritable(0), values, context);
+        reducer.reduce(new IntWritable(1), values, context);
+        reducer.reduce(new IntWritable(2), values, context);
 
         inOrder.verify(context, never()).write(
                 eq(NullWritable.get()),
-                eq(pow(3.0, 0.5))
+                eq(new DoubleWritable(pow(3.0, 0.5)))
         );
 
         reducer.cleanup(context);
 
         inOrder.verify(context).write(
                 eq(NullWritable.get()),
-                eq(pow(3.0, 0.5))
+                eq(new DoubleWritable(pow(3.0, 0.5)))
         );
     }
 
