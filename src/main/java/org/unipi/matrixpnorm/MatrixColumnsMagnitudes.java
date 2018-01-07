@@ -17,21 +17,20 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.DoubleWritable;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.TreeMap;
+
 import static java.lang.Math.sqrt;
 
 public class MatrixColumnsMagnitudes extends Configured implements Tool {
 
-    private double maxValue = 0.0;
-
-    public class MatrixColumnsMagnitudesMapper extends Mapper<LongWritable, Text, IntWritable, DoubleWritable> {
+    public static class MatrixColumnsMagnitudesMapper extends Mapper<LongWritable, Text, IntWritable, DoubleWritable> {
 
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
             for (int c = 0; c < row.length; c++) {
-                if (row[c] > maxValue) {
-                    maxValue = row[c];
-                }
+
                 if (!row[c].equals(0.0)) {
                     context.write(new IntWritable(c), new DoubleWritable(row[c] * row[c]));
                 }
@@ -39,20 +38,37 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
         }
     }
 
-    public class MatrixColumnsMagnitudesReducer extends Reducer<IntWritable, DoubleWritable, IntWritable, DoubleWritable> {
+    public static class MatrixColumnsMagnitudesReducer extends Reducer<IntWritable, DoubleWritable, IntWritable, DoubleWritable> {
+
+        private double maxValue = 0.0;
+
+        private TreeMap<Integer, Double> magnitudes = new TreeMap<>();
 
         public void reduce(IntWritable key, Iterable<DoubleWritable> values, Context context)
                 throws IOException, InterruptedException {
 
             Double sum = 0.0;
             for (DoubleWritable val : values) {
-                sum += val.get();
+                Double value = val.get();
+                if (value > maxValue) {
+                    maxValue = value;
+                }
+                sum += value;
             }
 
-            Double magnitude = sqrt(sum)/maxValue;
-            magnitude *= magnitude;
+            magnitudes.put(key.get(), sum);
+        }
 
-            context.write(key, new DoubleWritable(magnitude));
+        @Override
+        public void cleanup(Reducer<IntWritable, DoubleWritable, IntWritable, DoubleWritable>.Context context)
+                throws IOException, InterruptedException {
+
+            for(Map.Entry<Integer, Double> entry : magnitudes.entrySet()) {
+                context.write(
+                        new IntWritable(entry.getKey()),
+                        new DoubleWritable(entry.getValue()/maxValue)
+                );
+            }
         }
     }
 

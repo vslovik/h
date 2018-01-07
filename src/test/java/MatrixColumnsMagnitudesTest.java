@@ -16,6 +16,8 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.DoubleWritable;
 
+import static java.lang.Math.sqrt;
+
 class MatrixColumnsMagnitudesTest {
 
     private MatrixColumnsMagnitudes.MatrixColumnsMagnitudesMapper mapper;
@@ -26,8 +28,8 @@ class MatrixColumnsMagnitudesTest {
     @BeforeEach
     void init() throws IOException, InterruptedException {
         MatrixColumnsMagnitudes mcm =  new MatrixColumnsMagnitudes();
-        mapper = mcm.new MatrixColumnsMagnitudesMapper();
-        reducer = mcm.new MatrixColumnsMagnitudesReducer();
+        mapper = new MatrixColumnsMagnitudes.MatrixColumnsMagnitudesMapper();
+        reducer = new MatrixColumnsMagnitudes.MatrixColumnsMagnitudesReducer();
         mapperContext = mock(MatrixColumnsMagnitudes.MatrixColumnsMagnitudesMapper.Context.class);
         reducerContext = mock(MatrixColumnsMagnitudes.MatrixColumnsMagnitudesReducer.Context.class);
     }
@@ -53,10 +55,14 @@ class MatrixColumnsMagnitudesTest {
 
         ArrayList<DoubleWritable> values = new ArrayList<>();
         values.add(new DoubleWritable(1.0));
+        values.add(new DoubleWritable(16.0));
+        values.add(new DoubleWritable(81.0));
 
         reducer.reduce(new IntWritable(1), values, reducerContext);
 
-        verify(reducerContext).write(eq(new IntWritable(1)), eq(new DoubleWritable(1.0/9.0)));
+        reducer.cleanup(reducerContext);
+
+        verify(reducerContext).write(eq(new IntWritable(1)), eq(new DoubleWritable(98.0/81.0)));
     }
 
 }
