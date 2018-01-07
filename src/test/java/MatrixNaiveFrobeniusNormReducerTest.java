@@ -32,8 +32,6 @@ class MatrixNaiveFrobeniusNormReducerTest {
         Random r = new Random();
         Integer key = r.nextInt();
 
-        InOrder inOrder = inOrder(context);
-
         ArrayList<DoubleWritable> values = new ArrayList<>();
         values.add(new DoubleWritable(1.0));
         values.add(new DoubleWritable(2.0));
@@ -47,14 +45,14 @@ class MatrixNaiveFrobeniusNormReducerTest {
                 context
         );
 
-        inOrder.verify(context, never()).write(
+        verify(context, never()).write(
                 eq(NullWritable.get()),
                 eq(new DoubleWritable(pow(15.0, 0.5)))
         );
 
         reducer.cleanup(context);
 
-        inOrder.verify(context).write(
+        verify(context).write(
                 eq(NullWritable.get()),
                 eq(new DoubleWritable(pow(15.0, 0.5)))
         );
@@ -81,7 +79,7 @@ class MatrixNaiveFrobeniusNormReducerTest {
 
         reducer.cleanup(context);
 
-        inOrder.verify(context).write(
+        verify(context).write(
                 eq(NullWritable.get()),
                 eq(new DoubleWritable(pow(9.0, 0.5)))
         );
@@ -106,7 +104,7 @@ class MatrixNaiveFrobeniusNormReducerTest {
 
         reducer.cleanup(context);
 
-        inOrder.verify(context).write(
+        verify(context).write(
                 eq(NullWritable.get()),
                 eq(new DoubleWritable(pow(3.0, 0.5)))
         );
