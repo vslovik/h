@@ -63,6 +63,11 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
                         new DoubleWritable(entry.getValue()/maxValue)
                 );
             }
+
+            context.write(
+                    new IntWritable(magnitudes.size()),
+                    new DoubleWritable(maxValue)
+            );
         }
     }
 

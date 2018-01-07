@@ -94,6 +94,11 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
         @Override
         public void cleanup(Reducer<IntWritable, DoubleWritable, NullWritable, DoubleWritable>.Context context)
                 throws IOException, InterruptedException {
+
+            double maxSquaredValue = context.getConfiguration().getDouble("max_squared_value", 1.0);
+
+            trace *= maxSquaredValue;
+
             context.write(NullWritable.get(), new DoubleWritable(pow(trace, 0.5)));
         }
     }
@@ -114,9 +119,11 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
             List<Double> magnitudes = MagnitudesLoader.load(args[0], conf);
             conf.setDouble("gamma", 2 * log(magnitudes.size()));
 
-            for(int i=0; i < magnitudes.size(); i++) {
+            for(int i=0; i < magnitudes.size() - 1; i++) {
                 conf.setDouble(Integer.toString(i), magnitudes.get(i));
             }
+
+            conf.setDouble("max_squared_value", magnitudes.get(magnitudes.size()-1));
 
             Job job = Job.getInstance(conf, "matrix DimSum Frobenius norm");
             job.setJarByClass(MatrixDimSumFrobeniusNorm.class);

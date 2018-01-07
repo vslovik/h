@@ -45,7 +45,7 @@ class MatrixDimSumFrobeniusNormTest {
         when(reducerContext.getConfiguration().getDouble("1", 1.0)).thenReturn(4.0);
         when(reducerContext.getConfiguration().getDouble("2", 1.0)).thenReturn(4.0);
         when(reducerContext.getConfiguration().getDouble("3", 1.0)).thenReturn(4.0);
-
+        when(reducerContext.getConfiguration().getDouble("max_squared_value", 1.0)).thenReturn(1.0);
     }
 
     @Test
