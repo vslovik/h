@@ -62,7 +62,7 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
     }
 
     public static void main(String[] args) throws Exception {
-        int res = ToolRunner.run(new Configuration(), new HadoopMatrixNorm(), args);
+        int res = ToolRunner.run(new Configuration(), new MatrixColumnsMagnitudes(), args);
         System.exit(res);
     }
 
