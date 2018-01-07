@@ -27,8 +27,8 @@ class MatrixDimSumFrobeniusNormTest {
     @BeforeEach
     void init() throws IOException, InterruptedException {
         MatrixDimSumFrobeniusNorm dimSum = new MatrixDimSumFrobeniusNorm();
-        mapper  = dimSum.new MatrixDimSumFrobeniusNormMapper();
-        reducer = dimSum.new MatrixDimSumFrobeniusNormReducer();
+        mapper  = new MatrixDimSumFrobeniusNorm.MatrixDimSumFrobeniusNormMapper();
+        reducer = new MatrixDimSumFrobeniusNorm.MatrixDimSumFrobeniusNormReducer();
 
         Configuration conf = new Configuration();
 

@@ -28,7 +28,7 @@ import static java.lang.Math.min;
 
 public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
 
-    public class MatrixDimSumFrobeniusNormMapper extends Mapper<LongWritable, Text, IntWritable, DoubleWritable> {
+    public static class MatrixDimSumFrobeniusNormMapper extends Mapper<LongWritable, Text, IntWritable, DoubleWritable> {
 
         private double gamma;
         private Random random = new Random();
@@ -61,7 +61,7 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
         }
     }
 
-    public class MatrixDimSumFrobeniusNormReducer extends Reducer<IntWritable, DoubleWritable, NullWritable, DoubleWritable> {
+    public static class MatrixDimSumFrobeniusNormReducer extends Reducer<IntWritable, DoubleWritable, NullWritable, DoubleWritable> {
 
         Double trace = 0.0;
         private double gamma;
@@ -98,7 +98,7 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
         }
     }
 
-    public void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         int res = ToolRunner.run(new Configuration(), new MatrixDimSumFrobeniusNorm(), args);
         System.exit(res);
     }
