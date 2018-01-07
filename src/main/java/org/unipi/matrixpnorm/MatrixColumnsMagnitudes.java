@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static java.lang.Math.sqrt;
-
 public class MatrixColumnsMagnitudes extends Configured implements Tool {
 
     public static class MatrixColumnsMagnitudesMapper extends Mapper<LongWritable, Text, IntWritable, DoubleWritable> {
