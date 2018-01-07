@@ -37,29 +37,23 @@ public class MatrixDimSumFrobeniusNorm extends Configured implements Tool {
 
         @Override
         public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
-            try {
+            Configuration conf = context.getConfiguration();
 
-                Configuration conf = context.getConfiguration();
+            double colNorm;
+            double prob;
 
-                double colNorm;
-                double prob;
+            Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
 
-                Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
+            for (int c = 0; c < row.length; c++) {
 
-                for (int c = 0; c < row.length; c++) {
-
-                    if(!row[c].equals(0.0)) {
-                        colNorm = conf.getDouble(Integer.toString(key), 1.0);
-                        double factor = gamma / colNorm;
-                        prob = min(1.0, factor);
-                        if (random.nextDouble() < prob) {
-                            context.write(c, row[c] * row[c]);
-                        }
+                if (!row[c].equals(0.0)) {
+                    colNorm = conf.getDouble(Integer.toString(key), 1.0);
+                    double factor = gamma / colNorm;
+                    prob = min(1.0, factor);
+                    if (random.nextDouble() < prob) {
+                        context.write(c, row[c] * row[c]);
                     }
                 }
-
-            } catch (IllegalArgumentException e) {
-                throw new IOException();
             }
         }
     }

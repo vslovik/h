@@ -27,11 +27,9 @@ class MatrixPNormMapperTest {
 
     @Test
     void wrongInput() throws IOException, InterruptedException {
-
-        assertThrows(IOException.class,
-                () -> {
-                    mapper.map(0, new Text("blabla"), context);
-                });
+        assertThrows(NumberFormatException.class,
+                () -> mapper.map(0, new Text("blabla"), context)
+        );
     }
 
     @Test

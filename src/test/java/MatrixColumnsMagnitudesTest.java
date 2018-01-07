@@ -31,7 +31,7 @@ class MatrixColumnsMagnitudesTest {
     @Test
     void wrongInput() throws IOException, InterruptedException {
         assertThrows(
-                IOException.class,
+                NumberFormatException.class,
                 () -> mapper.map(0, new Text("blabla"), mapperContext)
         );
     }

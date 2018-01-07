@@ -25,18 +25,11 @@ public class MatrixNaiveFrobeniusNorm extends Configured implements Tool {
 
         @Override
         public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
-            try {
-
-                Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
-
-                for(int c = 0; c < row.length; c++) {
-                    if(!row[c].equals(0.0)) {
-                        context.write(c, row[c] * row[c]);
-                    }
+            Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
+            for (int c = 0; c < row.length; c++) {
+                if (!row[c].equals(0.0)) {
+                    context.write(c, row[c] * row[c]);
                 }
-
-            } catch (IllegalArgumentException e) {
-                throw new IOException();
             }
         }
     }
@@ -48,7 +41,6 @@ public class MatrixNaiveFrobeniusNorm extends Configured implements Tool {
         @Override
         public void reduce(Integer key, Iterable<Double> values,
                            Context context) throws IOException, InterruptedException {
-
             for (Double value : values) {
                 trace += value;
             }

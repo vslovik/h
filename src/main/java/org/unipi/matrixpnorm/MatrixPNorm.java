@@ -30,21 +30,15 @@ public class MatrixPNorm extends Configured implements Tool {
 
         @Override
         public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
-            try {
+            Double p = context.getConfiguration().getDouble("power", 2.0);
 
-                Double p = context.getConfiguration().getDouble("power", 2.0);
+            int rowIndex = key;
+            Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
 
-                int rowIndex = key;
-                Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
-
-                for (Double colValue: row) {
-                    if (!colValue.equals(0.0)) {
-                        context.write(rowIndex, pow(abs(colValue), p));
-                    }
+            for (Double colValue : row) {
+                if (!colValue.equals(0.0)) {
+                    context.write(rowIndex, pow(abs(colValue), p));
                 }
-
-            } catch (IllegalArgumentException e) {
-                throw new IOException();
             }
         }
     }

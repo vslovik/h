@@ -25,21 +25,14 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
 
         @Override
         public void map(Integer key, Text value, Context context) throws IOException, InterruptedException {
-
-            try {
-                Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
-
-                for(int c = 0; c < row.length; c++) {
-                    if(row[c] > maxValue) {
-                        maxValue = row[c];
-                    }
-                    if(!row[c].equals(0.0)) {
-                        context.write(c, row[c] * row[c]);
-                    }
+            Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
+            for (int c = 0; c < row.length; c++) {
+                if (row[c] > maxValue) {
+                    maxValue = row[c];
                 }
-
-            } catch (IllegalArgumentException e) {
-                throw new IOException();
+                if (!row[c].equals(0.0)) {
+                    context.write(c, row[c] * row[c]);
+                }
             }
         }
     }
