@@ -3,7 +3,6 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
 import org.unipi.matrixpnorm.MatrixPNorm;
 
 import java.io.IOException;
@@ -28,8 +27,6 @@ class MatrixPNormReducerTest {
     @Test
     void reduceTest() throws IOException, InterruptedException {
 
-        InOrder inOrder = inOrder(context);
-
         ArrayList<DoubleWritable> values = new ArrayList<>();
         values.add(new DoubleWritable(1.0));
         values.add(new DoubleWritable(2.0));
@@ -38,12 +35,12 @@ class MatrixPNormReducerTest {
         values.add(new DoubleWritable(5.0));
 
         reducer.reduce(
-                NullWritable.get(),
+                new IntWritable(0),
                 values,
                 context
         );
 
-        inOrder.verify(context).write(
+        verify(context).write(
                 eq(NullWritable.get()),
                 eq(new DoubleWritable(pow(15.0, 0.5)))
         );
@@ -52,16 +49,14 @@ class MatrixPNormReducerTest {
     @Test
     void allOnesMatrixReduceTest() throws IOException, InterruptedException {
 
-        InOrder inOrder = inOrder(context);
-
         ArrayList<DoubleWritable> values = new ArrayList<>();
         values.add(new DoubleWritable(3.0));
         values.add(new DoubleWritable(3.0));
         values.add(new DoubleWritable(3.0));
 
-        reducer.reduce(NullWritable.get(), values, context);
+        reducer.reduce(new IntWritable(0), values, context);
 
-        inOrder.verify(context).write(
+        verify(context).write(
                 eq(NullWritable.get()),
                 eq(new DoubleWritable(pow(9.0, 0.5)))
         );
@@ -70,16 +65,14 @@ class MatrixPNormReducerTest {
     @Test
     void unitaryMatrixReduceTest() throws IOException, InterruptedException {
 
-        InOrder inOrder = inOrder(context);
-
         ArrayList<DoubleWritable> values = new ArrayList<>();
         values.add(new DoubleWritable(1.0));
         values.add(new DoubleWritable(1.0));
         values.add(new DoubleWritable(1.0));
 
-        reducer.reduce(NullWritable.get(), values, context);
+        reducer.reduce(new IntWritable(0), values, context);
 
-        inOrder.verify(context).write(
+        verify(context).write(
                 eq(NullWritable.get()),
                 eq(new DoubleWritable(pow(3.0, 0.5)))
         );

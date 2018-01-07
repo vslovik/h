@@ -1,7 +1,6 @@
 import org.apache.hadoop.io.NullWritable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
 import org.unipi.matrixpnorm.MatrixPNorm;
 
 import org.apache.hadoop.io.DoubleWritable;
@@ -27,8 +26,6 @@ class MatrixPNormCombinerTest {
     @Test
     void reduceTest() throws IOException, InterruptedException {
 
-        InOrder inOrder = inOrder(context);
-
         ArrayList<DoubleWritable> values = new ArrayList<>();
         values.add(new DoubleWritable(1.0));
         values.add(new DoubleWritable(2.0));
@@ -38,8 +35,8 @@ class MatrixPNormCombinerTest {
 
         combiner.reduce(new IntWritable(0), values, context);
 
-        inOrder.verify(context).write(
-                eq(NullWritable.get()),
+        verify(context).write(
+                eq(new IntWritable(0)),
                 eq(new DoubleWritable(15.0))
         );
     }
@@ -47,8 +44,6 @@ class MatrixPNormCombinerTest {
     @Test
     void allOnesMatrixReduceTest() throws IOException, InterruptedException {
 
-        InOrder inOrder = inOrder(context);
-
         ArrayList<DoubleWritable> values = new ArrayList<>();
         values.add(new DoubleWritable(1.0));
         values.add(new DoubleWritable(1.0));
@@ -58,8 +53,8 @@ class MatrixPNormCombinerTest {
         combiner.reduce(new IntWritable(1), values, context);
         combiner.reduce(new IntWritable(2), values, context);
 
-        inOrder.verify(context, times(3)).write(
-                eq(NullWritable.get()),
+        verify(context, times(3)).write(
+                eq(new IntWritable(0)),
                 eq(new DoubleWritable(3.0))
         );
     }
@@ -67,8 +62,6 @@ class MatrixPNormCombinerTest {
     @Test
     void unitaryMatrixReduceTest() throws IOException, InterruptedException {
 
-        InOrder inOrder = inOrder(context);
-
         ArrayList<DoubleWritable> values = new ArrayList<>();
         values.add(new DoubleWritable(1.0));
 
@@ -76,8 +69,8 @@ class MatrixPNormCombinerTest {
         combiner.reduce(new IntWritable(1), values, context);
         combiner.reduce(new IntWritable(2), values, context);
 
-        inOrder.verify(context, times(3)).write(
-                eq(NullWritable.get()),
+        verify(context, times(3)).write(
+                eq(new IntWritable(0)),
                 eq(new DoubleWritable(1.0))
         );
     }

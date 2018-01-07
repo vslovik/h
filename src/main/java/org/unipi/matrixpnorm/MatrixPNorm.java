@@ -45,7 +45,7 @@ public class MatrixPNorm extends Configured implements Tool {
         }
     }
 
-    public static class MatrixPNormCombiner extends Reducer<IntWritable, DoubleWritable, NullWritable, DoubleWritable> {
+    public static class MatrixPNormCombiner extends Reducer<IntWritable, DoubleWritable, IntWritable, DoubleWritable> {
 
         @Override
         public void reduce(IntWritable key, Iterable<DoubleWritable> values,
@@ -56,14 +56,14 @@ public class MatrixPNorm extends Configured implements Tool {
                 sum += value.get();
             }
 
-            context.write(NullWritable.get(), new DoubleWritable(sum));
+            context.write(new IntWritable(0), new DoubleWritable(sum));
         }
     }
 
-    public static class MatrixPNormReducer extends Reducer<NullWritable, DoubleWritable, NullWritable, DoubleWritable> {
+    public static class MatrixPNormReducer extends Reducer<IntWritable, DoubleWritable, NullWritable, DoubleWritable> {
 
         @Override
-        public void reduce(NullWritable key, Iterable<DoubleWritable> values,
+        public void reduce(IntWritable key, Iterable<DoubleWritable> values,
                            Context context) throws IOException, InterruptedException {
 
             Double p = context.getConfiguration().getDouble("power", 2.0);
