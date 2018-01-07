@@ -1,5 +1,6 @@
 package org.unipi.matrixrowgen;
 
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
@@ -9,14 +10,14 @@ import org.unipi.matrixpnorm.Utils;
 import java.io.IOException;
 import java.util.Random;
 
-public class MatrixRowGenRecordReader extends RecordReader<Integer, Text> {
+public class MatrixRowGenRecordReader extends RecordReader<NullWritable, Text> {
 
     private int numMatrixRowsToGenerate = 100;
 
     private int numMatrixCols = 100;
     private int createdRecords = 0;
 
-    private int key = 0;
+    private NullWritable key = NullWritable.get();
     private Text value = new Text();
 
     public void initialize(InputSplit split, TaskAttemptContext context)
@@ -59,7 +60,6 @@ public class MatrixRowGenRecordReader extends RecordReader<Integer, Text> {
 
             String serializedMatrixRow = Utils.serializeArrayOfDoubles(generateMatrixRow(numMatrixCols));
 
-            key = createdRecords;
             value.set(serializedMatrixRow);
             createdRecords += 1;
 
@@ -69,7 +69,7 @@ public class MatrixRowGenRecordReader extends RecordReader<Integer, Text> {
         return false;
     }
 
-    public Integer getCurrentKey() throws IOException, InterruptedException {
+    public NullWritable getCurrentKey() throws IOException, InterruptedException {
         return key;
     }
 

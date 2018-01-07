@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-class MatrixRowGenInputFormat extends FileInputFormat<Integer, Text> {
+class MatrixRowGenInputFormat extends FileInputFormat<NullWritable, Text> {
 
     private static final String NUM_MAP_TASKS    = "random.generator.map.tasks";
     static final String NUM_MATRIX_ROWS_PER_TASK = "random.generator.num.matrix.rows.per.map.task";
@@ -28,7 +28,7 @@ class MatrixRowGenInputFormat extends FileInputFormat<Integer, Text> {
         return splits;
     }
 
-    public RecordReader<Integer, Text> createRecordReader(InputSplit split, TaskAttemptContext context)
+    public RecordReader<NullWritable, Text> createRecordReader(InputSplit split, TaskAttemptContext context)
             throws IOException, InterruptedException {
         MatrixRowGenRecordReader rr = new MatrixRowGenRecordReader();
         rr.initialize(split, context);

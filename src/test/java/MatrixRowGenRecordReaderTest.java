@@ -1,3 +1,4 @@
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.junit.jupiter.api.Test;
 import org.unipi.matrixrowgen.MatrixRowGenRecordReader;
@@ -17,11 +18,11 @@ class MatrixRowGenRecordReaderTest {
         double progress = 0.0;
         int i = 0;
         while (reader.nextKeyValue()) {
-            assertEquals(reader.getCurrentKey().getClass(), Integer.class);
+            assertEquals(reader.getCurrentKey().getClass(), NullWritable.class);
             assertEquals(reader.getCurrentValue().getClass(), Text.class);
             assertTrue(reader.getProgress() > progress);
             progress = reader.getProgress();
-            Double[] row = Utils.deserializeArrayOfDoubles(reader.getCurrentKey().toString());
+            Double[] row = Utils.deserializeArrayOfDoubles(reader.getCurrentValue().toString());
             assertTrue(row.length > 0);
             i += 1;
         }

@@ -28,7 +28,6 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             Double[] row = Utils.deserializeArrayOfDoubles(value.toString());
             for (int c = 0; c < row.length; c++) {
-
                 if (!row[c].equals(0.0)) {
                     context.write(new IntWritable(c), new DoubleWritable(row[c] * row[c]));
                 }
@@ -39,12 +38,10 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
     public static class MatrixColumnsMagnitudesReducer extends Reducer<IntWritable, DoubleWritable, IntWritable, DoubleWritable> {
 
         private double maxValue = 0.0;
-
         private TreeMap<Integer, Double> magnitudes = new TreeMap<>();
 
         public void reduce(IntWritable key, Iterable<DoubleWritable> values, Context context)
                 throws IOException, InterruptedException {
-
             Double sum = 0.0;
             for (DoubleWritable val : values) {
                 Double value = val.get();
@@ -53,7 +50,6 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
                 }
                 sum += value;
             }
-
             magnitudes.put(key.get(), sum);
         }
 

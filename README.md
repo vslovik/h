@@ -81,3 +81,48 @@ console output example:
     2	3	0.6135	0.7977	0.9404	1.0	0.1295	0.1516
     4	4	0.2221	0.0552	0.6961	0.2568	0.0387	0.1415	0.3005	0.4216	0.5451	0.6788	0.6828	0.3385	0.0445	0.6744	0.1367	0.2667
     ...
+   
+   
+## Matrix p-norm computation in parallel  
+
+Generate test sparse matrix
+
+    $ org.unipi.matrixrowgen.MatrixRowGenDriver <number of map tasks> <number of matrix rows per task> <number of matrix columns> <output path>
+
+example:
+
+    $ org.unipi.matrixrowgen.MatrixRowGenDriver 2 10000 100 rows
+
+Run matrix p-norm application
+
+    $ org.unipi.matrixpnorm.MatrixPNorm <input path> <output path> <p: double number>
+
+example: 
+
+    $ org.unipi.matrixpnorm.MatrixPNorm rows mpnorm 2.0
+
+Run Naive Frobenius norm application
+
+    $ org.unipi.matrixpnorm.MatrixNaiveFrobeniusNorm <input path> <output path>
+
+example: 
+
+    $ org.unipi.matrixpnorm.MatrixNaiveFrobeniusNorm rows mnfn
+
+Run DimSum Frobenius norm application in two steps:
+
+1. Pre-calculate column euclidean norms 
+
+    $ org.unipi.matrixpnorm.MatrixColumnsMagnitudes <input path> <output path>
+
+example:
+
+    $ org.unipi.matrixpnorm.MatrixColumnsMagnitudes rows colnorms
+
+2. Run DimSum Frobenius norm application
+
+    $ org.unipi.matrixpnorm.MatrixDimSumFrobeniusNorm <columns norm input path> <matrix input path> <output path>
+
+example:
+
+    $ org.unipi.matrixpnorm.MatrixDimSumFrobeniusNorm colnorms rows dimsum  

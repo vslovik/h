@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.conf.Configuration;
 
 class MagnitudesLoader {
@@ -17,16 +18,28 @@ class MagnitudesLoader {
         String line;
         List<Double> magnitudes = new ArrayList<>();
 
-        Path pt = new Path(path);
         FileSystem fs = FileSystem.get(conf);
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(pt)))) {
-            line = br.readLine();
-            while (line != null){
 
-                String[] row = line.split("\\s+");
-                magnitudes.add(Double.parseDouble(row[1]));
+        FileStatus[] fileStatus = fs.listStatus(new Path("mag"));
+        List<String> parts = new ArrayList<>();
+        for(FileStatus status : fileStatus){
+            String partPath =  status.getPath().toString();
+            String[] str = partPath.split("/");
+            if(str[str.length - 1].substring(0,"part".length()).equals("part"))
+                parts.add(partPath);
+        }
 
+        for(String p : parts) {
+            Path pt = new Path(p);
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(fs.open(pt)))) {
                 line = br.readLine();
+                while (line != null) {
+
+                    String[] row = line.split("\\s+");
+                    magnitudes.add(Double.parseDouble(row[1]));
+
+                    line = br.readLine();
+                }
             }
         }
 
