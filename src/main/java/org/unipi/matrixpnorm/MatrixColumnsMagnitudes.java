@@ -68,10 +68,10 @@ public class MatrixColumnsMagnitudes extends Configured implements Tool {
         job.setJarByClass(MatrixColumnsMagnitudes.class);
 
         job.setMapperClass(MatrixColumnsMagnitudesMapper.class);
-
         job.setMapOutputKeyClass(IntWritable.class);
         job.setMapOutputValueClass(DoubleWritable.class);
 
+        job.setReducerClass(MatrixColumnsMagnitudesReducer.class);
         job.setOutputKeyClass(IntWritable.class);
         job.setOutputValueClass(DoubleWritable.class);
 
