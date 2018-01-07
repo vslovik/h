@@ -13,24 +13,21 @@ public class MapperValue implements Writable {
     int rowIndex    = 0;
     double colValue = 0;
 
+    public MapperValue(){}
+
     public MapperValue(int rowIndex, double colValue) {
         this.rowIndex = rowIndex;
         this.colValue = colValue;
     }
 
     public void readFields(DataInput in) throws IOException {
-
-        Double[] arr = Arrays.stream(
-                in.readLine().split("\t")
-        ).map(String::trim).toArray(Double[]::new);
-
-        this.rowIndex = arr[0].intValue();
-        this.colValue = arr[1];
+        rowIndex = in.readInt();
+        colValue = in.readDouble();
     }
 
     public void write(DataOutput out) throws IOException {
-        double[] array = new double[] {this.rowIndex, this.colValue};
-        out.writeBytes(Arrays.toString(array));
+        out.writeInt(rowIndex);
+        out.writeDouble(colValue);
     }
 
     public boolean equals(Object o) {

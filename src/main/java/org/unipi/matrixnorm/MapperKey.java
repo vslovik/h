@@ -5,7 +5,6 @@ import org.apache.hadoop.io.WritableComparable;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class MapperKey implements WritableComparable<MapperKey> {
 
@@ -23,20 +22,20 @@ public class MapperKey implements WritableComparable<MapperKey> {
 
     @Override
     public void readFields(DataInput in) throws IOException {
-
-        Integer[] arr = Arrays.stream(
-                in.readLine().split("\t")
-        ).map(String::trim).toArray(Integer[]::new);
-
-        this.matrixIndex = arr[0];
-        this.colIndex    = arr[1];
-        this.flag        = arr[2];
+        matrixIndex = in.readInt();
+        colIndex    = in.readInt();
+        flag        = in.readInt();
     }
 
     @Override
     public void write(DataOutput out) throws IOException {
-        Integer[] array = new Integer[] {this.matrixIndex, this.colIndex, this.flag};
-        out.writeBytes(Arrays.toString(array));
+        out.writeInt(matrixIndex);
+        out.writeInt(colIndex);
+        out.writeInt(flag);
+    }
+
+    public String toString() {
+        return Integer.toString(matrixIndex) + "\t" + Integer.toString(colIndex) + "\t" + Integer.toString(flag);
     }
 
     @Override
